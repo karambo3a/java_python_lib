@@ -1,13 +1,13 @@
 package org.example;
 
-public class PythonObj {
-    private long addr = 0L;
+public class PythonObject {
+    private long index = 0L;
 
-    public PythonObj(long addr) {
-        this.addr = addr;
+    public PythonObject(long index) {
+        this.index = index;
     }
 
-    public long getAddr() {
-        return addr;
+    public long getIndex() {
+        return index;
     }
 }
