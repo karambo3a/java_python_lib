@@ -18,9 +18,9 @@ JNIEXPORT jobject JNICALL Java_org_example_Main_evaluate(JNIEnv *env, jobject ob
     PyObject* pdict = PyModule_GetDict(main_module);
     PyObject* pdict_new = PyDict_New();
 
-
     PyObject* py_object = PyRun_String(cstr, Py_eval_input, pdict, pdict_new);
     env->ReleaseStringUTFChars(str, cstr);
+    Py_DecRef(pdict_new);
 
     jclass cls = env->FindClass("org/example/PythonObject");
     jmethodID constructor = env->GetMethodID(cls, "<init>", "(J)V");
@@ -30,6 +30,7 @@ JNIEXPORT jobject JNICALL Java_org_example_Main_evaluate(JNIEnv *env, jobject ob
     return java_object;
 }
 
+
 JNIEXPORT jstring JNICALL Java_org_example_Main_representation(JNIEnv *env, jobject obj, jobject java_object) {
     std::size_t index = get_index(env, java_object);
     PyObject* py_object = object_manager->get_object(index);
@@ -37,6 +38,7 @@ JNIEXPORT jstring JNICALL Java_org_example_Main_representation(JNIEnv *env, jobj
     jstring jresult = env->NewStringUTF(result);
     return jresult;
 }
+
 
 JNIEXPORT jobject JNICALL Java_org_example_Main_getAttribute(JNIEnv *env, jobject obj, jobject java_object, jstring name) {
     const char *attr_name = env->GetStringUTFChars(name, nullptr);
@@ -65,15 +67,17 @@ JNIEXPORT jobject JNICALL Java_org_example_Main_callFunction(JNIEnv *env, jobjec
     if (args_cnt == 0) {
         func_result = PyObject_CallNoArgs(attr_object);
     } else {
-        PyObject *tuple = PyTuple_New(args_cnt);
+        PyObject *tuple = PyTuple_New((Py_ssize_t)args_cnt);
         for (int i = 0; i < args_cnt; ++i) {
-            jint index = get_index(env, env->GetObjectArrayElement(jargs, i));
-            PyTuple_SetItem(tuple, i, object_manager->get_object(index));
+            std::size_t index = get_index(env, env->GetObjectArrayElement(jargs, i));
+            PyObject* item = object_manager->get_object(index);
+            Py_IncRef(item);
+            PyTuple_SetItem(tuple, i, item);
         }
         func_result = PyObject_Call(attr_object, tuple, nullptr);
     }
 
-    jlong res_index = object_manager->add_object(func_result);
+    std::size_t res_index = object_manager->add_object(func_result);
     jclass cls = env->FindClass("org/example/PythonObject");
     jmethodID constructor = env->GetMethodID(cls, "<init>", "(J)V");
     jobject java_obj = env->NewObject(cls, constructor, res_index);

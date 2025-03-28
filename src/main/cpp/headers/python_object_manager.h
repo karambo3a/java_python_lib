@@ -18,7 +18,7 @@ public:
 
     PythonObjectManager& operator=(PythonObjectManager&& other) = delete;
 
-    std::size_t add_object(PyObject* py_object);
+    std::size_t add_object(PyObject* py_object, bool isBorrowed = false);
 
     PyObject* get_object(std::size_t index);
 
