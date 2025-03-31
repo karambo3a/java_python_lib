@@ -1,5 +1,5 @@
 #include "headers/python_object_manager.h"
-
+#include <iostream>
 
 PythonObjectManager::PythonObjectManager() {}
 
@@ -30,8 +30,21 @@ PyObject* PythonObjectManager::get_object(std::size_t index) {
     return this->py_objects[index];
 }
 
+PyObject* PythonObjectManager::get_object(JNIEnv *env, jobject java_object) {
+    std::size_t index = this->get_index(env, java_object);
+    return this->get_object(index);
+}
+
 
 void PythonObjectManager::free_object(std::size_t index) {
     Py_XDECREF(this->py_objects[index]);
     this->py_objects[index] = nullptr;
+}
+
+
+std::size_t PythonObjectManager::get_index(JNIEnv *env, jobject java_object) {
+    jclass cls = env->GetObjectClass(java_object);
+    jmethodID getIndex = env->GetMethodID(cls, "getIndex", "()J");
+    jlong index = env->CallLongMethod(java_object, getIndex);
+    return (std::size_t)index;
 }

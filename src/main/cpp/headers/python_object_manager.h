@@ -3,6 +3,7 @@
 
 #include <Python.h>
 #include <vector>
+#include <jni.h>
 
 class PythonObjectManager {
 public:
@@ -22,7 +23,11 @@ public:
 
     PyObject* get_object(std::size_t index);
 
+    PyObject* get_object(JNIEnv *env, jobject java_object);
+
     void free_object(std::size_t index);
+
+    std::size_t get_index(JNIEnv *env, jobject java_object);
 
 private:
     std::vector<PyObject*> py_objects;

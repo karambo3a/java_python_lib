@@ -1,6 +1,6 @@
-package org.example;
+package org.python.integration;
 
-public class PythonInitializer implements AutoCloseable{
+public class PythonSession implements AutoCloseable{
 
     static {
         System.loadLibrary("native");
@@ -9,7 +9,7 @@ public class PythonInitializer implements AutoCloseable{
     private native void initializePy();
     private native void finalizePy();
 
-    public PythonInitializer() {
+    public PythonSession() {
         initializePy();
     }
 

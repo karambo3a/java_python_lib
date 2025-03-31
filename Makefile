@@ -6,9 +6,12 @@ INCLUDES=-I/usr/include/python3.12 \
             -I/usr/lib/jvm/java-21-openjdk-amd64/include \
             -I/usr/lib/jvm/java-21-openjdk-amd64/include/linux
 LDFLAGS=-shared -fPIC
-OBJS=build/cpp/org_example_Main.o \
-	 build/cpp/org_example_PythonInitializer.o \
-     build/cpp/python_object_manager.o \
+OBJS=build/cpp/org_python_integration_PythonSession.o \
+	 build/cpp/org_python_integration_PythonCore.o \
+	 build/cpp/org_python_integration_AbstractPythonObject.o \
+	 build/cpp/org_python_integration_PythonCallable.o\
+	 build/cpp/org_python_integration_PythonInt.o\
+	 build/cpp/python_object_manager.o \
      build/cpp/globals.o
 
 buildNative: $(OBJS)
