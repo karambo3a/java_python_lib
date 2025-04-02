@@ -2,10 +2,12 @@ package org.python.integration;
 
 import java.util.Optional;
 
-public interface PythonBaseObject {
-    long getIndex();
+public interface IPythonObject {
     String representation();
-    PythonBaseObject getAttribute(String attrName);
+
+    IPythonObject getAttribute(String attrName) throws Exception;
+
     Optional<PythonCallable> asCallable();
+
     Optional<PythonInt> asInt();
 }

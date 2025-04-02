@@ -2,23 +2,18 @@ package org.python.integration;
 
 import java.util.Optional;
 
-public abstract class AbstractPythonObject implements PythonBaseObject{
-    protected long index;
+public abstract class AbstractPythonObject implements IPythonObject {
+    private final long index;
 
     protected AbstractPythonObject(long index) {
         this.index = index;
     }
 
     @Override
-    public long getIndex() {
-        return this.index;
-    }
-
-    @Override
     public native String representation();
 
     @Override
-    public native PythonBaseObject getAttribute(String attrName);
+    public native IPythonObject getAttribute(String attrName) throws Exception;
 
     @Override
     public native Optional<PythonCallable> asCallable();

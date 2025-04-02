@@ -1,19 +1,17 @@
 #include "headers/python_object_manager.h"
 #include <iostream>
 
-PythonObjectManager::PythonObjectManager() {}
-
 PythonObjectManager::~PythonObjectManager() {
     for (auto py_object: this->py_objects) {
         Py_XDECREF(py_object);
     }
 }
 
-std::size_t PythonObjectManager::add_object(PyObject* py_object, bool isBorrowed) {
+std::size_t PythonObjectManager::add_object(PyObject* py_object, bool is_borrowed) {
     if (!py_object) {
         return -1;
     }
-    if (isBorrowed) {
+    if (is_borrowed) {
         Py_IncRef(py_object);
     }
     for (std::size_t i = 0; i < this->py_objects.size(); ++i) {
@@ -44,7 +42,7 @@ void PythonObjectManager::free_object(std::size_t index) {
 
 std::size_t PythonObjectManager::get_index(JNIEnv *env, jobject java_object) {
     jclass cls = env->GetObjectClass(java_object);
-    jmethodID getIndex = env->GetMethodID(cls, "getIndex", "()J");
-    jlong index = env->CallLongMethod(java_object, getIndex);
+    jfieldID field = env->GetFieldID(cls, "index", "J");
+    jlong index = env->GetLongField(java_object, field);
     return (std::size_t)index;
 }

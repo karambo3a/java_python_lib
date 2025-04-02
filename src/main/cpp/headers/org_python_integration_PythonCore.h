@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     org_python_integration_PythonCore
  * Method:    evaluate
- * Signature: (Ljava/lang/String;)Lorg/python/integration/PythonBaseObject;
+ * Signature: (Ljava/lang/String;)Lorg/python/integration/IPythonObject;
  */
 JNIEXPORT jobject JNICALL Java_org_python_integration_PythonCore_evaluate
   (JNIEnv *, jclass, jstring);
@@ -18,7 +18,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_PythonCore_evaluate
 /*
  * Class:     org_python_integration_PythonCore
  * Method:    free
- * Signature: (Lorg/python/integration/PythonBaseObject;)V
+ * Signature: (Lorg/python/integration/IPythonObject;)V
  */
 JNIEXPORT void JNICALL Java_org_python_integration_PythonCore_free
   (JNIEnv *, jclass, jobject);

@@ -7,7 +7,7 @@
 
 JNIEXPORT void JNICALL Java_org_python_integration_PythonSession_initializePy(JNIEnv *env, jobject obj) {
   Py_Initialize();
-  object_manager = new PythonObjectManager;
+  object_manager = new PythonObjectManager();
 }
 
 JNIEXPORT void JNICALL Java_org_python_integration_PythonSession_finalizePy(JNIEnv *env, jobject obj) {

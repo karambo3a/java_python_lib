@@ -18,7 +18,7 @@ JNIEXPORT jstring JNICALL Java_org_python_integration_AbstractPythonObject_repre
 /*
  * Class:     org_python_integration_AbstractPythonObject
  * Method:    getAttribute
- * Signature: (Ljava/lang/String;)Lorg/python/integration/PythonBaseObject;
+ * Signature: (Ljava/lang/String;)Lorg/python/integration/IPythonObject;
  */
 JNIEXPORT jobject JNICALL Java_org_python_integration_AbstractPythonObject_getAttribute
   (JNIEnv *, jobject, jstring);

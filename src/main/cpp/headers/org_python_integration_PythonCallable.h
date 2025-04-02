@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     org_python_integration_PythonCallable
  * Method:    call
- * Signature: ([Lorg/python/integration/PythonBaseObject;)Lorg/python/integration/PythonBaseObject;
+ * Signature: ([Lorg/python/integration/IPythonObject;)Lorg/python/integration/IPythonObject;
  */
 JNIEXPORT jobject JNICALL Java_org_python_integration_PythonCallable_call
   (JNIEnv *, jobject, jobjectArray);

@@ -1,9 +1,10 @@
 package org.python.integration;
 
 public class PythonCore {
-    private PythonCore(){}
+    private PythonCore() {
+    }
 
-    public static native PythonBaseObject evaluate(String str);
+    public static native IPythonObject evaluate(String str);
 
-    public static native void free(PythonBaseObject obj);
+    public static native void free(IPythonObject obj);
 }
