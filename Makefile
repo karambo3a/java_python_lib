@@ -13,7 +13,8 @@ OBJS=build/cpp/org_python_integration_core_PythonSession.o \
 	 build/cpp/org_python_integration_object_PythonInt.o\
 	 build/cpp/python_object_manager.o \
 	 build/cpp/python_object_factory.o \
-     build/cpp/globals.o
+     build/cpp/globals.o \
+	 build/cpp/exceptions.o
 
 buildNative: $(OBJS)
 	mkdir -p build/libs && \

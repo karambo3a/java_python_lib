@@ -1,5 +1,8 @@
 #include "headers/python_object_manager.h"
+#include "headers/exceptions.h"
+#include <string>
 #include <iostream>
+
 
 PythonObjectManager::~PythonObjectManager() {
     for (auto py_object: this->py_objects) {
@@ -7,10 +10,8 @@ PythonObjectManager::~PythonObjectManager() {
     }
 }
 
+
 std::size_t PythonObjectManager::add_object(PyObject* py_object, bool is_borrowed) {
-    if (!py_object) {
-        return -1;
-    }
     if (is_borrowed) {
         Py_IncRef(py_object);
     }
@@ -24,18 +25,30 @@ std::size_t PythonObjectManager::add_object(PyObject* py_object, bool is_borrowe
     return this->py_objects.size() - 1;
 }
 
-PyObject* PythonObjectManager::get_object(std::size_t index) {
-    return this->py_objects[index];
+
+PyObject* PythonObjectManager::get_object(JNIEnv *env, std::size_t index) {
+    PyObject* py_object = this->py_objects[index];
+    if (!py_object) {
+        throw_native_operation_exception(env, "Associated Python object with Java object is NULL");
+        return nullptr;
+    }
+    return py_object;
 }
+
 
 PyObject* PythonObjectManager::get_object(JNIEnv *env, jobject java_object) {
     std::size_t index = this->get_index(env, java_object);
-    return this->get_object(index);
+    PyObject* py_object = this->get_object(env, index);
+    return py_object;
 }
 
 
-void PythonObjectManager::free_object(std::size_t index) {
-    Py_XDECREF(this->py_objects[index]);
+void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
+    std::size_t index = this->get_index(env, java_object);
+    if (!this->py_objects[index]) {
+        throw_native_operation_exception(env, ("Double object free on index = " + std::to_string(index)).c_str());
+    }
+    Py_DecRef(this->py_objects[index]);
     this->py_objects[index] = nullptr;
 }
 

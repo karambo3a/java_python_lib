@@ -1,4 +1,5 @@
 #include "headers/python_object_factory.h"
+#include "headers/globals.h"
 
 
 jobject create_java_object(JNIEnv* env, jclass cls, std::size_t index){
@@ -7,18 +8,46 @@ jobject create_java_object(JNIEnv* env, jclass cls, std::size_t index){
     return java_py_object;
 }
 
+
 jobject create_python_object(JNIEnv* env, std::size_t index){
     jclass python_object_class = env->FindClass("org/python/integration/object/PythonObject");
     return create_java_object(env, python_object_class, index);
 }
+
 
 jobject create_python_int(JNIEnv* env, std::size_t index){
     jclass python_int_class = env->FindClass("org/python/integration/object/PythonInt");
     return create_java_object(env, python_int_class, index);
 }
 
+
 jobject create_python_callable(JNIEnv* env, std::size_t index){
     jclass python_callable_class = env->FindClass("org/python/integration/object/PythonCallable");
     return create_java_object(env, python_callable_class, index);
 }
 
+
+jobject convert_to_java_object(JNIEnv* env, PyObject* py_object) {
+    if (!py_object) {
+        return nullptr;
+    }
+    std::size_t index = object_manager->add_object(py_object);
+    jobject java_object = create_python_object(env, index);
+    return java_object;
+}
+    
+
+jthrowable create_python_exception(JNIEnv* env, PyObject* exception) {
+    PyObject* py_type = PyObject_Type(exception);
+    PyObject* py_value = PyException_GetArgs(exception);
+    PyObject* py_traceback = PyException_GetTraceback(exception);
+
+    jobject java_type = convert_to_java_object(env, py_type);
+    jobject java_value = convert_to_java_object(env, py_value);
+    jobject java_traceback = convert_to_java_object(env, py_traceback);
+
+    jclass python_exception_class = env->FindClass("org/python/integration/exception/PythonException");
+    jmethodID constructor = env->GetMethodID(python_exception_class, "<init>", "(Lorg/python/integration/object/IPythonObject;Lorg/python/integration/object/IPythonObject;Lorg/python/integration/object/IPythonObject;)V");
+    jthrowable java_exception = (jthrowable)env->NewObject(python_exception_class, constructor, java_type, java_value, java_traceback);
+    return java_exception;
+}

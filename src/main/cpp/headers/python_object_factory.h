@@ -10,5 +10,6 @@ jobject create_python_int(JNIEnv* env, std::size_t index);
 
 jobject create_python_callable(JNIEnv* env, std::size_t index);
 
+jthrowable create_python_exception(JNIEnv* env, PyObject* exception);
 
 #endif // PYTHON_FACTORY_H

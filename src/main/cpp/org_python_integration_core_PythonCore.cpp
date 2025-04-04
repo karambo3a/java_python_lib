@@ -14,14 +14,19 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate(J
     PyObject* py_object = PyRun_String(repr, Py_eval_input, pdict, pdict_new);
     env->ReleaseStringUTFChars(java_repr, repr);
     Py_DecRef(pdict_new);
-    jlong index = object_manager->add_object(py_object);
 
+    if (!py_object) {
+        PyObject* py_exception = PyErr_GetRaisedException();
+        jthrowable java_exception = create_python_exception(env, py_exception);
+        Py_DecRef(py_exception);
+        env->Throw(java_exception);
+    }
+
+    jlong index = object_manager->add_object(py_object);
     return create_python_object(env, index);
 }
 
 
-
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonCore_free(JNIEnv *env, jclass cls, jobject java_object) {
-    std::size_t index = object_manager->get_index(env, java_object);
-    object_manager->free_object(index);
+    object_manager->free_object(env, java_object);
 }

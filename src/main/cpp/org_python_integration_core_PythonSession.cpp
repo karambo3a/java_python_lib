@@ -10,6 +10,7 @@ JNIEXPORT void JNICALL Java_org_python_integration_core_PythonSession_initialize
   object_manager = new PythonObjectManager();
 }
 
+
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonSession_finalizePy(JNIEnv *env, jobject obj) {
   delete object_manager;
   object_manager = nullptr;

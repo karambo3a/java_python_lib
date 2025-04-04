@@ -3,6 +3,7 @@
 
 #include <Python.h>
 #include <vector>
+#include <iostream>
 #include <jni.h>
 
 class PythonObjectManager {
@@ -21,11 +22,11 @@ public:
 
     std::size_t add_object(PyObject* py_object, bool is_borrowed = false);
 
-    PyObject* get_object(std::size_t index);
+    PyObject* get_object(JNIEnv *env, std::size_t index);
 
     PyObject* get_object(JNIEnv *env, jobject java_object);
 
-    void free_object(std::size_t index);
+    void free_object(JNIEnv *env, jobject java_object);
 
     std::size_t get_index(JNIEnv *env, jobject java_object);
 
