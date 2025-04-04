@@ -1,4 +1,6 @@
-package org.python.integration;
+package org.python.integration.core;
+
+import org.python.integration.object.IPythonObject;
 
 public class PythonCore {
     private PythonCore() {

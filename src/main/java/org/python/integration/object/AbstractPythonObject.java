@@ -1,4 +1,4 @@
-package org.python.integration;
+package org.python.integration.object;
 
 import java.util.Optional;
 

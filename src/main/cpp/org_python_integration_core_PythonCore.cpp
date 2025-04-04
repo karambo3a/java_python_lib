@@ -1,11 +1,11 @@
-#include "headers/org_python_integration_PythonCore.h"
+#include "headers/org_python_integration_core_PythonCore.h"
 #include "headers/python_object_factory.h"
 #include "headers/globals.h"
 #include <Python.h>
 #include <iostream>
 
 
-JNIEXPORT jobject JNICALL Java_org_python_integration_PythonCore_evaluate(JNIEnv *env, jclass cls, jstring java_repr) {
+JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate(JNIEnv *env, jclass cls, jstring java_repr) {
     const char *repr = env->GetStringUTFChars(java_repr, nullptr);
     PyObject* main_module = PyImport_AddModule("__main__");
     PyObject* pdict = PyModule_GetDict(main_module);
@@ -21,7 +21,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_PythonCore_evaluate(JNIEnv
 
 
 
-JNIEXPORT void JNICALL Java_org_python_integration_PythonCore_free(JNIEnv *env, jclass cls, jobject java_object) {
+JNIEXPORT void JNICALL Java_org_python_integration_core_PythonCore_free(JNIEnv *env, jclass cls, jobject java_object) {
     std::size_t index = object_manager->get_index(env, java_object);
     object_manager->free_object(index);
 }

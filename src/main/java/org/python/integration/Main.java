@@ -1,5 +1,9 @@
 package org.python.integration;
 
+import org.python.integration.core.PythonCore;
+import org.python.integration.core.PythonSession;
+import org.python.integration.object.IPythonObject;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -16,6 +20,7 @@ public class Main {
                 var b = list.getAttribute("kalmsclaks");
             } catch (Exception e) {
                 System.out.println("caught!");
+                System.out.println(e.getMessage());
             }
             IPythonObject len = null;
             if (getLen.asCallable().isPresent()) {
@@ -35,7 +40,6 @@ public class Main {
             try {
                 getitem = list.getAttribute("__getitem__");
             } catch (Exception e) {
-
             }
             IPythonObject item = null;
             if (getitem.asCallable().isPresent()) {

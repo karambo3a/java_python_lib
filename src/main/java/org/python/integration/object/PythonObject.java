@@ -1,4 +1,4 @@
-package org.python.integration;
+package org.python.integration.object;
 
 public class PythonObject extends AbstractPythonObject {
 

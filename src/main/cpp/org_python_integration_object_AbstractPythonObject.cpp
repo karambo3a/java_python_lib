@@ -1,9 +1,9 @@
-#include "headers/org_python_integration_AbstractPythonObject.h"
+#include "headers/org_python_integration_object_AbstractPythonObject.h"
 #include "headers/python_object_factory.h"
 #include "headers/globals.h"
 #include <iostream>
 
-JNIEXPORT jstring JNICALL Java_org_python_integration_AbstractPythonObject_representation(JNIEnv *env, jobject java_object) {
+JNIEXPORT jstring JNICALL Java_org_python_integration_object_AbstractPythonObject_representation(JNIEnv *env, jobject java_object) {
     PyObject* py_object = object_manager->get_object(env, java_object);
     PyObject* py_repr = PyObject_Repr(py_object);
     //TODO
@@ -14,7 +14,7 @@ JNIEXPORT jstring JNICALL Java_org_python_integration_AbstractPythonObject_repre
 }
 
 
-JNIEXPORT jobject JNICALL Java_org_python_integration_AbstractPythonObject_getAttribute(JNIEnv *env, jobject java_object, jstring name) {
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_getAttribute(JNIEnv *env, jobject java_object, jstring name) {
     const char *attr_name = env->GetStringUTFChars(name, nullptr);
     PyObject* pyObj = object_manager->get_object(env, java_object);
     PyObject* attr_object = PyObject_GetAttrString(pyObj, attr_name);
@@ -29,7 +29,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_AbstractPythonObject_getAt
 }
 
 
-JNIEXPORT jobject JNICALL Java_org_python_integration_AbstractPythonObject_asCallable(JNIEnv *env, jobject java_object) {
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asCallable(JNIEnv *env, jobject java_object) {
     std::size_t index = object_manager->get_index(env, java_object);
     PyObject* py_object = object_manager->get_object(index);
 
@@ -45,7 +45,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_AbstractPythonObject_asCal
 }
 
 
-JNIEXPORT jobject JNICALL Java_org_python_integration_AbstractPythonObject_asInt(JNIEnv *env, jobject java_object){
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asInt(JNIEnv *env, jobject java_object){
     std::size_t index = object_manager->get_index(env, java_object);
     PyObject* py_object = object_manager->get_object(index);
 

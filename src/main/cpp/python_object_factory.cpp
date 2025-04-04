@@ -8,17 +8,17 @@ jobject create_java_object(JNIEnv* env, jclass cls, std::size_t index){
 }
 
 jobject create_python_object(JNIEnv* env, std::size_t index){
-    jclass python_object_class = env->FindClass("org/python/integration/PythonObject");
+    jclass python_object_class = env->FindClass("org/python/integration/object/PythonObject");
     return create_java_object(env, python_object_class, index);
 }
 
 jobject create_python_int(JNIEnv* env, std::size_t index){
-    jclass python_int_class = env->FindClass("org/python/integration/PythonInt");
+    jclass python_int_class = env->FindClass("org/python/integration/object/PythonInt");
     return create_java_object(env, python_int_class, index);
 }
 
 jobject create_python_callable(JNIEnv* env, std::size_t index){
-    jclass python_callable_class = env->FindClass("org/python/integration/PythonCallable");
+    jclass python_callable_class = env->FindClass("org/python/integration/object/PythonCallable");
     return create_java_object(env, python_callable_class, index);
 }
 

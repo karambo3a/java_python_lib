@@ -1,9 +1,9 @@
-#include "headers/org_python_integration_PythonCallable.h"
+#include "headers/org_python_integration_object_PythonCallable.h"
 #include "headers/globals.h"
 #include "headers/python_object_factory.h"
 #include <iostream>
 
-JNIEXPORT jobject JNICALL Java_org_python_integration_PythonCallable_call(JNIEnv *env, jobject java_object, jobjectArray jargs) {
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_call(JNIEnv *env, jobject java_object, jobjectArray jargs) {
     PyObject* callable_object = object_manager->get_object(env, java_object);
 
     jsize args_cnt = env->GetArrayLength(jargs);
