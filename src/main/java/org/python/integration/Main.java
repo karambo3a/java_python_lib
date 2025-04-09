@@ -14,7 +14,7 @@ public class Main {
 
             System.out.println(list.representation());
             var getLen = list.getAttribute("__len__");
-            try{
+            try {
                 var b = list.getAttribute("some attribute");
             } catch (PythonException e) {
                 System.out.println("caught!");
@@ -29,13 +29,18 @@ public class Main {
             }
 
             int javaItem = 0;
-                if (len.asInt().isPresent()) {
-                    var a = len.asInt().get();
-                    javaItem = a.toJavaInt();
-                }
+            if (len.asInt().isPresent()) {
+                var a = len.asInt().get();
+                javaItem = a.toJavaInt();
+            }
 
             System.out.println("javaItem " + javaItem);  //
 
+            var bool = PythonCore.evaluate("1 < 2");
+            if (bool.asBool().isPresent()) {
+                var a = bool.asBool().get();
+                System.out.println("boolean " + a.toJavaBoolean());
+            }
             var index = PythonCore.evaluate("1");
             var getitem = list.getAttribute("__getitem__");
             IPythonObject item = null;

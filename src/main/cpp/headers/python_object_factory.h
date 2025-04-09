@@ -10,6 +10,8 @@ jobject create_python_int(JNIEnv* env, std::size_t index);
 
 jobject create_python_callable(JNIEnv* env, std::size_t index);
 
+jobject create_python_bool(JNIEnv* env, std::size_t index);
+
 jthrowable create_python_exception(JNIEnv* env);
 
 jthrowable create_native_operation_exception(JNIEnv* env, const char* message);

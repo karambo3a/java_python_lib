@@ -13,4 +13,6 @@ public interface IPythonObject {
     Optional<PythonCallable> asCallable();
 
     Optional<PythonInt> asInt();
+
+    Optional<PythonBool> asBool();
 }

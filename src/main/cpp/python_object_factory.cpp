@@ -27,6 +27,13 @@ jobject create_python_callable(JNIEnv* env, std::size_t index){
 }
 
 
+jobject create_python_bool(JNIEnv* env, std::size_t index){
+    jclass python_bool_class = env->FindClass("org/python/integration/object/PythonBool");
+
+    return create_java_object(env, python_bool_class, index);
+}
+
+
 // TODO
 jobject convert_to_java_object(JNIEnv* env, PyObject* py_object) {
     if (!py_object) {
@@ -64,7 +71,7 @@ jthrowable create_python_exception(JNIEnv* env) {
 }
 
 
-jthrowable create_native_operation_exception(JNIEnv* env, const char message) {
+jthrowable create_native_operation_exception(JNIEnv* env, const char *message) {
     jclass python_exception_class = env->FindClass("org/python/integration/exception/NativeOperationException");
     jmethodID constructor = env->GetMethodID(python_exception_class, "<init>", "(Ljava/lang/String;)V");
     jthrowable java_exception = (jthrowable)env->NewObject(python_exception_class, constructor, message);
