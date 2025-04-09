@@ -1,6 +1,5 @@
 #include "headers/org_python_integration_object_PythonCallable.h"
 #include "headers/globals.h"
-#include "headers/exceptions.h"
 #include "headers/python_object_factory.h"
 #include <iostream>
 
@@ -15,7 +14,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_call
     } else {
         PyObject *args = PyTuple_New((Py_ssize_t)args_cnt);
         if (!args) {
-            throw_native_operation_exception(env, "Failed to create tuple for arguments");
+            jthrowable java_exception = create_native_operation_exception(env, "Failed to create tuple for arguments");
+            env->Throw(java_exception);
             return nullptr;
         }
         for (int i = 0; i < args_cnt; ++i) {
@@ -28,9 +28,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_call
     }
 
     if (!func_result) {
-        PyObject* py_exception = PyErr_GetRaisedException();
-        jthrowable java_exception = create_python_exception(env, py_exception);
-        Py_DecRef(py_exception);
+        jthrowable java_exception = create_python_exception(env);
         env->Throw(java_exception);
         return nullptr;
     }

@@ -16,10 +16,9 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate(J
     Py_DecRef(pdict_new);
 
     if (!py_object) {
-        PyObject* py_exception = PyErr_GetRaisedException();
-        jthrowable java_exception = create_python_exception(env, py_exception);
-        Py_DecRef(py_exception);
+        jthrowable java_exception = create_python_exception(env);
         env->Throw(java_exception);
+        return nullptr;
     }
 
     jlong index = object_manager->add_object(py_object);

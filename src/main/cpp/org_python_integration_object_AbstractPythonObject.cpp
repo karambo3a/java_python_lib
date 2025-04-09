@@ -1,7 +1,6 @@
 #include "headers/org_python_integration_object_AbstractPythonObject.h"
 #include "headers/python_object_factory.h"
 #include "headers/globals.h"
-#include "headers/exceptions.h"
 #include <iostream>
 
 
@@ -9,10 +8,7 @@ JNIEXPORT jstring JNICALL Java_org_python_integration_object_AbstractPythonObjec
     PyObject* py_object = object_manager->get_object(env, java_object);
     PyObject* py_repr = PyObject_Repr(py_object);
     if (!py_repr) {
-        PyObject* py_exception = PyErr_GetRaisedException();
-        jthrowable java_exception = create_python_exception(env, py_exception);
-        Py_DecRef(py_exception);
-        Py_DecRef(py_repr);
+        jthrowable java_exception = create_python_exception(env);
         env->Throw(java_exception);
         return nullptr;
     }
@@ -21,7 +17,8 @@ JNIEXPORT jstring JNICALL Java_org_python_integration_object_AbstractPythonObjec
     const char *repr = PyUnicode_AsUTF8(py_repr);
     if (!repr) {
         Py_DecRef(py_repr);
-        throw_native_operation_exception(env, "Failed to convert Python string to const char*");
+        jthrowable java_exception = create_native_operation_exception(env, "Failed to convert Python string to const char*");
+        env->Throw(java_exception);
         return nullptr;
     }
     jstring java_result = env->NewStringUTF(repr);
@@ -32,13 +29,15 @@ JNIEXPORT jstring JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_getAttribute(JNIEnv *env, jobject java_object, jstring name) {
     if (!name) {
-        throw_native_operation_exception(env, "Attribute name cannot be null");
+        jthrowable java_exception = create_native_operation_exception(env, "Attribute name cannot be null");
+        env->Throw(java_exception);
         return nullptr;
     }
 
     const char *attr_name = env->GetStringUTFChars(name, nullptr);
     if (!attr_name){
-        throw_native_operation_exception(env, "Failed to convert Java string to const char*");
+        jthrowable java_exception = create_native_operation_exception(env, "Failed to convert Java string to const char*");
+        env->Throw(java_exception);
         return nullptr;
     }
 
@@ -48,9 +47,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
     env->ReleaseStringUTFChars(name, attr_name);
 
     if (!attr_object) {
-        PyObject* py_exception = PyErr_GetRaisedException();
-        jthrowable java_exception = create_python_exception(env, py_exception);
-        Py_DecRef(py_exception);
+        jthrowable java_exception = create_python_exception(env);
         env->Throw(java_exception);
         return nullptr;
     }

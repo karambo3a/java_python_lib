@@ -1,7 +1,7 @@
 .PHONY: buildNative cleanNative
 
 CC=g++
-CXXFLAGS=-std=c++20 -fPIC -fno-omit-frame-pointer -g
+CXXFLAGS=-std=c++20 -fPIC -fno-omit-frame-pointer -g -DPYTHON_VERSION=312
 INCLUDES=-I/usr/include/python3.12 \
             -I/usr/lib/jvm/java-21-openjdk-amd64/include \
             -I/usr/lib/jvm/java-21-openjdk-amd64/include/linux

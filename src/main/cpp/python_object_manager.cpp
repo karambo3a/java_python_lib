@@ -1,5 +1,5 @@
 #include "headers/python_object_manager.h"
-#include "headers/exceptions.h"
+#include "headers/python_object_factory.h"
 #include <string>
 #include <iostream>
 
@@ -29,7 +29,8 @@ std::size_t PythonObjectManager::add_object(PyObject* py_object, bool is_borrowe
 PyObject* PythonObjectManager::get_object(JNIEnv *env, std::size_t index) {
     PyObject* py_object = this->py_objects[index];
     if (!py_object) {
-        throw_native_operation_exception(env, "Associated Python object with Java object is NULL");
+        jthrowable java_exception = create_native_operation_exception(env, "Associated Python object with Java object is NULL");
+        env->Throw(java_exception);
         return nullptr;
     }
     return py_object;
@@ -46,7 +47,8 @@ PyObject* PythonObjectManager::get_object(JNIEnv *env, jobject java_object) {
 void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
     std::size_t index = this->get_index(env, java_object);
     if (!this->py_objects[index]) {
-        throw_native_operation_exception(env, ("Double object free on index = " + std::to_string(index)).c_str());
+        jthrowable java_exception = create_native_operation_exception(env, ("Double object free on index=" + std::to_string(index)).c_str());
+        env->Throw(java_exception);
     }
     Py_DecRef(this->py_objects[index]);
     this->py_objects[index] = nullptr;
