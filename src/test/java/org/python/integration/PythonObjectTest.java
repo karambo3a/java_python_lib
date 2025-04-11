@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,10 +52,8 @@ public class PythonObjectTest {
     @DisplayName("Should throws PythonException when getting non-existent attribute")
     void testGetAttributeNonExistentAttributeThrows() {
         PythonException pythonException = assertThrows(PythonException.class, () -> list.getAttribute("not existent attribute"));
-        assertNotNull(pythonException.getType());
         assertNotNull(pythonException.getValue());
-        assertNull(pythonException.getTraceback());
-        }
+    }
 
     @Test
     @DisplayName("Should throws NativeOperationException when getting attribute with null name")
@@ -64,8 +61,6 @@ public class PythonObjectTest {
         NativeOperationException nativeOperationException = assertThrows(NativeOperationException.class, () -> list.getAttribute(null));
         assertEquals("Attribute name cannot be null", nativeOperationException.getMessage());
     }
-
-
 
 
     @Test

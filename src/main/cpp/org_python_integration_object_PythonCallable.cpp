@@ -6,33 +6,39 @@
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_call(JNIEnv *env, jobject java_object, jobjectArray jargs) {
     PyObject* callable_object = object_manager->get_object(env, java_object);
-
-    jsize args_cnt = env->GetArrayLength(jargs);
-    PyObject* func_result;
-    if (args_cnt == 0) {
-        func_result = PyObject_CallNoArgs(callable_object);
-    } else {
-        PyObject *args = PyTuple_New((Py_ssize_t)args_cnt);
-        if (!args) {
-            jthrowable java_exception = create_native_operation_exception(env, "Failed to create tuple for arguments");
-            env->Throw(java_exception);
-            return nullptr;
-        }
-        for (int i = 0; i < args_cnt; ++i) {
-            PyObject* arg = object_manager->get_object(env, env->GetObjectArrayElement(jargs, i));
-            Py_IncRef(arg);
-            PyTuple_SetItem(args, i, arg);
-        }
-        func_result = PyObject_Call(callable_object, args, nullptr);
-        Py_DecRef(args);
+    if (!callable_object) {
+        return nullptr;
     }
 
-    if (!func_result) {
-        jthrowable java_exception = create_python_exception(env);
+    jsize args_cnt = env->GetArrayLength(jargs);
+    PyObject *args = PyTuple_New((Py_ssize_t)args_cnt);
+    if (!args) {
+        jthrowable java_exception = create_native_operation_exception(env, "Failed to create tuple for arguments");
         env->Throw(java_exception);
         return nullptr;
     }
 
-    std::size_t res_index = object_manager->add_object(func_result);
-    return create_python_object(env, res_index);
+    PyObject* func_result;
+    if (args_cnt == 0) {
+        func_result = PyObject_CallNoArgs(callable_object);
+    } else {
+        for (int i = 0; i < args_cnt; ++i) {
+            PyObject* arg = object_manager->get_object(env, env->GetObjectArrayElement(jargs, i));
+            if (!arg) {
+                return nullptr;
+            }
+            Py_IncRef(arg);
+            PyTuple_SetItem(args, i, arg);
+        }
+        func_result = PyObject_Call(callable_object, args, nullptr);
+    }
+
+    if (!func_result) {
+        jthrowable java_exception = create_python_exception(env);
+        Py_DecRef(args);
+        env->Throw(java_exception);
+        return nullptr;
+    }
+
+    return convert_to_java_object(env, func_result);
 }

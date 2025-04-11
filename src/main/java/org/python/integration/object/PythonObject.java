@@ -2,7 +2,7 @@ package org.python.integration.object;
 
 public class PythonObject extends AbstractPythonObject {
 
-    public PythonObject(long index) {
+    private PythonObject(long index) {
         super(index);
     }
 }

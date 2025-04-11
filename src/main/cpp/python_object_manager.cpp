@@ -49,9 +49,10 @@ void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
     if (!this->py_objects[index]) {
         jthrowable java_exception = create_native_operation_exception(env, ("Double object free on index=" + std::to_string(index)).c_str());
         env->Throw(java_exception);
+        return;
     }
-    Py_DecRef(this->py_objects[index]);
     this->py_objects[index] = nullptr;
+    Py_XDECREF(this->py_objects[index]);
 }
 
 
