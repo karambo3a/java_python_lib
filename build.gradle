@@ -60,6 +60,7 @@ run {
 
 
 test {
+    dependsOn buildNative
     useJUnitPlatform()
     systemProperty "java.library.path", nativeLibsDir
 }

@@ -74,6 +74,6 @@ jthrowable create_python_exception(JNIEnv* env) {
 jthrowable create_native_operation_exception(JNIEnv* env, const char *message) {
     jclass python_exception_class = env->FindClass("org/python/integration/exception/NativeOperationException");
     jmethodID constructor = env->GetMethodID(python_exception_class, "<init>", "(Ljava/lang/String;)V");
-    jthrowable java_exception = (jthrowable)env->NewObject(python_exception_class, constructor, message);
+    jthrowable java_exception = (jthrowable)env->NewObject(python_exception_class, constructor, env->NewStringUTF(message));
     return java_exception;
 }

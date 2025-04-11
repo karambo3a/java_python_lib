@@ -1,8 +1,5 @@
 package org.python.integration.object;
 
-import org.python.integration.exception.NativeOperationException;
-import org.python.integration.exception.PythonException;
-
 import java.util.Optional;
 
 public abstract class AbstractPythonObject implements IPythonObject {
@@ -13,10 +10,10 @@ public abstract class AbstractPythonObject implements IPythonObject {
     }
 
     @Override
-    public native String representation() throws PythonException;
+    public native String representation();
 
     @Override
-    public native IPythonObject getAttribute(String attrName) throws PythonException, NativeOperationException;
+    public native IPythonObject getAttribute(String attrName);
 
     @Override
     public native Optional<PythonCallable> asCallable();
