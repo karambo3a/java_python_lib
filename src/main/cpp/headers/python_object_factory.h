@@ -12,6 +12,8 @@ jobject create_python_callable(JNIEnv* env, std::size_t index);
 
 jobject create_python_bool(JNIEnv* env, std::size_t index);
 
+jobject create_python_list(JNIEnv* env, std::size_t index);
+
 jobject convert_to_java_object(JNIEnv* env, PyObject* py_object);
 
 jthrowable create_python_exception(JNIEnv* env);

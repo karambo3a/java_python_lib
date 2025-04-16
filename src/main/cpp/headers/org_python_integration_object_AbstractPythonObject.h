@@ -47,6 +47,14 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asBool
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_python_integration_object_AbstractPythonObject
+ * Method:    asList
+ * Signature: ()Ljava/util/Optional;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asList
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

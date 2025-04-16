@@ -11,6 +11,7 @@ import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonBool;
 import org.python.integration.object.PythonCallable;
 import org.python.integration.object.PythonInt;
+import org.python.integration.object.PythonList;
 
 import java.util.Optional;
 
@@ -115,5 +116,14 @@ public class PythonObjectTest {
     void testAsBoolUnsuccessful() {
         Optional<PythonBool> pythonBool = list.asBool();
         assertTrue(pythonBool.isEmpty());
+    }
+
+
+    @Test
+    @DisplayName("Should successfully convert PythonObject to PythonList")
+    void testAsListSuccessful() {
+        Optional<PythonList> pythonList = list.asList();
+        assertTrue(pythonList.isPresent());
+        assertNotNull(pythonList.get());
     }
 }

@@ -29,8 +29,12 @@ jobject create_python_callable(JNIEnv* env, std::size_t index){
 
 jobject create_python_bool(JNIEnv* env, std::size_t index){
     jclass python_bool_class = env->FindClass("org/python/integration/object/PythonBool");
-
     return create_java_object(env, python_bool_class, index);
+}
+
+jobject create_python_list(JNIEnv* env, std::size_t index){
+    jclass python_list_class = env->FindClass("org/python/integration/object/PythonList");
+    return create_java_object(env, python_list_class, index);
 }
 
 
