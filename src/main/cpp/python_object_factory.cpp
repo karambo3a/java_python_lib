@@ -32,8 +32,15 @@ jobject create_python_bool(JNIEnv* env, std::size_t index){
     return create_java_object(env, python_bool_class, index);
 }
 
+
 jobject create_python_list(JNIEnv* env, std::size_t index){
     jclass python_list_class = env->FindClass("org/python/integration/object/PythonList");
+    return create_java_object(env, python_list_class, index);
+}
+
+
+jobject create_python_dict(JNIEnv* env, std::size_t index){
+    jclass python_list_class = env->FindClass("org/python/integration/object/PythonDict");
     return create_java_object(env, python_list_class, index);
 }
 

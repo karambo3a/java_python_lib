@@ -26,4 +26,7 @@ public abstract class AbstractPythonObject implements IPythonObject {
 
     @Override
     public native Optional<PythonList> asList();
+
+    @Override
+    public native Optional<PythonDict> asDict();
 }

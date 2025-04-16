@@ -7,39 +7,46 @@ import java.util.Optional;
 
 public class PythonList extends AbstractList<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonList;
+    private final long index;
 
     private PythonList(long index) {
-        pythonList = new PythonObject(index);
+        this.index = index;
+        this.pythonList = new PythonObject(index);
     }
 
     @Override
     public String representation() {
-        return pythonList.representation();
+        return this.pythonList.representation();
     }
 
     @Override
     public IPythonObject getAttribute(String attrName) {
-        return pythonList.getAttribute(attrName);
+        return this.pythonList.getAttribute(attrName);
     }
 
     @Override
     public Optional<PythonCallable> asCallable() {
-        return pythonList.asCallable();
+        return this.pythonList.asCallable();
     }
 
     @Override
     public Optional<PythonInt> asInt() {
-        return pythonList.asInt();
+        return this.pythonList.asInt();
     }
 
     @Override
     public Optional<PythonBool> asBool() {
-        return pythonList.asBool();
+        return this.pythonList.asBool();
     }
 
     @Override
     public Optional<PythonList> asList() {
-        return pythonList.asList();
+        return this.pythonList.asList();
+    }
+
+    @Override
+    public Optional<PythonDict> asDict() {
+        return this.pythonList.asDict();
     }
 
     @Override
@@ -47,7 +54,7 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
         IPythonObject lenAttr = null;
         PythonInt lenInt = null;
         try {
-            lenAttr = pythonList.getAttribute("__len__");
+            lenAttr = this.pythonList.getAttribute("__len__");
             PythonCallable lenAttrCallable = lenAttr.asCallable().orElseThrow(() -> new IllegalStateException("__len__ in not callable"));
             lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("result of __len__ is not int"));
             return lenInt.toJavaInt();
@@ -62,7 +69,7 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
         IPythonObject getItemAttr = null;
         IPythonObject pythonIndex = PythonCore.evaluate(String.valueOf(index));
         try {
-            getItemAttr = pythonList.getAttribute("__getitem__");
+            getItemAttr = this.pythonList.getAttribute("__getitem__");
             PythonCallable getItemCallable = getItemAttr.asCallable().orElseThrow(() -> new IllegalStateException("__getitem__ is not callable"));
             return getItemCallable.call(pythonIndex);
         } finally {
@@ -78,7 +85,7 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
         IPythonObject pythonIndex = PythonCore.evaluate(String.valueOf(index));
         try {
             IPythonObject prevObject = this.get(index);
-            setItemAttr = pythonList.getAttribute("__setitem__");
+            setItemAttr = this.pythonList.getAttribute("__setitem__");
             PythonCallable setItemCallable = setItemAttr.asCallable().orElseThrow(() -> new IllegalStateException("__setitem__ is not callable"));
             setItemCallable.call(pythonIndex, object);
             return prevObject;
@@ -96,7 +103,7 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
         IPythonObject containsAttr = null;
         PythonBool result = null;
         try {
-            containsAttr = pythonList.getAttribute("__contains__");
+            containsAttr = this.pythonList.getAttribute("__contains__");
             PythonCallable containsCallable = containsAttr.asCallable().orElseThrow(() -> new IllegalStateException("__contains__ is not callable"));
             result = containsCallable.call((IPythonObject) object).asBool().orElseThrow(() -> new IllegalStateException("__contains__ result is not bool"));
             return result.toJavaBoolean();
@@ -111,7 +118,7 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
         IPythonObject insertAttr = null;
         IPythonObject pythonIndex = PythonCore.evaluate(String.valueOf(index));
         try {
-            insertAttr = pythonList.getAttribute("insert");
+            insertAttr = this.pythonList.getAttribute("insert");
             PythonCallable insertCallable = insertAttr.asCallable().orElseThrow(() -> new IllegalStateException("insert is not callable"));
             insertCallable.call(pythonIndex, object);
         } finally {
@@ -119,4 +126,6 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
             PythonCore.free(pythonIndex);
         }
     }
+
+    public static native PythonList of(IPythonObject object);
 }
