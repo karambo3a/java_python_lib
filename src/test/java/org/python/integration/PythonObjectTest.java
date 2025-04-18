@@ -10,7 +10,9 @@ import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonBool;
 import org.python.integration.object.PythonCallable;
+import org.python.integration.object.PythonDict;
 import org.python.integration.object.PythonInt;
+import org.python.integration.object.PythonList;
 
 import java.util.Optional;
 
@@ -94,7 +96,7 @@ public class PythonObjectTest {
 
 
     @Test
-    @DisplayName("Should return empty Optional when converting not int PythonObject to PythonCallable")
+    @DisplayName("Should return empty Optional when converting not int PythonObject to PythonInt")
     void testAsIntUnsuccessful() {
         Optional<PythonInt> pythonInt = list.asInt();
         assertTrue(pythonInt.isEmpty());
@@ -111,9 +113,43 @@ public class PythonObjectTest {
     }
 
     @Test
-    @DisplayName("Should return empty Optional when converting not bool PythonObject to PythonCallable")
+    @DisplayName("Should return empty Optional when converting not bool PythonObject to PythonBool")
     void testAsBoolUnsuccessful() {
         Optional<PythonBool> pythonBool = list.asBool();
         assertTrue(pythonBool.isEmpty());
+    }
+
+
+    @Test
+    @DisplayName("Should successfully convert PythonObject to PythonList")
+    void testAsListSuccessful() {
+        Optional<PythonList> pythonList = list.asList();
+        assertTrue(pythonList.isPresent());
+        assertNotNull(pythonList.get());
+        assertEquals("[1, 2, 3]", pythonList.get().representation());
+    }
+
+    @Test
+    @DisplayName("Should return empty Optional when converting not list PythonObject to PythonList")
+    void testAsListUnsuccessful() {
+        Optional<PythonList> pythonList = PythonCore.evaluate("1").asList();
+        assertTrue(pythonList.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert PythonObject to PythonDict")
+    void testAsDictSuccessful() {
+        IPythonObject dict = PythonCore.evaluate("{1: 1, 2: 2}");
+        Optional<PythonDict> pythonDict = dict.asDict();
+        assertTrue(pythonDict.isPresent());
+        assertNotNull(pythonDict.get());
+        assertEquals("{1: 1, 2: 2}", pythonDict.get().representation());
+    }
+
+    @Test
+    @DisplayName("Should return empty Optional when converting not dict PythonObject to PythonDict")
+    void testAsDictUnsuccessful() {
+        Optional<PythonDict> pythonDict = list.asDict();
+        assertTrue(pythonDict.isEmpty());
     }
 }
