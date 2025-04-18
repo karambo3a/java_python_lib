@@ -63,6 +63,22 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asDict
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_python_integration_object_AbstractPythonObject
+ * Method:    asTuple
+ * Signature: ()Ljava/util/Optional;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asTuple
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_python_integration_object_AbstractPythonObject
+ * Method:    asSet
+ * Signature: ()Ljava/util/Optional;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asSet
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

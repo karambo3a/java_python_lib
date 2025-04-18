@@ -12,6 +12,7 @@ import org.python.integration.object.PythonList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -79,10 +80,19 @@ public class PythonListTest {
 
     @Test
     @DisplayName("Should return true if list contains item")
-    void testListContainsSuccessful() {
+    void testListContainsTrueSuccessful() {
         PythonList list = initPythonList("[1,2,3]");
         IPythonObject item = PythonCore.evaluate("1");
 
         assertTrue(list.contains(item));
+    }
+
+    @Test
+    @DisplayName("Should return false if tuple does not contain item")
+    void testListContainsFalseSuccessful() {
+        PythonList list = initPythonList("[1,2,3]");
+        IPythonObject item = PythonCore.evaluate("4");
+
+        assertFalse(list.contains(item));
     }
 }

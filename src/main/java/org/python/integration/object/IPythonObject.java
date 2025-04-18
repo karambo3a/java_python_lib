@@ -16,4 +16,8 @@ public interface IPythonObject {
     Optional<PythonList> asList();
 
     Optional<PythonDict> asDict();
+
+    Optional<PythonTuple> asTuple();
+
+    Optional<PythonSet> asSet();
 }

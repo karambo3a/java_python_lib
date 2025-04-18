@@ -7,8 +7,11 @@
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_of(JNIEnv *env, jclass cls, jobject java_object) {
     PyObject *sequence = object_manager->get_object(env, java_object);
-    PyObject *list = PySequence_List(sequence);
     if (!sequence) {
+        return nullptr;
+    }
+    PyObject *list = PySequence_List(sequence);
+    if (!list) {
         jthrowable java_exception = create_python_exception(env);
         env->Throw(java_exception);
         return nullptr;

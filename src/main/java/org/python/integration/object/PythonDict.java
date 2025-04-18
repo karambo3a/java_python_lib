@@ -58,6 +58,16 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         return this.pythonDict.asDict();
     }
 
+    @Override
+    public Optional<PythonTuple> asTuple() {
+        return this.pythonDict.asTuple();
+    }
+
+    @Override
+    public Optional<PythonSet> asSet() {
+        return this.pythonDict.asSet();
+    }
+
 
     @Override
     public Set<Entry<IPythonObject, IPythonObject>> entrySet() {

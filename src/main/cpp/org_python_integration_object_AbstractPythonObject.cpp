@@ -149,8 +149,47 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
         return env->CallStaticObjectMethod(optional_class, empty_method);
     }
-    jobject java_py_list = create_python_dict(env, index);
+    jobject java_py_dict = create_python_dict(env, index);
 
     jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
-    return env->CallStaticObjectMethod(optional_class, of_method, java_py_list);
+    return env->CallStaticObjectMethod(optional_class, of_method, java_py_dict);
 }
+
+
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asTuple(JNIEnv *env, jobject java_object) {
+    std::size_t index = object_manager->get_index(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index);
+    if (!py_object) {
+        return nullptr;
+    }
+
+    jclass optional_class = env->FindClass("java/util/Optional");
+    if (!PyTuple_CheckExact(py_object)) {
+        jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
+        return env->CallStaticObjectMethod(optional_class, empty_method);
+    }
+    jobject java_py_tuple = create_python_tuple(env, index);
+
+    jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
+    return env->CallStaticObjectMethod(optional_class, of_method, java_py_tuple);
+}
+
+
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asSet(JNIEnv *env, jobject java_object) {
+    std::size_t index = object_manager->get_index(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index);
+    if (!py_object) {
+        return nullptr;
+    }
+
+    jclass optional_class = env->FindClass("java/util/Optional");
+    if (!PySet_CheckExact(py_object)) {
+        jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
+        return env->CallStaticObjectMethod(optional_class, empty_method);
+    }
+    jobject java_py_set = create_python_set(env, index);
+
+    jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
+    return env->CallStaticObjectMethod(optional_class, of_method, java_py_set);
+}
+

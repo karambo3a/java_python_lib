@@ -45,6 +45,18 @@ jobject create_python_dict(JNIEnv* env, std::size_t index){
 }
 
 
+jobject create_python_tuple(JNIEnv* env, std::size_t index){
+    jclass python_tuple_class = env->FindClass("org/python/integration/object/PythonTuple");
+    return create_java_object(env, python_tuple_class, index);
+}
+
+
+jobject create_python_set(JNIEnv* env, std::size_t index){
+    jclass python_set_class = env->FindClass("org/python/integration/object/PythonSet");
+    return create_java_object(env, python_set_class, index);
+}
+
+
 jobject convert_to_java_object(JNIEnv* env, PyObject* py_object) {
     if (!py_object) {
         return nullptr;
