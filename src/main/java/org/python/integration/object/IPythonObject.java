@@ -12,4 +12,12 @@ public interface IPythonObject {
     Optional<PythonInt> asInt();
 
     Optional<PythonBool> asBool();
+
+    Optional<PythonList> asList();
+
+    Optional<PythonDict> asDict();
+
+    Optional<PythonTuple> asTuple();
+
+    Optional<PythonSet> asSet();
 }

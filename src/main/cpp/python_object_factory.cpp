@@ -29,8 +29,31 @@ jobject create_python_callable(JNIEnv* env, std::size_t index){
 
 jobject create_python_bool(JNIEnv* env, std::size_t index){
     jclass python_bool_class = env->FindClass("org/python/integration/object/PythonBool");
-
     return create_java_object(env, python_bool_class, index);
+}
+
+
+jobject create_python_list(JNIEnv* env, std::size_t index){
+    jclass python_list_class = env->FindClass("org/python/integration/object/PythonList");
+    return create_java_object(env, python_list_class, index);
+}
+
+
+jobject create_python_dict(JNIEnv* env, std::size_t index){
+    jclass python_list_class = env->FindClass("org/python/integration/object/PythonDict");
+    return create_java_object(env, python_list_class, index);
+}
+
+
+jobject create_python_tuple(JNIEnv* env, std::size_t index){
+    jclass python_tuple_class = env->FindClass("org/python/integration/object/PythonTuple");
+    return create_java_object(env, python_tuple_class, index);
+}
+
+
+jobject create_python_set(JNIEnv* env, std::size_t index){
+    jclass python_set_class = env->FindClass("org/python/integration/object/PythonSet");
+    return create_java_object(env, python_set_class, index);
 }
 
 
