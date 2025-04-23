@@ -3,6 +3,8 @@ package org.python.integration.object;
 import java.util.Optional;
 
 public interface IPythonObject {
+    void keepAlive();
+
     String representation();
 
     IPythonObject getAttribute(String attrName);

@@ -4,6 +4,32 @@
 #include <iostream>
 
 
+JNIEXPORT void JNICALL Java_org_python_integration_object_AbstractPythonObject_keepAlive(JNIEnv *env, jobject java_object) {
+    std::size_t scope = object_manager->get_scope(env, java_object);
+
+    PythonObjectManager *curr_object_manager = object_manager;
+    while (curr_object_manager->get_prev_object_manager() != nullptr && curr_object_manager->get_object_manager_scope() != scope) {
+        curr_object_manager = curr_object_manager->get_prev_object_manager();
+    }
+    PyObject* py_object = curr_object_manager->get_object(env, java_object);
+    if (!py_object) {
+        return;
+    }
+
+    std::size_t new_index = curr_object_manager->get_prev_object_manager()->add_object(py_object, true);
+    curr_object_manager->free_object(env, java_object);
+
+    jclass cls = env->GetObjectClass(java_object);
+    jfieldID field = env->GetFieldID(cls, "index", "J");
+    env->SetLongField(java_object, field, (jlong)new_index);
+
+
+    cls = env->GetObjectClass(java_object);
+    field = env->GetFieldID(cls, "scope", "J");
+    env->SetLongField(java_object, field, (jlong)curr_object_manager->get_prev_object_manager()->get_object_manager_scope());
+}
+
+
 JNIEXPORT jstring JNICALL Java_org_python_integration_object_AbstractPythonObject_representation(JNIEnv *env, jobject java_object) {
     PyObject* py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
@@ -64,7 +90,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asCallable(JNIEnv *env, jobject java_object) {
     std::size_t index = object_manager->get_index(env, java_object);
-    PyObject* py_object = object_manager->get_object(env, index);
+    std::size_t scope = object_manager->get_scope(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index, scope);
     if (!py_object) {
         return nullptr;
     }
@@ -74,7 +101,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
         return env->CallStaticObjectMethod(optional_class, empty_method);
     }
-    jobject java_py_callable = create_python_callable(env, index);
+    jobject java_py_callable = create_python_callable(env, index, scope);
 
     jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
     return env->CallStaticObjectMethod(optional_class, of_method, java_py_callable);
@@ -83,7 +110,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asInt(JNIEnv *env, jobject java_object){
     std::size_t index = object_manager->get_index(env, java_object);
-    PyObject* py_object = object_manager->get_object(env, index);
+    std::size_t scope = object_manager->get_scope(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index, scope);
     if (!py_object) {
         return nullptr;
     }
@@ -93,7 +121,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
         return env->CallStaticObjectMethod(optional_class, empty_method);
     }
-    jobject java_py_int = create_python_int(env, index);
+    jobject java_py_int = create_python_int(env, index, scope);
 
     jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
     return env->CallStaticObjectMethod(optional_class, of_method, java_py_int);
@@ -102,7 +130,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asBool(JNIEnv *env, jobject java_object) {
     std::size_t index = object_manager->get_index(env, java_object);
-    PyObject* py_object = object_manager->get_object(env, index);
+    std::size_t scope = object_manager->get_scope(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index, scope);
     if (!py_object) {
         return nullptr;
     }
@@ -112,15 +141,17 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
         return env->CallStaticObjectMethod(optional_class, empty_method);
     }
-    jobject java_py_bool = create_python_bool(env, index);
+    jobject java_py_bool = create_python_bool(env, index, scope);
 
     jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
     return env->CallStaticObjectMethod(optional_class, of_method, java_py_bool);
 }
 
+
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asList(JNIEnv *env, jobject java_object) {
     std::size_t index = object_manager->get_index(env, java_object);
-    PyObject* py_object = object_manager->get_object(env, index);
+    std::size_t scope = object_manager->get_scope(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index, scope);
     if (!py_object) {
         return nullptr;
     }
@@ -130,7 +161,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
         return env->CallStaticObjectMethod(optional_class, empty_method);
     }
-    jobject java_py_list = create_python_list(env, index);
+    jobject java_py_list = create_python_list(env, index, scope);
 
     jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
     return env->CallStaticObjectMethod(optional_class, of_method, java_py_list);
@@ -139,7 +170,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asDict(JNIEnv *env, jobject java_object) {
     std::size_t index = object_manager->get_index(env, java_object);
-    PyObject* py_object = object_manager->get_object(env, index);
+    std::size_t scope = object_manager->get_scope(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index, scope);
     if (!py_object) {
         return nullptr;
     }
@@ -149,7 +181,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
         return env->CallStaticObjectMethod(optional_class, empty_method);
     }
-    jobject java_py_dict = create_python_dict(env, index);
+    jobject java_py_dict = create_python_dict(env, index, scope);
 
     jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
     return env->CallStaticObjectMethod(optional_class, of_method, java_py_dict);
@@ -158,7 +190,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asTuple(JNIEnv *env, jobject java_object) {
     std::size_t index = object_manager->get_index(env, java_object);
-    PyObject* py_object = object_manager->get_object(env, index);
+    std::size_t scope = object_manager->get_scope(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index, scope);
     if (!py_object) {
         return nullptr;
     }
@@ -168,7 +201,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
         return env->CallStaticObjectMethod(optional_class, empty_method);
     }
-    jobject java_py_tuple = create_python_tuple(env, index);
+    jobject java_py_tuple = create_python_tuple(env, index, scope);
 
     jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
     return env->CallStaticObjectMethod(optional_class, of_method, java_py_tuple);
@@ -177,7 +210,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asSet(JNIEnv *env, jobject java_object) {
     std::size_t index = object_manager->get_index(env, java_object);
-    PyObject* py_object = object_manager->get_object(env, index);
+    std::size_t scope = object_manager->get_scope(env, java_object);
+    PyObject* py_object = object_manager->get_object(env, index, scope);
     if (!py_object) {
         return nullptr;
     }
@@ -187,7 +221,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
         return env->CallStaticObjectMethod(optional_class, empty_method);
     }
-    jobject java_py_set = create_python_set(env, index);
+    jobject java_py_set = create_python_set(env, index, scope);
 
     jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
     return env->CallStaticObjectMethod(optional_class, of_method, java_py_set);

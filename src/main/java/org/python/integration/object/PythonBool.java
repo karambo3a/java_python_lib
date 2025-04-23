@@ -2,8 +2,8 @@ package org.python.integration.object;
 
 public class PythonBool extends AbstractPythonObject{
 
-    private PythonBool(long index) {
-        super(index);
+    private PythonBool(long index, long scope) {
+        super(index, scope);
     }
 
     public native boolean toJavaBoolean();

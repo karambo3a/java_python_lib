@@ -10,11 +10,18 @@ import java.util.Set;
 public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implements IPythonObject {
     private final IPythonObject pythonDict;
     private final long index;
+    private final long scope;
 
-
-    private PythonDict(long index) {
+    private PythonDict(long index, long scope) {
         this.index = index;
-        this.pythonDict = new PythonObject(index);
+        this.scope = scope;
+        this.pythonDict = new PythonObject(index, scope);
+    }
+
+
+    @Override
+    public void keepAlive() {
+        this.pythonDict.keepAlive();
     }
 
 
