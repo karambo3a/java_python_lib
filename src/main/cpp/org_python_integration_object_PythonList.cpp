@@ -17,6 +17,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_of(JNIEn
         return nullptr;
     }
     std::size_t index = object_manager->add_object(list);
-    jobject python_list = create_python_list(env, index);
+    jobject python_list = create_python_list(env, index, object_manager->get_object_manager_scope());
     return python_list;
 }
