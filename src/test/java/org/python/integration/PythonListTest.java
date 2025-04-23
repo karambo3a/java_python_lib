@@ -48,6 +48,7 @@ public class PythonListTest {
         assertNotNull(result);
 
         Optional<PythonInt> resultOptional = result.asInt();
+        assertNotNull(resultOptional);
         assertTrue(resultOptional.isPresent());
         assertEquals(2, resultOptional.get().toJavaInt());
     }
