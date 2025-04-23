@@ -9,12 +9,11 @@ import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonDict;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,6 +35,7 @@ public class PythonDictTest {
         return listOptional.orElse(null);
     }
 
+    
     @Test
     @DisplayName("Should successfully return entrySet of the dict")
     public void testEntrySetSuccessful() {
@@ -43,17 +43,12 @@ public class PythonDictTest {
 
         Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
         assertNotNull(entries);
-        var expected = List.of(
-                List.of("2", "3"),
-                List.of("1", "2")
-        );
-        var entryList = new ArrayList<>(entries);
-        for (int i = 0; i < entryList.size(); ++i) {
-            assertEquals(expected.get(i).getFirst(), entryList.get(i).getKey().representation());
-            assertEquals(expected.get(i).getLast(), entryList.get(i).getValue().representation());
-        }
+        assertEquals(2, entries.size());
+        var entryList = entries.stream().map((pyObject) -> Map.entry(pyObject.getKey().representation(), pyObject.getValue().representation()));
+        assertThat(entryList)
+                .hasSize(2)
+                .containsExactlyInAnyOrder(Map.entry("2", "3"), Map.entry("1", "2"));
     }
-
 
     @Test
     @DisplayName("Should successfully return size of the non-empty dict")
