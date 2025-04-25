@@ -54,12 +54,31 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
         return this.pythonList.asTuple();
     }
 
-
     @Override
     public Optional<PythonSet> asSet() {
         return this.pythonList.asSet();
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof IPythonObject)) {
+            return false;
+        }
+        return pythonList.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return pythonList.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return pythonList.toString();
+    }
 
     @Override
     public IPythonObject set(int index, IPythonObject object) {

@@ -60,6 +60,27 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
     }
 
     @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof IPythonObject)) {
+            return false;
+        }
+        return pythonTuple.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return pythonTuple.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return pythonTuple.toString();
+    }
+
+    @Override
     public IPythonObject get(int index) {
         IPythonObject getItemAttr = null;
         IPythonObject pythonIndex = PythonCore.evaluate(String.valueOf(index));

@@ -58,12 +58,31 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
         return this.pythonSet.asTuple();
     }
 
-
     @Override
     public Optional<PythonSet> asSet() {
         return this.pythonSet.asSet();
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof IPythonObject)) {
+            return false;
+        }
+        return pythonSet.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return pythonSet.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return pythonSet.toString();
+    }
 
     @Override
     public Iterator<IPythonObject> iterator() {
@@ -95,7 +114,6 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
                     nextAttr = pythonIterator.getAttribute("__next__");
                     PythonCallable nextCallable = nextAttr.asCallable()
                             .orElseThrow(() -> new IllegalStateException("__next__ is not callable"));
-
                     next = nextCallable.call();
                     return true;
                 } catch (PythonException pe) {

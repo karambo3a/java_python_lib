@@ -3,6 +3,12 @@ package org.python.integration.object;
 import java.util.Optional;
 
 public interface IPythonObject {
+    boolean equals(Object object);
+
+    int hashCode();
+
+    String toString();
+
     String representation();
 
     IPythonObject getAttribute(String attrName);
@@ -20,4 +26,6 @@ public interface IPythonObject {
     Optional<PythonTuple> asTuple();
 
     Optional<PythonSet> asSet();
+
+
 }

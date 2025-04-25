@@ -68,6 +68,26 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         return this.pythonDict.asSet();
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof IPythonObject)) {
+            return false;
+        }
+        return pythonDict.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return ((AbstractPythonObject)pythonDict).hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return pythonDict.toString();
+    }
 
     @Override
     public Set<Entry<IPythonObject, IPythonObject>> entrySet() {
@@ -96,7 +116,6 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
                     PythonCore.free(getAttr);
                 }
             }
-
             return entries;
         } finally {
             PythonCore.free(itemsAttr);
