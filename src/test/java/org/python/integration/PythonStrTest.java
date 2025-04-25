@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
 import org.python.integration.object.IPythonObject;
+import org.python.integration.object.PythonStr;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,5 +26,13 @@ public class PythonStrTest {
 
         assertNotNull(pythonStr);
         assertEquals("string!", pythonStr.asStr().get().toJavaString());
+    }
+
+    @Test
+    @DisplayName("Should return new PythonStr from Java String")
+    void testFromJavaInt() {
+        PythonStr pythonStr1 = PythonStr.from("string!");
+        assertNotNull(pythonStr1);
+        assertEquals("string!", pythonStr1.toJavaString());
     }
 }

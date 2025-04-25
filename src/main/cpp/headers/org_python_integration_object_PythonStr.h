@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jstring JNICALL Java_org_python_integration_object_PythonStr_toJavaString
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_python_integration_object_PythonStr
+ * Method:    from
+ * Signature: (Ljava/lang/String;)Lorg/python/integration/object/PythonStr;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonStr_from
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif

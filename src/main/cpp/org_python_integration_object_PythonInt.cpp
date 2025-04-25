@@ -19,3 +19,15 @@ JNIEXPORT jint JNICALL Java_org_python_integration_object_PythonInt_toJavaInt(JN
 
     return java_int;
 }
+
+
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_from(JNIEnv *env, jclass java_cls, jint java_int) {
+    PyObject* py_int = PyLong_FromLong((long) java_int);
+    if (!py_int) {
+        jthrowable java_exception = create_python_exception(env);
+        env->Throw(java_exception);
+        return nullptr;
+    }
+    std::size_t index = object_manager->add_object(py_int, false);
+    return create_python_int(env, index, object_manager->get_object_manager_scope());
+}

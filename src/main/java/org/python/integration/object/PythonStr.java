@@ -7,4 +7,5 @@ public class PythonStr extends AbstractPythonObject{
 
     public native String toJavaString();
 
+    public static native PythonStr from(String value);
 }

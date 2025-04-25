@@ -17,3 +17,17 @@ JNIEXPORT jstring JNICALL Java_org_python_integration_object_PythonStr_toJavaStr
     jstring java_string = env->NewStringUTF(str);
     return java_string;
 }
+
+
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonStr_from(JNIEnv *env, jclass java_cls, jstring java_string){
+    if (!java_string) {
+        jthrowable java_exception = create_native_operation_exception(env, "The conversion string cannot be null");
+        env->Throw(java_exception);
+        return nullptr;
+    }
+    const char* str = env->GetStringUTFChars(java_string, nullptr);
+    PyObject *py_string = PyUnicode_FromString(str);
+    env->ReleaseStringUTFChars(java_string, str);
+    std::size_t index = object_manager->add_object(py_string, false);
+    return create_python_str(env, index, object_manager->get_object_manager_scope());
+}
