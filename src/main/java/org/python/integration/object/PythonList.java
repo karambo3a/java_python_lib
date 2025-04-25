@@ -50,6 +50,11 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
     }
 
     @Override
+    public Optional<PythonStr> asStr() {
+        return this.pythonList.asStr();
+    }
+
+    @Override
     public Optional<PythonList> asList() {
         return this.pythonList.asList();
     }

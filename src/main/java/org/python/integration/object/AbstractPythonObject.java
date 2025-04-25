@@ -30,6 +30,9 @@ public abstract class AbstractPythonObject implements IPythonObject {
     public native Optional<PythonBool> asBool();
 
     @Override
+    public native Optional<PythonStr> asStr();
+
+    @Override
     public native Optional<PythonList> asList();
 
     @Override

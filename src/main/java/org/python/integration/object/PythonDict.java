@@ -54,6 +54,10 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         return this.pythonDict.asBool();
     }
 
+    @Override
+    public Optional<PythonStr> asStr() {
+        return this.pythonDict.asStr();
+    }
 
     @Override
     public Optional<PythonList> asList() {

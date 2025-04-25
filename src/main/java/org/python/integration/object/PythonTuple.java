@@ -49,6 +49,11 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
     }
 
     @Override
+    public Optional<PythonStr> asStr() {
+        return this.pythonTuple.asStr();
+    }
+
+    @Override
     public Optional<PythonList> asList() {
         return this.pythonTuple.asList();
     }

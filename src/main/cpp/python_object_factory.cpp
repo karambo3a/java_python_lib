@@ -33,6 +33,12 @@ jobject create_python_bool(JNIEnv* env, std::size_t index, std::size_t scope){
 }
 
 
+jobject create_python_str(JNIEnv* env, std::size_t index, std::size_t scope){
+    jclass python_bool_class = env->FindClass("org/python/integration/object/PythonStr");
+    return create_java_object(env, python_bool_class, index, scope);
+}
+
+
 jobject create_python_list(JNIEnv* env, std::size_t index, std::size_t scope){
     jclass python_list_class = env->FindClass("org/python/integration/object/PythonList");
     return create_java_object(env, python_list_class, index, scope);

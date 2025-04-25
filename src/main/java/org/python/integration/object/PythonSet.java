@@ -52,6 +52,11 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
     }
 
     @Override
+    public Optional<PythonStr> asStr() {
+        return this.pythonSet.asStr();
+    }
+
+    @Override
     public Optional<PythonList> asList() {
         return this.pythonSet.asList();
     }

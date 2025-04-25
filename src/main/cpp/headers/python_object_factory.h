@@ -12,6 +12,8 @@ jobject create_python_callable(JNIEnv* env, std::size_t index, std::size_t scope
 
 jobject create_python_bool(JNIEnv* env, std::size_t index, std::size_t scope);
 
+jobject create_python_str(JNIEnv* env, std::size_t index, std::size_t scope);
+
 jobject create_python_list(JNIEnv* env, std::size_t index, std::size_t scope);
 
 jobject create_python_dict(JNIEnv* env, std::size_t index, std::size_t scope);
