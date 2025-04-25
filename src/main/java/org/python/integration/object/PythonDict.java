@@ -81,7 +81,7 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
 
     @Override
     public int hashCode() {
-        return ((AbstractPythonObject)pythonDict).hashCode();
+        return pythonDict.hashCode();
     }
 
     @Override

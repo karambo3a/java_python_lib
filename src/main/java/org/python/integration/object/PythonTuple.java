@@ -5,7 +5,7 @@ import org.python.integration.core.PythonCore;
 import java.util.AbstractList;
 import java.util.Optional;
 
-public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject{
+public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonTuple;
     private long index;
 

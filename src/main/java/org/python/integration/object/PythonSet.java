@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObject{
+public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonSet;
     private long index;
 
@@ -16,7 +16,6 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
         this.index = index;
         this.pythonSet = new PythonObject(index);
     }
-
 
     @Override
     public String representation() {
