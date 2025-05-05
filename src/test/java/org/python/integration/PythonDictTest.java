@@ -8,6 +8,7 @@ import org.python.integration.core.PythonSession;
 import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonDict;
+import org.python.integration.object.PythonInt;
 
 import java.util.Map;
 import java.util.Optional;
@@ -118,5 +119,18 @@ public class PythonDictTest {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
         assertFalse(pythonDict.containsKey(PythonCore.evaluate("3")));
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Map to PythonDict")
+    void testFromSuccessful() {
+        IPythonObject key = PythonInt.from(1);
+        IPythonObject value = PythonInt.from(2);
+        var s = Map.of(key, value);
+        PythonDict dict = PythonDict.from(s);
+        assertNotNull(dict);
+
+        assertTrue(dict.containsKey(PythonCore.evaluate("1")));
+        assertEquals("2", dict.get(PythonCore.evaluate("1")).representation());
     }
 }

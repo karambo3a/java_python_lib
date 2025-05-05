@@ -7,6 +7,7 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObject{
     private final IPythonObject pythonSet;
@@ -151,4 +152,6 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
         }
     }
 
+
+    public static native PythonSet from(Set<IPythonObject> set);
 }

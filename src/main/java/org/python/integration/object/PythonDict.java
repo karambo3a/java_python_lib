@@ -4,6 +4,7 @@ import org.python.integration.core.PythonCore;
 
 import java.util.AbstractMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -183,6 +184,8 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
             PythonCore.free(result);
         }
     }
+
+    public static native PythonDict from(Map<IPythonObject, IPythonObject> map);
 }
 
 

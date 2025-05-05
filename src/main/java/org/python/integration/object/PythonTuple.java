@@ -3,6 +3,7 @@ package org.python.integration.object;
 import org.python.integration.core.PythonCore;
 
 import java.util.AbstractList;
+import java.util.List;
 import java.util.Optional;
 
 public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject{
@@ -119,4 +120,6 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
             PythonCore.free(result);
         }
     }
+
+    public static native PythonTuple from(List<IPythonObject> tuple);
 }

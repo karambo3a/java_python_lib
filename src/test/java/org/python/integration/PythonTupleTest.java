@@ -9,6 +9,7 @@ import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonInt;
 import org.python.integration.object.PythonTuple;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,4 +78,16 @@ public class PythonTupleTest {
     }
 
 
+    @Test
+    @DisplayName("Should successfully convert List to PythonTuple")
+    void testFromSuccessful() {
+        IPythonObject first = PythonInt.from(1);
+        IPythonObject second = PythonInt.from(2);
+        var t = List.of(first, second);
+        PythonTuple tuple = PythonTuple.from(t);
+        assertNotNull(tuple);
+
+        assertEquals(first.representation(), tuple.getFirst().representation());
+        assertEquals(second.representation(), tuple.getLast().representation());
+    }
 }

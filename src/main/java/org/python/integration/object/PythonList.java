@@ -4,6 +4,7 @@ import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonScope;
 
 import java.util.AbstractList;
+import java.util.List;
 import java.util.Optional;
 
 public class PythonList extends AbstractList<IPythonObject> implements IPythonObject {
@@ -136,4 +137,6 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
     }
 
     public static native PythonList of(IPythonObject object);
+
+    public static native PythonList from(List<IPythonObject> list);
 }

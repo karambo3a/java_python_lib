@@ -6,13 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
 import org.python.integration.object.IPythonObject;
+import org.python.integration.object.PythonInt;
 import org.python.integration.object.PythonSet;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonSetTest {
     private PythonSession pythonSession;
@@ -39,6 +42,21 @@ public class PythonSetTest {
             assertNotNull(next);
             assertEquals(expected.get(index), next.representation());
             index++;
+        }
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Set to PythonSet")
+    void testFromSuccessful() {
+        IPythonObject first = PythonInt.from(1);
+        IPythonObject second = PythonInt.from(2);
+        var s = Set.of(first, second);
+        PythonSet set = PythonSet.from(s);
+        assertNotNull(set);
+
+        var expected = Set.of("1", "2");
+        for (var i: set) {
+            assertTrue(expected.contains(i.representation()));
         }
     }
 }

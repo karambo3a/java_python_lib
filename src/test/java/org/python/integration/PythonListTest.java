@@ -9,6 +9,7 @@ import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonInt;
 import org.python.integration.object.PythonList;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,5 +96,19 @@ public class PythonListTest {
         IPythonObject item = PythonCore.evaluate("4");
 
         assertFalse(list.contains(item));
+    }
+
+
+    @Test
+    @DisplayName("Should successfully convert List to PythonList")
+    void testFromSuccessful() {
+        IPythonObject first = PythonInt.from(1);
+        IPythonObject second = PythonInt.from(2);
+        var l = List.of(first, second);
+        PythonList list = PythonList.from(l);
+        assertNotNull(list);
+
+        assertEquals(first.representation(), list.getFirst().representation());
+        assertEquals(second.representation(), list.getLast().representation());
     }
 }
