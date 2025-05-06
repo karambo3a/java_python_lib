@@ -10,7 +10,7 @@ class PythonObjectManager {
 public:
     PythonObjectManager() = default;
 
-    PythonObjectManager(PythonObjectManager *prev_object_manager, std::size_t scope);
+    PythonObjectManager(PythonObjectManager *prev_object_manager, std::size_t scope_id);
 
     ~PythonObjectManager();
 
@@ -26,9 +26,9 @@ public:
 
     PythonObjectManager* get_prev_object_manager();
 
-    std::size_t get_object_manager_scope();
+    std::size_t get_scope_id();
 
-    PyObject* get_object(JNIEnv *env, std::size_t index, std::size_t scope);
+    PyObject* get_object(JNIEnv *env, std::size_t index, std::size_t scope_id);
 
     PyObject* get_object(JNIEnv *env, jobject java_object);
 
@@ -36,14 +36,10 @@ public:
 
     void free_object(JNIEnv *env, jobject java_object);
 
-    std::size_t get_index(JNIEnv *env, jobject java_object);
-
-    std::size_t get_scope(JNIEnv *env, jobject java_object);
-
 private:
     std::vector<PyObject*> py_objects;
     PythonObjectManager *prev_object_manager = nullptr;
-    std::size_t scope = 0;
+    std::size_t scope_id = 0;
 };
 
 #endif // PYTHON_OBJECT_H

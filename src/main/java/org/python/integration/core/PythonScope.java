@@ -3,9 +3,10 @@ package org.python.integration.core;
 public class PythonScope implements AutoCloseable {
 
     private boolean isClosed;
+    private final long scopeId;
 
     public PythonScope() {
-        initializeScope();
+        this.scopeId = initializeScope();
         this.isClosed = false;
     }
 
@@ -17,7 +18,7 @@ public class PythonScope implements AutoCloseable {
         }
     }
 
-    private native void initializeScope();
+    private native long initializeScope();
 
     private native void finalizeScope();
 }

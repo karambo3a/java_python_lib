@@ -11,18 +11,18 @@ import java.util.Optional;
 public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObject{
     private final IPythonObject pythonSet;
     private final long index;
-    private final long scope;
+    private final long scopeId;
 
-    private PythonSet(long index, long scope) {
+    private PythonSet(long index, long scopeId) {
         this.index = index;
-        this.scope = scope;
-        this.pythonSet = new PythonObject(index, scope);
+        this.scopeId = scopeId;
+        this.pythonSet = new PythonObject(index, scopeId);
     }
 
 
     @Override
-    public void keepAlive() {
-        this.pythonSet.keepAlive();
+    public IPythonObject keepAlive() {
+        return this.pythonSet.keepAlive().asSet().get();
     }
 
 

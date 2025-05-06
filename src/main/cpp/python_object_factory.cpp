@@ -62,7 +62,7 @@ jobject convert_to_java_object(JNIEnv* env, PyObject* py_object) {
         return nullptr;
     }
     std::size_t index = object_manager->add_object(py_object);
-    jobject java_object = create_python_object(env, index, object_manager->get_object_manager_scope());
+    jobject java_object = create_python_object(env, index, object_manager->get_scope_id());
     return java_object;
 }
 

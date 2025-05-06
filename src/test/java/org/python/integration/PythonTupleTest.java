@@ -75,6 +75,4 @@ public class PythonTupleTest {
 
         assertFalse(tuple.contains(item));
     }
-
-
 }

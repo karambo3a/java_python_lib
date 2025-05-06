@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
-import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonDict;
 
@@ -18,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonDictTest {
@@ -35,7 +33,7 @@ public class PythonDictTest {
         return listOptional.orElse(null);
     }
 
-    
+
     @Test
     @DisplayName("Should successfully return entrySet of the dict")
     public void testEntrySetSuccessful() {
@@ -68,7 +66,7 @@ public class PythonDictTest {
 
     @Test
     @DisplayName("Should successfully return dict item")
-    public void testGetExistentKeySuccessful() {
+    public void testGetExistentKey() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
         IPythonObject value = pythonDict.get(PythonCore.evaluate("1"));
@@ -77,11 +75,10 @@ public class PythonDictTest {
 
     @Test
     @DisplayName("Should successfully return dict item")
-    public void testGetNonExistentKeyThrows() {
+    public void testGetNonExistentKey() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
-        PythonException exception = assertThrows(PythonException.class, () -> pythonDict.get(PythonCore.evaluate("3")));
-        assertTrue(exception.getValue().representation().contains("KeyError"));
+        assertNull(pythonDict.get(PythonCore.evaluate("3")));
     }
 
     @Test

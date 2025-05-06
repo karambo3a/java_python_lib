@@ -8,18 +8,18 @@ import java.util.Optional;
 public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject{
     private final IPythonObject pythonTuple;
     private final long index;
-    private final long scope;
+    private final long scopeId;
 
-    protected PythonTuple(long index, long scope) {
+    protected PythonTuple(long index, long scopeId) {
         this.index = index;
-        this.scope = scope;
-        this.pythonTuple = new PythonObject(index, scope);
+        this.scopeId = scopeId;
+        this.pythonTuple = new PythonObject(index, scopeId);
     }
 
 
     @Override
-    public void keepAlive() {
-        this.pythonTuple.keepAlive();
+    public IPythonObject keepAlive() {
+        return this.pythonTuple.keepAlive().asTuple().get();
     }
 
 

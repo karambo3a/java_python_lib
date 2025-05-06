@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     org_python_integration_object_AbstractPythonObject
  * Method:    keepAlive
- * Signature: ()V
+ * Signature: ()Lorg/python/integration/object/IPythonObject;
  */
-JNIEXPORT void JNICALL Java_org_python_integration_object_AbstractPythonObject_keepAlive
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_keepAlive
   (JNIEnv *, jobject);
 
 /*

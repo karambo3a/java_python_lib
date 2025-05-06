@@ -1,6 +1,7 @@
 package org.python.integration.object;
 
 import org.python.integration.core.PythonCore;
+import org.python.integration.exception.PythonException;
 
 import java.util.AbstractMap;
 import java.util.HashSet;
@@ -10,18 +11,18 @@ import java.util.Set;
 public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implements IPythonObject {
     private final IPythonObject pythonDict;
     private final long index;
-    private final long scope;
+    private final long scopeId;
 
-    private PythonDict(long index, long scope) {
+    private PythonDict(long index, long scopeId) {
         this.index = index;
-        this.scope = scope;
-        this.pythonDict = new PythonObject(index, scope);
+        this.scopeId = scopeId;
+        this.pythonDict = new PythonObject(index, scopeId);
     }
 
 
     @Override
-    public void keepAlive() {
-        this.pythonDict.keepAlive();
+    public IPythonObject keepAlive() {
+        return this.pythonDict.keepAlive().asDict().get();
     }
 
 
@@ -133,13 +134,20 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
     @Override
     public IPythonObject get(Object key) {
         if (!(key instanceof IPythonObject)) {
-            throw new IllegalArgumentException("key must be an instance of IPythonObject");
+            return null;
         }
         IPythonObject getAttr = null;
         try {
             getAttr = this.pythonDict.getAttribute("__getitem__");
             PythonCallable getAttrCallable = getAttr.asCallable().orElseThrow(() -> new IllegalStateException("__getitem__ is not callable"));
-            return getAttrCallable.call((IPythonObject) key);
+            try {
+                return getAttrCallable.call((IPythonObject) key);
+            } catch (PythonException pe) {
+                if (pe.getValue().representation().contains("KeyError")) {
+                    return null;
+                }
+                throw pe;
+            }
         } finally {
             PythonCore.free(getAttr);
         }

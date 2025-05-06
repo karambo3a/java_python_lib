@@ -3,7 +3,7 @@ package org.python.integration.object;
 import java.util.Optional;
 
 public interface IPythonObject {
-    void keepAlive();
+    IPythonObject keepAlive();
 
     String representation();
 
