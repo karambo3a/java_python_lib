@@ -8,6 +8,7 @@ import org.python.integration.core.PythonSession;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonDict;
 
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -46,6 +47,35 @@ public class PythonDictTest {
         assertThat(entryList)
                 .hasSize(2)
                 .containsExactlyInAnyOrder(Map.entry("2", "3"), Map.entry("1", "2"));
+
+        for (var entry : entries) {
+            entry.setValue(PythonCore.evaluate("1"));
+        }
+        assertEquals("{1: 1, 2: 1}", pythonDict.representation());
+    }
+
+    @Test
+    @DisplayName("Should successfully modify the dict via entrySet")
+    public void testEntrySetSetValueSuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
+        for (var entry : entries) {
+            entry.setValue(PythonCore.evaluate("1"));
+        }
+        assertEquals("{1: 1, 2: 1}", pythonDict.representation());
+    }
+
+    @Test
+    @DisplayName("Should successfully remove entry of the dict via entrySet ")
+    public void testEntrySetRemoveSuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
+        assertTrue(entries.remove(new AbstractMap.SimpleEntry<>(PythonCore.evaluate("1"), PythonCore.evaluate("2"))));
+        assertEquals("{2: 3}", pythonDict.representation());
+
+        assertFalse(entries.remove(new AbstractMap.SimpleEntry<>(PythonCore.evaluate("2"), PythonCore.evaluate("2"))));
     }
 
     @Test
@@ -115,5 +145,26 @@ public class PythonDictTest {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
         assertFalse(pythonDict.containsKey(PythonCore.evaluate("3")));
+    }
+
+    @Test
+    @DisplayName("Should return prev value (dict contains the key)")
+    public void testRemoveContainsKeySuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        IPythonObject prevValue = pythonDict.remove(PythonCore.evaluate("1"));
+        assertNotNull(prevValue);
+        assertEquals("2", prevValue.representation());
+        assertEquals("{2: 3}", pythonDict.representation());
+    }
+
+    @Test
+    @DisplayName("Should return prev value (dict contains the key)")
+    public void testRemoveDoNotContainKeySuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        IPythonObject prevValue = pythonDict.remove(PythonCore.evaluate("3"));
+        assertNull(prevValue);
+        assertEquals("{1: 2, 2: 3}", pythonDict.representation());
     }
 }

@@ -4,9 +4,13 @@ import org.python.integration.core.PythonCore;
 import org.python.integration.exception.PythonException;
 
 import java.util.AbstractMap;
-import java.util.HashSet;
+import java.util.AbstractSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+
 
 public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implements IPythonObject {
     private final IPythonObject pythonDict;
@@ -79,42 +83,8 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
 
     @Override
     public Set<Entry<IPythonObject, IPythonObject>> entrySet() {
-        IPythonObject itemsAttr = null;
-        IPythonObject dictItems = null;
-        PythonList itemsList = null;
-        IPythonObject first = PythonCore.evaluate("0");
-        IPythonObject second = PythonCore.evaluate("1");
-        Set<Entry<IPythonObject, IPythonObject>> entries = new HashSet<>();
-
-        try {
-            itemsAttr = this.pythonDict.getAttribute("items");
-            PythonCallable itemsAttrCallable = itemsAttr.asCallable().orElseThrow(() -> new IllegalStateException("items is not callable"));
-            dictItems = itemsAttrCallable.call();
-            itemsList = PythonList.of(dictItems);
-
-            for (IPythonObject entry : itemsList) {
-                IPythonObject getAttr = entry.getAttribute("__getitem__");
-                PythonCallable getAttrCallable = getAttr.asCallable().orElseThrow(() -> new IllegalStateException("__getitem__ is not callable"));
-                try {
-                    IPythonObject key = getAttrCallable.call(first);
-                    IPythonObject value = getAttrCallable.call(second);
-                    entries.add(new SimpleEntry<>(key, value));
-                } finally {
-                    PythonCore.free(entry);
-                    PythonCore.free(getAttr);
-                }
-            }
-
-            return entries;
-        } finally {
-            PythonCore.free(itemsAttr);
-            PythonCore.free(dictItems);
-            PythonCore.free(itemsList);
-            PythonCore.free(first);
-            PythonCore.free(second);
-        }
+        return new EntrySet();
     }
-
 
     @Override
     public int size() {
@@ -187,25 +157,128 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
             PythonCore.free(result);
         }
     }
+
+    @Override
+    public IPythonObject remove(Object object) {
+        if (!(object instanceof IPythonObject key)) {
+            return null;
+        }
+        IPythonObject popAttr = null;
+        try {
+            popAttr = this.pythonDict.getAttribute("pop");
+            if (!this.containsKey(key)) {
+                return null;
+            }
+            PythonCallable popAttrCallable = popAttr.asCallable().orElseThrow(() -> new IllegalStateException("pop is not callable"));
+            return popAttrCallable.call(key);
+        } finally {
+            PythonCore.free(popAttr);
+        }
+    }
+
+    private final class EntrySet extends AbstractSet<Entry<IPythonObject, IPythonObject>> {
+        @Override
+        public int size() {
+            return PythonDict.this.size();
+        }
+
+        @Override
+        public boolean contains(Object object) {
+            if (!(object instanceof Entry<?, ?> entry)) {
+                return false;
+            }
+            if (!(entry.getKey() instanceof IPythonObject key && entry.getValue() instanceof IPythonObject value)) {
+                return false;
+            }
+            IPythonObject dictValue = PythonDict.this.get(key);
+            return dictValue != null && value.representation().equals(dictValue.representation());
+        }
+
+        @Override
+        public boolean remove(Object object) {
+            if (!(object instanceof Entry<?, ?> entry)) {
+                return false;
+            }
+            if (!(entry.getKey() instanceof IPythonObject key && entry.getValue() instanceof IPythonObject value)) {
+                return false;
+            }
+            IPythonObject dictValue = PythonDict.this.get(key);
+            if (dictValue != null && dictValue.representation().equals(value.representation())) {
+                PythonDict.this.remove(key);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public Iterator<Entry<IPythonObject, IPythonObject>> iterator() {
+            return new Iterator<>() {
+                private final Iterator<DictEntry> iterator = getIterator();
+
+                private Iterator<DictEntry> getIterator() {
+                    IPythonObject keysAttr = null;
+                    IPythonObject keys = null;
+                    try {
+                        keysAttr = PythonDict.this.pythonDict.getAttribute("keys");
+                        PythonCallable keysAttrCallable = keysAttr.asCallable().orElseThrow(() -> new IllegalStateException("keys is not callable"));
+                        keys = keysAttrCallable.call();
+                        return PythonList.of(keys).stream().map(DictEntry::new).iterator();
+                    } finally {
+                        PythonCore.free(keysAttr);
+                        PythonCore.free(keys);
+                    }
+                }
+
+                @Override
+                public boolean hasNext() {
+                    return this.iterator.hasNext();
+                }
+
+                @Override
+                public Entry<IPythonObject, IPythonObject> next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException("No more elements in dictionary");
+                    }
+                    return this.iterator.next();
+                }
+            };
+        }
+    }
+
+    private final class DictEntry implements Entry<IPythonObject, IPythonObject> {
+        private final IPythonObject key;
+
+        public DictEntry(IPythonObject key) {
+            this.key = key;
+        }
+
+        @Override
+        public IPythonObject getKey() {
+            return this.key;
+        }
+
+        @Override
+        public IPythonObject getValue() {
+            return PythonDict.this.get(key);
+        }
+
+        @Override
+        public IPythonObject setValue(IPythonObject value) {
+            return PythonDict.this.put(key, value);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof DictEntry entry)) {
+                return false;
+            }
+            return Objects.equals(this.getKey(), entry.getKey()) &&
+                    Objects.equals(this.getValue(), entry.getValue());
+        }
+
+        @Override
+        public int hashCode() {
+            return this.key.hashCode() + this.getValue().hashCode();
+        }
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
