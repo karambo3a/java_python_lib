@@ -17,6 +17,30 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 /*
  * Class:     org_python_integration_object_AbstractPythonObject
+ * Method:    equals
+ * Signature: (Ljava/lang/Object;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_python_integration_object_AbstractPythonObject_equals
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_python_integration_object_AbstractPythonObject
+ * Method:    hashCode
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_python_integration_object_AbstractPythonObject_hashCode
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_python_integration_object_AbstractPythonObject
+ * Method:    toString
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_python_integration_object_AbstractPythonObject_toString
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_python_integration_object_AbstractPythonObject
  * Method:    representation
  * Signature: ()Ljava/lang/String;
  */

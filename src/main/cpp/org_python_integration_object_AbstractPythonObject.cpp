@@ -3,6 +3,66 @@
 #include "headers/globals.h"
 #include <iostream>
 
+JNIEXPORT jboolean JNICALL Java_org_python_integration_object_AbstractPythonObject_equals(JNIEnv *env, jobject this_object, jobject other_object){
+    if (this_object == other_object) {
+        return JNI_TRUE;
+    }
+    if (!env->IsInstanceOf(other_object, env->GetObjectClass(this_object))) {
+        return JNI_FALSE;
+    }
+    PyObject* py_this = object_manager->get_object(env, this_object);
+    PyObject* py_other = object_manager->get_object(env, other_object);
+    if (!py_this || !py_other) {
+        return JNI_FALSE;
+    }
+    int result = PyObject_RichCompareBool(py_this, py_other, Py_EQ);
+    if (result == -1) {
+        jthrowable java_exception = create_python_exception(env);
+        env->Throw(java_exception);
+        return JNI_FALSE;
+    } else if (result == 0) {
+        return JNI_FALSE;
+    }
+    return JNI_TRUE;
+}
+
+JNIEXPORT jint JNICALL Java_org_python_integration_object_AbstractPythonObject_hashCode(JNIEnv *env, jobject java_object) {
+    PyObject* py_object = object_manager->get_object(env, java_object);
+    if (!py_object) {
+        return -1;
+    }
+    Py_hash_t hash = PyObject_Hash(py_object);
+    if (hash == -1 && PyErr_Occurred()) {
+        jthrowable java_exception = create_python_exception(env);
+        env->Throw(java_exception);
+    }
+    return (jint)hash;
+}
+
+
+JNIEXPORT jstring JNICALL Java_org_python_integration_object_AbstractPythonObject_toString(JNIEnv *env, jobject java_object) {
+    PyObject* py_object = object_manager->get_object(env, java_object);
+    if (!py_object) {
+        return nullptr;
+    }
+    PyObject* py_str = PyObject_Str(py_object);
+    if (!py_str) {
+        jthrowable java_exception = create_python_exception(env);
+        env->Throw(java_exception);
+    }
+    const char *repr = PyUnicode_AsUTF8(py_str);
+    jstring java_string = nullptr;
+    if (!repr) {
+        jthrowable java_exception = create_python_exception(env);
+        Py_DecRef(py_object);
+        env->Throw(java_exception);
+    } else {
+        java_string = env->NewStringUTF(repr);
+    }
+    Py_DecRef(py_str);
+    return java_string;
+}
+
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_keepAlive(JNIEnv *env, jobject java_object) {
     std::size_t scope_id = get_scope(env, java_object);
@@ -49,9 +109,9 @@ JNIEXPORT jstring JNICALL Java_org_python_integration_object_AbstractPythonObjec
         env->Throw(java_exception);
         return nullptr;
     }
-    jstring java_result = env->NewStringUTF(repr);
+    jstring java_string = env->NewStringUTF(repr);
     Py_DecRef(py_repr);
-    return java_result;
+    return java_string;
 }
 
 

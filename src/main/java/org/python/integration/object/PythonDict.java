@@ -80,11 +80,32 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         return this.pythonDict.asSet();
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof IPythonObject)) {
+            return false;
+        }
+        return pythonDict.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return pythonDict.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return pythonDict.toString();
+    }
 
     @Override
     public Set<Entry<IPythonObject, IPythonObject>> entrySet() {
         return new EntrySet();
     }
+
 
     @Override
     public int size() {

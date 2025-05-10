@@ -15,6 +15,15 @@ public abstract class AbstractPythonObject implements IPythonObject {
     public native IPythonObject keepAlive();
 
     @Override
+    public native boolean equals(Object object);
+
+    @Override
+    public native int hashCode();
+
+    @Override
+    public native String toString();
+
+    @Override
     public native String representation();
 
     @Override
