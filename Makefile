@@ -8,6 +8,7 @@ INCLUDES=-I/usr/include/python3.12 \
 LDFLAGS=-shared -fPIC
 OBJS=build/cpp/org_python_integration_core_PythonSession.o \
 	 build/cpp/org_python_integration_core_PythonCore.o \
+	 build/cpp/org_python_integration_core_PythonScope.o \
 	 build/cpp/org_python_integration_object_AbstractPythonObject.o \
 	 build/cpp/org_python_integration_object_PythonCallable.o\
 	 build/cpp/org_python_integration_object_PythonInt.o\

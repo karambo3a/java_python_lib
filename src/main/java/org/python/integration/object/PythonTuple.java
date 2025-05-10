@@ -7,12 +7,21 @@ import java.util.Optional;
 
 public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonTuple;
-    private long index;
+    private final long index;
+    private final long scopeId;
 
-    protected PythonTuple(long index) {
+    protected PythonTuple(long index, long scopeId) {
         this.index = index;
-        this.pythonTuple = new PythonObject(index);
+        this.scopeId = scopeId;
+        this.pythonTuple = new PythonObject(index, scopeId);
     }
+
+
+    @Override
+    public IPythonObject keepAlive() {
+        return this.pythonTuple.keepAlive().asTuple().get();
+    }
+
 
     @Override
     public String representation() {

@@ -4,10 +4,15 @@ import java.util.Optional;
 
 public abstract class AbstractPythonObject implements IPythonObject {
     private final long index;
+    private final long scopeId;
 
-    protected AbstractPythonObject(long index) {
+    protected AbstractPythonObject(long index, long scopeId) {
         this.index = index;
+        this.scopeId = scopeId;
     }
+
+    @Override
+    public native IPythonObject keepAlive();
 
     @Override
     public native boolean equals(Object object);
