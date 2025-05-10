@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -104,4 +105,41 @@ public class PythonCallableTest {
         assertEquals("Associated Python object with Java object is NULL", exception.getMessage());
     }
 
+    @Test
+    @DisplayName("Equals should return true Java boolean (equals with the same object)")
+    void testEqualsWithTheSameObj() {
+        IPythonObject list = PythonCore.evaluate("[1, 2, 3]");
+        IPythonObject attr1 = list.getAttribute("__len__").asCallable().get();
+
+        assertTrue(attr1.equals(attr1));
+    }
+
+
+    @Test
+    @DisplayName("Equals should return false Java boolean (equals with the different classes)")
+    void testEqualsWithDifferentClasses() {
+        IPythonObject list = PythonCore.evaluate("[1, 2, 3]");
+        IPythonObject attr1 = list.getAttribute("__len__");
+
+        assertFalse(attr1.equals(list));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInputForEqualsTest")
+    public void testEquals(String a1, String a2, boolean expected) {
+        IPythonObject list = PythonCore.evaluate("[1, 2, 3]");
+        PythonCallable attr1 = list.getAttribute(a1).asCallable().get();
+        PythonCallable attr2 = list.getAttribute(a2).asCallable().get();
+
+        assertEquals(expected, attr1.equals(attr2));
+    }
+
+    private static Stream<Arguments> provideInputForEqualsTest() {
+        return Stream.of(
+                // Should return true for equal objects
+                Arguments.of("__len__", "__len__", true),
+                // Should return false for unequal objects
+                Arguments.of("__len__", "__str__", false)
+        );
+    }
 }

@@ -5,7 +5,7 @@
 JNIEXPORT jboolean JNICALL Java_org_python_integration_object_PythonBool_toJavaBoolean(JNIEnv *env, jobject java_object){
     PyObject* py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
-        return false;
+        return (jboolean)false;
     }
 
     int is_true = PyObject_IsTrue(py_object);

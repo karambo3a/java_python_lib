@@ -5,7 +5,7 @@ import org.python.integration.core.PythonCore;
 import java.util.AbstractList;
 import java.util.Optional;
 
-public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject{
+public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonTuple;
     private long index;
 
@@ -57,6 +57,27 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
     @Override
     public Optional<PythonSet> asSet() {
         return this.pythonTuple.asSet();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof IPythonObject)) {
+            return false;
+        }
+        return pythonTuple.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return pythonTuple.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return pythonTuple.toString();
     }
 
     @Override
