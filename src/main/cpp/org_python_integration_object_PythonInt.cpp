@@ -28,6 +28,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_from(JNIE
         env->Throw(java_exception);
         return nullptr;
     }
-    std::size_t index = object_manager->add_object(py_int, false);
+    std::size_t index = object_manager->add_object(py_int);
     return create_python_int(env, index, object_manager->get_object_manager_scope());
 }

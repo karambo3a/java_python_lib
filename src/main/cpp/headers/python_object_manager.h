@@ -3,7 +3,6 @@
 
 #include <Python.h>
 #include <vector>
-#include <iostream>
 #include <jni.h>
 
 class PythonObjectManager {
@@ -46,4 +45,8 @@ private:
     std::size_t scope = 0;
 };
 
-#endif // PYTHON_OBJECT_H
+void initialize_scope();
+
+void finalize_scope();
+
+#endif // PYTHON_OBJECT_MANAGER_H

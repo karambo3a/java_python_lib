@@ -58,6 +58,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_from(JNI
         Py_IncRef(py_object);
         PyList_SetItem(py_list, (Py_ssize_t) i, py_object);
     }
-    std::size_t index = object_manager->add_object(py_list, false);
+    std::size_t index = object_manager->add_object(py_list);
     return create_python_list(env, index, object_manager->get_object_manager_scope());
 }

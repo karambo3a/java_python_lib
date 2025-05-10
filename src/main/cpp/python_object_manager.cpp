@@ -1,7 +1,7 @@
 #include "headers/python_object_manager.h"
 #include "headers/python_object_factory.h"
+#include "headers/globals.h"
 #include <string>
-#include <iostream>
 
 PythonObjectManager::PythonObjectManager(PythonObjectManager *prev_object_manager, std::size_t scope): prev_object_manager(prev_object_manager), scope(scope) {}
 
@@ -61,7 +61,7 @@ PyObject* PythonObjectManager::get_object(JNIEnv *env, std::size_t index, std::s
 
 PyObject* PythonObjectManager::get_object(JNIEnv *env, jobject java_object) {
     std::size_t index = this->get_index(env, java_object);
-    std::size_t scope = get_scope(env, java_object);
+    std::size_t scope = this->get_scope(env, java_object);
     PyObject* py_object = this->get_object(env, index, scope);
     return py_object;
 }
@@ -92,4 +92,17 @@ std::size_t PythonObjectManager::get_index(JNIEnv *env, jobject java_object) {
     jfieldID field = env->GetFieldID(cls, "index", "J");
     jlong index = env->GetLongField(java_object, field);
     return (std::size_t)index;
+}
+
+
+void initialize_scope() {
+    object_manager = new PythonObjectManager(object_manager, object_manager->get_object_manager_scope() + 1);
+}
+
+
+void finalize_scope() {
+    PythonObjectManager *curr_object_manager = object_manager;
+    object_manager = curr_object_manager->get_prev_object_manager();
+    delete curr_object_manager;
+    curr_object_manager = nullptr;
 }

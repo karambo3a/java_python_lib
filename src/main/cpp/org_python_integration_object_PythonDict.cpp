@@ -3,7 +3,6 @@
 #include "headers/python_object_factory.h"
 #include "headers/globals.h"
 #include <Python.h>
-#include <iostream>
 
 
 jobject map_entry_set(JNIEnv *env, jobject java_map) {
@@ -83,6 +82,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonDict_from(JNI
         }
     }
 
-    std::size_t index = object_manager->add_object(py_dict, false);
+    std::size_t index = object_manager->add_object(py_dict);
     return create_python_dict(env, index, object_manager->get_object_manager_scope());
 }

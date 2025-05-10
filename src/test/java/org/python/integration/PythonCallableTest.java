@@ -12,6 +12,7 @@ import org.python.integration.exception.NativeOperationException;
 import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonCallable;
+import org.python.integration.object.PythonInt;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -104,4 +105,53 @@ public class PythonCallableTest {
         assertEquals("Associated Python object with Java object is NULL", exception.getMessage());
     }
 
+    @Test
+    @DisplayName("Should successfully convert Function to PythonCallable")
+    void testFromUnaryOperator() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from((arg) -> integer);
+        Optional<PythonInt> res = callable.call(integer).asInt();
+        assertTrue(res.isPresent());
+        assertEquals(1, res.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Supplier to PythonCallable")
+    void testFromSupplier() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from(() -> integer);
+        Optional<PythonInt> res = callable.call().asInt();
+        assertTrue(res.isPresent());
+        assertEquals(1, res.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert BiFunction to PythonCallable")
+    void testFromBinaryOperator() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from((arg1, arg2) -> integer);
+        Optional<PythonInt> res = callable.call(integer, integer).asInt();
+        assertTrue(res.isPresent());
+        assertEquals(1, res.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Consumer to PythonCallable")
+    void testFromConsumer() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from((arg1) -> {});
+        IPythonObject res = callable.call(integer);
+        assertEquals("None", res.representation());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Consumer to PythonCallable")
+    void testFromFunctionWithInnerScope() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from((arg1) -> {
+            return PythonInt.from(2);
+        });
+        Optional<PythonInt> res = callable.call(integer).asInt();
+        assertEquals(2, res.get().toJavaInt());
+    }
 }

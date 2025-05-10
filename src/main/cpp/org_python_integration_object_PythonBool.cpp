@@ -25,6 +25,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonBool_from(JNI
         env->Throw(java_exception);
         return nullptr;
     }
-    std::size_t index = object_manager->add_object(py_bool, false);
+    std::size_t index = object_manager->add_object(py_bool);
     return create_python_bool(env, index, object_manager->get_object_manager_scope());
 }

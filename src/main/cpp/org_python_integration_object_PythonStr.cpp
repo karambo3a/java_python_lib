@@ -28,6 +28,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonStr_from(JNIE
     const char* str = env->GetStringUTFChars(java_string, nullptr);
     PyObject *py_string = PyUnicode_FromString(str);
     env->ReleaseStringUTFChars(java_string, str);
-    std::size_t index = object_manager->add_object(py_string, false);
+    std::size_t index = object_manager->add_object(py_string);
     return create_python_str(env, index, object_manager->get_object_manager_scope());
 }

@@ -36,7 +36,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate(J
         env->Throw(java_exception);
         return nullptr;
     }
-    return convert_to_java_object(env, py_object);
+    return convert_to_python_object(env, py_object);
 }
 
 

@@ -3,7 +3,6 @@
 #include "headers/python_object_factory.h"
 #include "headers/globals.h"
 #include <Python.h>
-#include <iostream>
 
 jobject set_iterator(JNIEnv *env, jobject java_set) {
     jclass cls = env->FindClass("java/util/Set");
@@ -51,6 +50,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonSet_from(JNIE
         }
     }
 
-    std::size_t index = object_manager->add_object(py_set, false);
+    std::size_t index = object_manager->add_object(py_set);
     return create_python_set(env, index, object_manager->get_object_manager_scope());
 }

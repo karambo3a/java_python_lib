@@ -22,7 +22,9 @@ jobject create_python_tuple(JNIEnv* env, std::size_t index, std::size_t scope);
 
 jobject create_python_set(JNIEnv* env, std::size_t index, std::size_t scope);
 
-jobject convert_to_java_object(JNIEnv* env, PyObject* py_object);
+jobject convert_to_python_object(JNIEnv* env, PyObject* py_object);
+
+jobject convert_to_python_callable(JNIEnv *env, PyObject *py_callable);
 
 jthrowable create_python_exception(JNIEnv* env);
 

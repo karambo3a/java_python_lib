@@ -2,7 +2,6 @@
 #include "headers/python_object_manager.h"
 #include "headers/globals.h"
 #include <Python.h>
-#include <iostream>
 
 
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonSession_initializePy(JNIEnv *env, jobject obj) {

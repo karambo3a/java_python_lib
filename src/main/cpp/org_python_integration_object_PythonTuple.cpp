@@ -3,7 +3,6 @@
 #include "headers/python_object_factory.h"
 #include "headers/globals.h"
 #include <Python.h>
-#include <iostream>
 
 std::size_t tuple_size(JNIEnv *env, jobject java_tuple) {
     jclass cls = env->FindClass("java/util/List");
@@ -42,6 +41,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonTuple_from(JN
         PyTuple_SetItem(py_tuple, (Py_ssize_t) i, py_object);
     }
 
-    std::size_t index = object_manager->add_object(py_tuple, false);
+    std::size_t index = object_manager->add_object(py_tuple);
     return create_python_tuple(env, index, object_manager->get_object_manager_scope());
 }

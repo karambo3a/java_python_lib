@@ -63,7 +63,7 @@ jobject create_python_set(JNIEnv* env, std::size_t index, std::size_t scope){
 }
 
 
-jobject convert_to_java_object(JNIEnv* env, PyObject* py_object) {
+jobject convert_to_python_object(JNIEnv* env, PyObject* py_object) {
     if (!py_object) {
         return nullptr;
     }
@@ -73,8 +73,21 @@ jobject convert_to_java_object(JNIEnv* env, PyObject* py_object) {
 }
 
 
+jobject convert_to_python_callable(JNIEnv *env, PyObject *py_callable) {
+    if (!py_callable) {
+        return nullptr;
+    }
+    std::size_t index = object_manager->add_object((PyObject *)py_callable);
+    jobject java_object = create_python_callable(env, index, object_manager->get_object_manager_scope());
+    return java_object;
+}
+
+
 jthrowable create_python_exception(JNIEnv* env) {
     PyObject *py_type = nullptr, *py_value = nullptr, *py_traceback = nullptr;
+    #ifndef PYTHON_VERSION
+        #error "bebra"
+    #endif
     #if PYTHON_VERSION >= 312
         py_value = PyErr_GetRaisedException();
     #else
@@ -82,7 +95,7 @@ jthrowable create_python_exception(JNIEnv* env) {
         PyErr_NormalizeException(&py_type, &py_value, &py_traceback);
     #endif
 
-    jobject java_value = convert_to_java_object(env, py_value);
+    jobject java_value = convert_to_python_object(env, py_value);
 
     jclass python_exception_class = env->FindClass("org/python/integration/exception/PythonException");
     jmethodID constructor = env->GetMethodID(python_exception_class, "<init>", "(Lorg/python/integration/object/IPythonObject;)V");

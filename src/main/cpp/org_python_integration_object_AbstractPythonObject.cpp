@@ -1,7 +1,6 @@
 #include "headers/org_python_integration_object_AbstractPythonObject.h"
 #include "headers/python_object_factory.h"
 #include "headers/globals.h"
-#include <iostream>
 
 
 JNIEXPORT void JNICALL Java_org_python_integration_object_AbstractPythonObject_keepAlive(JNIEnv *env, jobject java_object) {
@@ -84,7 +83,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
         return nullptr;
     }
 
-    return convert_to_java_object(env, attr_object);
+    return convert_to_python_object(env, attr_object);
 }
 
 
