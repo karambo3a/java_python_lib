@@ -1,6 +1,7 @@
 package org.python.integration.object;
 
 import org.python.integration.core.PythonCore;
+import org.python.integration.core.PythonScope;
 
 import java.util.AbstractList;
 import java.util.Optional;
@@ -91,30 +92,21 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
 
     @Override
     public IPythonObject get(int index) {
-        IPythonObject getItemAttr = null;
-        IPythonObject pythonIndex = PythonCore.evaluate(String.valueOf(index));
-        try {
-            getItemAttr = this.pythonTuple.getAttribute("__getitem__");
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject getItemAttr = this.pythonTuple.getAttribute("__getitem__");
+            IPythonObject pythonIndex = PythonCore.evaluate(String.valueOf(index));
             PythonCallable getItemCallable = getItemAttr.asCallable().orElseThrow(() -> new IllegalStateException("__getitem__ is not callable"));
-            return getItemCallable.call(pythonIndex);
-        } finally {
-            PythonCore.free(getItemAttr);
-            PythonCore.free(pythonIndex);
+            return getItemCallable.call(pythonIndex).keepAlive();
         }
     }
 
     @Override
     public int size() {
-        IPythonObject lenAttr = null;
-        PythonInt lenInt = null;
-        try {
-            lenAttr = this.pythonTuple.getAttribute("__len__");
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject lenAttr = this.pythonTuple.getAttribute("__len__");
             PythonCallable lenAttrCallable = lenAttr.asCallable().orElseThrow(() -> new IllegalStateException("__len__ in not callable"));
-            lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("result of __len__ is not int"));
+            PythonInt lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("result of __len__ is not int"));
             return lenInt.toJavaInt();
-        } finally {
-            PythonCore.free(lenAttr);
-            PythonCore.free(lenInt);
         }
     }
 
@@ -123,16 +115,12 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
         if (!(object instanceof IPythonObject)) {
             return false;
         }
-        IPythonObject containsAttr = null;
-        PythonBool result = null;
-        try {
-            containsAttr = this.pythonTuple.getAttribute("__contains__");
+
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject containsAttr = this.pythonTuple.getAttribute("__contains__");
             PythonCallable containsCallable = containsAttr.asCallable().orElseThrow(() -> new IllegalStateException("__contains__ is not callable"));
-            result = containsCallable.call((IPythonObject) object).asBool().orElseThrow(() -> new IllegalStateException("__contains__ result is not bool"));
+            PythonBool result = containsCallable.call((IPythonObject) object).asBool().orElseThrow(() -> new IllegalStateException("__contains__ result is not bool"));
             return result.toJavaBoolean();
-        } finally {
-            PythonCore.free(containsAttr);
-            PythonCore.free(result);
         }
     }
 }

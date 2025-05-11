@@ -1,6 +1,6 @@
 package org.python.integration.object;
 
-import org.python.integration.core.PythonCore;
+import org.python.integration.core.PythonScope;
 import org.python.integration.exception.PythonException;
 
 import java.util.AbstractSet;
@@ -99,38 +99,37 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
             boolean exhausted = false;
 
             private IPythonObject initIterator() {
-                IPythonObject iterAttr = null;
-                try {
-                    iterAttr = pythonSet.getAttribute("__iter__");
-                    PythonCallable iterCallable = iterAttr.asCallable().orElseThrow(() -> new IllegalStateException("__iter__ is not callable"));
-                    return iterCallable.call();
-                } finally {
-                    PythonCore.free(iterAttr);
+                try (PythonScope pythonScope = new PythonScope()) {
+                    IPythonObject iterAttr = pythonSet.getAttribute("__iter__");
+                    PythonCallable iterCallable = iterAttr.asCallable()
+                            .orElseThrow(() -> new IllegalStateException("__iter__ is not callable"));
+                    return iterCallable.call().keepAlive();
                 }
             }
 
             @Override
             public boolean hasNext() {
-                if (exhausted) return false;
+                if (exhausted) {
+                    return false;
+                }
                 if (next != null) {
                     return true;
                 }
 
-                IPythonObject nextAttr = null;
-                try {
-                    nextAttr = pythonIterator.getAttribute("__next__");
+                try (PythonScope nextScope = new PythonScope()) {
+                    IPythonObject nextAttr = pythonIterator.getAttribute("__next__");
                     PythonCallable nextCallable = nextAttr.asCallable()
                             .orElseThrow(() -> new IllegalStateException("__next__ is not callable"));
-                    next = nextCallable.call();
-                    return true;
-                } catch (PythonException pe) {
-                    if (pe.getValue().representation().contains("StopIteration")) {
-                        exhausted = true;
-                        return false;
+                    try {
+                        next = nextCallable.call().keepAlive();
+                    } catch (PythonException pe) {
+                        if (pe.getValue().representation().contains("StopIteration")) {
+                            exhausted = true;
+                            return false;
+                        }
+                        throw pe;
                     }
-                    throw pe;
-                } finally {
-                    PythonCore.free(nextAttr);
+                    return true;
                 }
             }
 
@@ -144,23 +143,16 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
                 next = null;
                 return item;
             }
-
         };
     }
 
     @Override
     public int size() {
-        IPythonObject lenAttr = null;
-        PythonInt lenInt = null;
-        try {
-            lenAttr = this.pythonSet.getAttribute("__len__");
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject lenAttr = this.pythonSet.getAttribute("__len__");
             PythonCallable lenAttrCallable = lenAttr.asCallable().orElseThrow(() -> new IllegalStateException("__len__ in not callable"));
-            lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("result of __len__ is not int"));
+            PythonInt lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("result of __len__ is not int"));
             return lenInt.toJavaInt();
-        } finally {
-            PythonCore.free(lenAttr);
-            PythonCore.free(lenInt);
         }
     }
-
 }

@@ -1,13 +1,12 @@
 package org.python.integration.object;
 
-import org.python.integration.core.PythonCore;
+import org.python.integration.core.PythonScope;
 import org.python.integration.exception.PythonException;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -109,16 +108,11 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
 
     @Override
     public int size() {
-        IPythonObject lenAttr = null;
-        PythonInt lenInt = null;
-        try {
-            lenAttr = this.pythonDict.getAttribute("__len__");
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject lenAttr = this.pythonDict.getAttribute("__len__");
             PythonCallable lenAttrCallable = lenAttr.asCallable().orElseThrow(() -> new IllegalStateException("__len__ is not callable"));
-            lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("__len__ result must be int"));
+            PythonInt lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("__len__ result must be int"));
             return lenInt.toJavaInt();
-        } finally {
-            PythonCore.free(lenAttr);
-            PythonCore.free(lenInt);
         }
     }
 
@@ -127,37 +121,32 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         if (!(key instanceof IPythonObject)) {
             return null;
         }
-        IPythonObject getAttr = null;
-        try {
-            getAttr = this.pythonDict.getAttribute("__getitem__");
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject getAttr = this.pythonDict.getAttribute("__getitem__");
             PythonCallable getAttrCallable = getAttr.asCallable().orElseThrow(() -> new IllegalStateException("__getitem__ is not callable"));
             try {
-                return getAttrCallable.call((IPythonObject) key);
+                IPythonObject value = getAttrCallable.call((IPythonObject) key);
+                return value.keepAlive();
             } catch (PythonException pe) {
                 if (pe.getValue().representation().contains("KeyError")) {
                     return null;
                 }
                 throw pe;
             }
-        } finally {
-            PythonCore.free(getAttr);
         }
     }
 
     @Override
     public IPythonObject put(IPythonObject key, IPythonObject value) {
-        IPythonObject setAttr = null;
-        try {
+        try (PythonScope pythonScope = new PythonScope()) {
             IPythonObject prevValue = null;
             if (this.containsKey(key)) {
-                prevValue = this.get(key);
+                prevValue = this.get(key).keepAlive();
             }
-            setAttr = this.pythonDict.getAttribute("__setitem__");
+            IPythonObject setAttr = this.pythonDict.getAttribute("__setitem__");
             PythonCallable setAttrCallable = setAttr.asCallable().orElseThrow(() -> new IllegalStateException("__setitem__ is not callable"));
             setAttrCallable.call(key, value);
             return prevValue;
-        } finally {
-            PythonCore.free(setAttr);
         }
     }
 
@@ -166,16 +155,11 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         if (!(key instanceof IPythonObject)) {
             return false;
         }
-        IPythonObject containsAttr = null;
-        PythonBool result = null;
-        try {
-            containsAttr = this.pythonDict.getAttribute("__contains__");
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject containsAttr = this.pythonDict.getAttribute("__contains__");
             PythonCallable containsAttrCallable = containsAttr.asCallable().orElseThrow(() -> new IllegalStateException("__contains__ is not callable"));
-            result = containsAttrCallable.call((IPythonObject) key).asBool().orElseThrow(() -> new IllegalStateException("__contains__ result is not bool"));
+            PythonBool result = containsAttrCallable.call((IPythonObject) key).asBool().orElseThrow(() -> new IllegalStateException("__contains__ result is not bool"));
             return result.toJavaBoolean();
-        } finally {
-            PythonCore.free(containsAttr);
-            PythonCore.free(result);
         }
     }
 
@@ -184,16 +168,13 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         if (!(object instanceof IPythonObject key)) {
             return null;
         }
-        IPythonObject popAttr = null;
-        try {
-            popAttr = this.pythonDict.getAttribute("pop");
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject popAttr = this.pythonDict.getAttribute("pop");
             if (!this.containsKey(key)) {
                 return null;
             }
             PythonCallable popAttrCallable = popAttr.asCallable().orElseThrow(() -> new IllegalStateException("pop is not callable"));
-            return popAttrCallable.call(key);
-        } finally {
-            PythonCore.free(popAttr);
+            return popAttrCallable.call(key).keepAlive();
         }
     }
 
@@ -212,7 +193,7 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
                 return false;
             }
             IPythonObject dictValue = PythonDict.this.get(key);
-            return dictValue != null && value.representation().equals(dictValue.representation());
+            return value.equals(dictValue);
         }
 
         @Override
@@ -224,7 +205,7 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
                 return false;
             }
             IPythonObject dictValue = PythonDict.this.get(key);
-            if (dictValue != null && dictValue.representation().equals(value.representation())) {
+            if (value.equals(dictValue)) {
                 PythonDict.this.remove(key);
                 return true;
             }
@@ -237,16 +218,11 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
                 private final Iterator<DictEntry> iterator = getIterator();
 
                 private Iterator<DictEntry> getIterator() {
-                    IPythonObject keysAttr = null;
-                    IPythonObject keys = null;
-                    try {
-                        keysAttr = PythonDict.this.pythonDict.getAttribute("keys");
+                    try (PythonScope pythonScope = new PythonScope()) {
+                        IPythonObject keysAttr = PythonDict.this.pythonDict.getAttribute("keys");
                         PythonCallable keysAttrCallable = keysAttr.asCallable().orElseThrow(() -> new IllegalStateException("keys is not callable"));
-                        keys = keysAttrCallable.call();
-                        return PythonList.of(keys).stream().map(DictEntry::new).iterator();
-                    } finally {
-                        PythonCore.free(keysAttr);
-                        PythonCore.free(keys);
+                        IPythonObject keys = keysAttrCallable.call();
+                        return PythonList.of(keys).keepAlive().asList().get().stream().map(DictEntry::new).iterator();
                     }
                 }
 
@@ -293,8 +269,8 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
             if (!(other instanceof DictEntry entry)) {
                 return false;
             }
-            return Objects.equals(this.getKey(), entry.getKey()) &&
-                    Objects.equals(this.getValue(), entry.getValue());
+            return this.getKey().equals(entry.getKey()) &&
+                    this.getValue().equals(entry.getValue());
         }
 
         @Override

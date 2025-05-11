@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
-import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonDict;
 
@@ -23,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonDictTest {
@@ -106,7 +104,7 @@ public class PythonDictTest {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
         IPythonObject value = pythonDict.get(PythonCore.evaluate("1"));
-        assertEquals("2", value.representation());
+        assertEquals(2, value.asInt().get().toJavaInt());
     }
 
     @Test
