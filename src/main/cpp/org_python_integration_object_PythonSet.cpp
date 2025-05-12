@@ -51,5 +51,5 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonSet_from(JNIE
     }
 
     std::size_t index = object_manager->add_object(py_set);
-    return create_python_set(env, index, object_manager->get_object_manager_scope());
+    return create_python_set(env, index, object_manager->get_scope_id());
 }

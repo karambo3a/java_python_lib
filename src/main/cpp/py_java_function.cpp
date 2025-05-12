@@ -19,7 +19,7 @@ PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs
 
     if (kwargs) {
         PyErr_SetString(PyExc_RuntimeError, "kwargs must be null");
-        delete_scope();
+        finalize_scope();
         return nullptr;
     }
 

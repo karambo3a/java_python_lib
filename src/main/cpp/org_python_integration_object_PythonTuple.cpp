@@ -42,5 +42,5 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonTuple_from(JN
     }
 
     std::size_t index = object_manager->add_object(py_tuple);
-    return create_python_tuple(env, index, object_manager->get_object_manager_scope());
+    return create_python_tuple(env, index, object_manager->get_scope_id());
 }

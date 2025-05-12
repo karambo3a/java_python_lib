@@ -207,8 +207,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asStr(JNIEnv *env, jobject java_object) {
-    std::size_t index = object_manager->get_index(env, java_object);
-    std::size_t scope = object_manager->get_scope(env, java_object);
+    std::size_t index = get_index(env, java_object);
+    std::size_t scope = get_scope(env, java_object);
     PyObject* py_object = object_manager->get_object(env, index, scope);
     if (!py_object) {
         return nullptr;
