@@ -7,7 +7,7 @@ public class PythonCallable extends AbstractPythonObject {
     }
 
     @Override
-    public IPythonObject keepAlive() {
+    public PythonCallable keepAlive() {
         return super.keepAlive().asCallable().get();
     }
 

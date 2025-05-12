@@ -7,7 +7,7 @@ public class PythonBool extends AbstractPythonObject{
     }
 
     @Override
-    public IPythonObject keepAlive() {
+    public PythonBool keepAlive() {
         return super.keepAlive().asBool().get();
     }
 

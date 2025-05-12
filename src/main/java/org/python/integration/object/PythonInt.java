@@ -7,7 +7,7 @@ public class PythonInt extends AbstractPythonObject {
     }
 
     @Override
-    public IPythonObject keepAlive() {
+    public PythonInt keepAlive() {
         return super.keepAlive().asInt().get();
     }
 

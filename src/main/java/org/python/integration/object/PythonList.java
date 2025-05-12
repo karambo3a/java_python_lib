@@ -19,7 +19,7 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
 
 
     @Override
-    public IPythonObject keepAlive() {
+    public PythonList keepAlive() {
         return this.pythonList.keepAlive().asList().get();
     }
 

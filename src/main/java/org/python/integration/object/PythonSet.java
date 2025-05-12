@@ -21,7 +21,7 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
 
 
     @Override
-    public IPythonObject keepAlive() {
+    public PythonSet keepAlive() {
         return this.pythonSet.keepAlive().asSet().get();
     }
 

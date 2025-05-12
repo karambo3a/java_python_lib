@@ -19,7 +19,7 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
 
 
     @Override
-    public IPythonObject keepAlive() {
+    public PythonTuple keepAlive() {
         return this.pythonTuple.keepAlive().asTuple().get();
     }
 

@@ -24,7 +24,7 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
 
 
     @Override
-    public IPythonObject keepAlive() {
+    public PythonDict keepAlive() {
         return this.pythonDict.keepAlive().asDict().get();
     }
 
