@@ -2,8 +2,13 @@ package org.python.integration.object;
 
 public class PythonCallable extends AbstractPythonObject {
 
-    private PythonCallable(long index) {
-        super(index);
+    private PythonCallable(long index, long scopeId) {
+        super(index, scopeId);
+    }
+
+    @Override
+    public PythonCallable keepAlive() {
+        return super.keepAlive().asCallable().get();
     }
 
     public native IPythonObject call(IPythonObject... args);

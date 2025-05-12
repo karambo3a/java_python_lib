@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_python_integration_object_AbstractPythonObject
+ * Method:    keepAlive
+ * Signature: ()Lorg/python/integration/object/IPythonObject;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_keepAlive
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_python_integration_object_AbstractPythonObject
  * Method:    equals
  * Signature: (Ljava/lang/Object;)Z
  */

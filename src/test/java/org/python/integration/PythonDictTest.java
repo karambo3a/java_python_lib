@@ -8,10 +8,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
-import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonDict;
 
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonDictTest {
@@ -52,6 +51,35 @@ public class PythonDictTest {
         assertThat(entryList)
                 .hasSize(2)
                 .containsExactlyInAnyOrder(Map.entry("2", "3"), Map.entry("1", "2"));
+
+        for (var entry : entries) {
+            entry.setValue(PythonCore.evaluate("1"));
+        }
+        assertEquals("{1: 1, 2: 1}", pythonDict.representation());
+    }
+
+    @Test
+    @DisplayName("Should successfully modify the dict via entrySet")
+    public void testEntrySetSetValueSuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
+        for (var entry : entries) {
+            entry.setValue(PythonCore.evaluate("1"));
+        }
+        assertEquals("{1: 1, 2: 1}", pythonDict.representation());
+    }
+
+    @Test
+    @DisplayName("Should successfully remove entry of the dict via entrySet ")
+    public void testEntrySetRemoveSuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
+        assertTrue(entries.remove(new AbstractMap.SimpleEntry<>(PythonCore.evaluate("1"), PythonCore.evaluate("2"))));
+        assertEquals("{2: 3}", pythonDict.representation());
+
+        assertFalse(entries.remove(new AbstractMap.SimpleEntry<>(PythonCore.evaluate("2"), PythonCore.evaluate("2"))));
     }
 
     @Test
@@ -72,20 +100,19 @@ public class PythonDictTest {
 
     @Test
     @DisplayName("Should successfully return dict item")
-    public void testGetExistentKeySuccessful() {
+    public void testGetExistentKey() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
         IPythonObject value = pythonDict.get(PythonCore.evaluate("1"));
-        assertEquals("2", value.representation());
+        assertEquals(2, value.asInt().get().toJavaInt());
     }
 
     @Test
     @DisplayName("Should successfully return dict item")
-    public void testGetNonExistentKeyThrows() {
+    public void testGetNonExistentKey() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
-        PythonException exception = assertThrows(PythonException.class, () -> pythonDict.get(PythonCore.evaluate("3")));
-        assertTrue(exception.getValue().representation().contains("KeyError"));
+        assertNull(pythonDict.get(PythonCore.evaluate("3")));
     }
 
     @Test
@@ -150,5 +177,26 @@ public class PythonDictTest {
         IPythonObject object = PythonCore.evaluate("{1:2, 2:3}");
 
         assertEquals(object, object);
+    }
+
+    @Test
+    @DisplayName("Should return prev value (dict contains the key)")
+    public void testRemoveContainsKeySuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        IPythonObject prevValue = pythonDict.remove(PythonCore.evaluate("1"));
+        assertNotNull(prevValue);
+        assertEquals("2", prevValue.representation());
+        assertEquals("{2: 3}", pythonDict.representation());
+    }
+
+    @Test
+    @DisplayName("Should return prev value (dict contains the key)")
+    public void testRemoveDoNotContainKeySuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        IPythonObject prevValue = pythonDict.remove(PythonCore.evaluate("3"));
+        assertNull(prevValue);
+        assertEquals("{1: 2, 2: 3}", pythonDict.representation());
     }
 }

@@ -8,10 +8,6 @@ public class PythonSession implements AutoCloseable {
         System.loadLibrary("native");
     }
 
-    private native void initializePy();
-
-    private native void finalizePy();
-
     public PythonSession() {
         initializePy();
         this.isClosed = false;
@@ -19,9 +15,13 @@ public class PythonSession implements AutoCloseable {
 
     @Override
     public void close() {
-        if (!isClosed) {
+        if (!this.isClosed) {
             finalizePy();
             this.isClosed = true;
         }
     }
+
+    private native void initializePy();
+
+    private native void finalizePy();
 }
