@@ -201,11 +201,10 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
             if (!(object instanceof Entry<?, ?> entry)) {
                 return false;
             }
-            if (!(entry.getKey() instanceof IPythonObject key && entry.getValue() instanceof IPythonObject value)) {
+            if (!(entry.getKey() instanceof IPythonObject key && entry.getValue() instanceof IPythonObject)) {
                 return false;
             }
-            IPythonObject dictValue = PythonDict.this.get(key);
-            if (value.equals(dictValue)) {
+            if (contains(entry)) {
                 PythonDict.this.remove(key);
                 return true;
             }
