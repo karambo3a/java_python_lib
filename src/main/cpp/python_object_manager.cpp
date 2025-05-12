@@ -2,8 +2,10 @@
 #include "headers/python_object_factory.h"
 #include "headers/globals.h"
 #include <string>
+#include <iostream>
 
-PythonObjectManager::PythonObjectManager(PythonObjectManager *prev_object_manager, std::size_t scope): prev_object_manager(prev_object_manager), scope(scope) {}
+
+PythonObjectManager::PythonObjectManager(PythonObjectManager *prev_object_manager, std::size_t scope_id): prev_object_manager(prev_object_manager), scope_id(scope_id) {}
 
 
 PythonObjectManager::~PythonObjectManager() {
@@ -18,8 +20,8 @@ PythonObjectManager* PythonObjectManager::get_prev_object_manager() {
 }
 
 
-std::size_t PythonObjectManager::get_object_manager_scope() {
-    return this->scope;
+std::size_t PythonObjectManager::get_scope_id() {
+    return this->scope_id;
 }
 
 
@@ -43,9 +45,9 @@ PyObject* PythonObjectManager::get_object(std::size_t index) {
 }
 
 
-PyObject* PythonObjectManager::get_object(JNIEnv *env, std::size_t index, std::size_t scope) {
+PyObject* PythonObjectManager::get_object(JNIEnv *env, std::size_t index, std::size_t scope_id) {
     PythonObjectManager* object_manager = this;
-    while (object_manager->get_prev_object_manager() != nullptr && object_manager->get_object_manager_scope() != scope) {
+    while (object_manager->get_prev_object_manager() != nullptr && object_manager->get_scope_id() != scope_id) {
         object_manager = object_manager->get_prev_object_manager();
     }
 
@@ -60,15 +62,15 @@ PyObject* PythonObjectManager::get_object(JNIEnv *env, std::size_t index, std::s
 
 
 PyObject* PythonObjectManager::get_object(JNIEnv *env, jobject java_object) {
-    std::size_t index = this->get_index(env, java_object);
-    std::size_t scope = this->get_scope(env, java_object);
-    PyObject* py_object = this->get_object(env, index, scope);
+    std::size_t index = get_index(env, java_object);
+    std::size_t scope_id = get_scope(env, java_object);
+    PyObject* py_object = this->get_object(env, index, scope_id);
     return py_object;
 }
 
 
 void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
-    std::size_t index = this->get_index(env, java_object);
+    std::size_t index = get_index(env, java_object);
     if (!this->py_objects[index]) {
         jthrowable java_exception = create_native_operation_exception(env, ("Double object free on index=" + std::to_string(index)).c_str());
         env->Throw(java_exception);
@@ -78,25 +80,8 @@ void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
     Py_XDECREF(this->py_objects[index]);
 }
 
-
-std::size_t PythonObjectManager::get_scope(JNIEnv *env, jobject java_object) {
-    jclass cls = env->GetObjectClass(java_object);
-    jfieldID field = env->GetFieldID(cls, "scope", "J");
-    jlong scope = env->GetLongField(java_object, field);
-    return (std::size_t)scope;
-}
-
-
-std::size_t PythonObjectManager::get_index(JNIEnv *env, jobject java_object) {
-    jclass cls = env->GetObjectClass(java_object);
-    jfieldID field = env->GetFieldID(cls, "index", "J");
-    jlong index = env->GetLongField(java_object, field);
-    return (std::size_t)index;
-}
-
-
 void initialize_scope() {
-    object_manager = new PythonObjectManager(object_manager, object_manager->get_object_manager_scope() + 1);
+    object_manager = new PythonObjectManager(object_manager, object_manager->get_scope_id() + 1);
 }
 
 

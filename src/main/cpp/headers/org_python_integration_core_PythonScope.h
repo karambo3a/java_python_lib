@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     org_python_integration_core_PythonScope
  * Method:    initializeScope
- * Signature: ()V
+ * Signature: ()J
  */
-JNIEXPORT void JNICALL Java_org_python_integration_core_PythonScope_initializeScope
+JNIEXPORT jlong JNICALL Java_org_python_integration_core_PythonScope_initializeScope
   (JNIEnv *, jobject);
 
 /*

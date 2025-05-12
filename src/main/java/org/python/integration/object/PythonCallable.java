@@ -7,8 +7,13 @@ import java.util.function.Supplier;
 
 public class PythonCallable extends AbstractPythonObject {
 
-    private PythonCallable(long index, long scope) {
-        super(index, scope);
+    private PythonCallable(long index, long scopeId) {
+        super(index, scopeId);
+    }
+
+    @Override
+    public PythonCallable keepAlive() {
+        return super.keepAlive().asCallable().get();
     }
 
     public native IPythonObject call(IPythonObject... args);

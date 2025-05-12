@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.python.integration.core.PythonCore;
+import org.python.integration.core.PythonScope;
 import org.python.integration.core.PythonSession;
 import org.python.integration.exception.NativeOperationException;
 import org.python.integration.exception.PythonException;
@@ -16,6 +17,7 @@ import org.python.integration.object.PythonList;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,6 +34,28 @@ public class PythonObjectTest {
         list = PythonCore.evaluate("[1,2,3]");
     }
 
+    private IPythonObject createPythonObject() {
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject pythonObject = PythonCore.evaluate("1");
+            return pythonObject.keepAlive();
+        }
+    }
+
+    @Test
+    @DisplayName("Successfully call keepAlive")
+    void testKeepAliveSuccessful() {
+        IPythonObject pythonObject = assertDoesNotThrow(this::createPythonObject);
+        assertNotNull(pythonObject);
+        assertEquals("1", pythonObject.representation());
+    }
+
+    @Test
+    @DisplayName("Throws an exception for keepAlive call in root scope")
+    void testKeepAliveThrows() {
+        NativeOperationException exception = assertThrows(NativeOperationException.class, () -> list.keepAlive());
+        assertNotNull(exception);
+        assertEquals("Cannot move object to higher scope: already in root scope", exception.getMessage());
+    }
 
     @Test
     @DisplayName("Should return correct string representation")

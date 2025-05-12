@@ -10,18 +10,18 @@ import java.util.Optional;
 public class PythonList extends AbstractList<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonList;
     private final long index;
-    private final long scope;
+    private final long scopeId;
 
-    private PythonList(long index, long scope) {
+    private PythonList(long index, long scopeId) {
         this.index = index;
-        this.scope = scope;
-        this.pythonList = new PythonObject(index, scope);
+        this.scopeId = scopeId;
+        this.pythonList = new PythonObject(index, scopeId);
     }
 
 
     @Override
-    public void keepAlive() {
-        this.pythonList.keepAlive();
+    public PythonList keepAlive() {
+        return this.pythonList.keepAlive().asList().get();
     }
 
 
@@ -70,22 +70,40 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
         return this.pythonList.asTuple();
     }
 
-
     @Override
     public Optional<PythonSet> asSet() {
         return this.pythonList.asSet();
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof IPythonObject)) {
+            return false;
+        }
+        return pythonList.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+        return pythonList.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return pythonList.toString();
+    }
 
     @Override
     public IPythonObject set(int index, IPythonObject object) {
         try (PythonScope pythonScope = new PythonScope()) {
-            IPythonObject prevObject = this.get(index);
+            IPythonObject prevObject = this.get(index).keepAlive();
             IPythonObject pythonIndex = PythonCore.evaluate(String.valueOf(index));
             IPythonObject setItemAttr = this.pythonList.getAttribute("__setitem__");
             PythonCallable setItemCallable = setItemAttr.asCallable().orElseThrow(() -> new IllegalStateException("__setitem__ is not callable"));
             setItemCallable.call(pythonIndex, object);
-            prevObject.keepAlive();
             return prevObject;
         }
     }
@@ -107,9 +125,7 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
             IPythonObject pythonIndex = PythonCore.evaluate(String.valueOf(index));
             IPythonObject getItemAttr = this.pythonList.getAttribute("__getitem__");
             PythonCallable getItemCallable = getItemAttr.asCallable().orElseThrow(() -> new IllegalStateException("__getitem__ is not callable"));
-            IPythonObject result = getItemCallable.call(pythonIndex);
-            result.keepAlive();
-            return result;
+            return getItemCallable.call(pythonIndex).keepAlive();
         }
     }
 
