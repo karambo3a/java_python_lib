@@ -1,0 +1,24 @@
+BasedOnStyle: Chromium
+AccessModifierOffset: -4
+AlignAfterOpenBracket: BlockIndent
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Custom
+ColumnLimit: 100
+EmptyLineAfterAccessModifier: Never
+IncludeBlocks: Merge
+IndentWidth: 4
+PointerAlignment: Right
+QualifierAlignment: Left
+SeparateDefinitionBlocks: Always
+SortIncludes: CaseSensitive
+SpacesInAngles: Never
+IncludeCategories:
+  - Regex: '^".*.h"$'
+    Priority: 1
+  - Regex: '^<.*>$'
+    Priority: 2
+  - Regex: '^".*"$'
+    Priority: 3

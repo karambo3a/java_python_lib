@@ -1,0 +1,13 @@
+---
+Checks: '
+    -bugprone-*,
+    -modernize-*,
+    -performance-*,
+    -readability-*,
+    -portability-*,
+    -clang-analyzer-*,
+    misc-*'
+WarningsAsErrors: true
+HeaderFilterRegex: '.*\.(h|hpp|cpp)$'
+ExtraArgs:
+    - "-std=c++20"

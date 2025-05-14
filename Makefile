@@ -1,6 +1,7 @@
 .PHONY: buildNative cleanNative
 
 CC=g++
+CLANG_TIDY=clang-tidy-18
 CXXFLAGS=-std=c++20 -fPIC -fno-omit-frame-pointer -g -DPYTHON_VERSION=312
 INCLUDES=-I/usr/include/python3.12 \
             -I/usr/lib/jvm/java-21-openjdk-amd64/include \
@@ -25,6 +26,9 @@ buildNative: $(OBJS)
 $(OBJS): build/cpp/%.o: src/main/cpp/%.cpp
 	mkdir -p build/cpp/ && \
 	$(CC) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+tidy:
+	$(CLANG_TIDY) -header-filter='src/main/cpp/headers/.*' src/main/cpp/* -- $(CXXFLAGS) $(INCLUDES)
 
 cleanNative:
 	rm -rf build/cpp build/libs
