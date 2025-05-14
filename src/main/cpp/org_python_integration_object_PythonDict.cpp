@@ -1,9 +1,8 @@
 #include "headers/org_python_integration_object_PythonDict.h"
-#include "headers/python_object_manager.h"
-#include "headers/python_object_factory.h"
 #include "headers/globals.h"
+#include "headers/python_object_factory.h"
+#include "headers/python_object_manager.h"
 #include <Python.h>
-
 
 jobject map_entry_set(JNIEnv *env, jobject java_map) {
     jclass cls = env->FindClass("java/util/Map");
@@ -20,7 +19,7 @@ jobject map_iterator(JNIEnv *env, jobject java_entry_set) {
 bool map_has_next(JNIEnv *env, jobject iterator) {
     jclass cls = env->FindClass("java/util/Iterator");
     jmethodID has_next_method = env->GetMethodID(cls, "hasNext", "()Z");
-    return (bool) env->CallBooleanMethod(iterator, has_next_method);
+    return (bool)env->CallBooleanMethod(iterator, has_next_method);
 }
 
 jobject map_next(JNIEnv *env, jobject iterator) {
@@ -28,7 +27,6 @@ jobject map_next(JNIEnv *env, jobject iterator) {
     jmethodID next_method = env->GetMethodID(cls, "next", "()Ljava/lang/Object;");
     return env->CallObjectMethod(iterator, next_method);
 }
-
 
 jobject entry_get_key(JNIEnv *env, jobject entry) {
     jclass cls = env->FindClass("java/util/Map$Entry");
@@ -42,8 +40,7 @@ jobject entry_get_value(JNIEnv *env, jobject entry) {
     return env->CallObjectMethod(entry, get_value_method);
 }
 
-
-JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonDict_from(JNIEnv *env, jclass cls, jobject java_map) {
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonDict_from(JNIEnv *env, jclass, jobject java_map) {
     if (!java_map) {
         jthrowable java_exception = create_native_operation_exception(env, "Java map cannot be null");
         env->Throw(java_exception);
@@ -59,16 +56,16 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonDict_from(JNI
         return nullptr;
     }
 
-    while(map_has_next(env, iterator)) {
+    while (map_has_next(env, iterator)) {
         jobject java_entry = map_next(env, iterator);
         jobject java_key = entry_get_key(env, java_entry);
         jobject java_value = entry_get_value(env, java_entry);
-        PyObject  *py_key = object_manager->get_object(env, java_key);
+        PyObject *py_key = object_manager->get_object(env, java_key);
         if (!py_key) {
             Py_DecRef(py_dict);
             return nullptr;
         }
-        PyObject  *py_value = object_manager->get_object(env, java_value);
+        PyObject *py_value = object_manager->get_object(env, java_value);
         if (!py_value) {
             Py_DecRef(py_dict);
             return nullptr;
@@ -82,6 +79,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonDict_from(JNI
         }
     }
 
-    std::size_t index = object_manager->add_object(py_dict);
+    const std::size_t index = object_manager->add_object(py_dict);
     return create_python_dict(env, index, object_manager->get_scope_id());
 }

@@ -5,6 +5,11 @@ public class PythonStr extends AbstractPythonObject{
         super(index, scope);
     }
 
+    @Override
+    public PythonStr keepAlive() {
+        return super.keepAlive().asStr().get();
+    }
+
     public native String toJavaString();
 
     public static native PythonStr from(String value);

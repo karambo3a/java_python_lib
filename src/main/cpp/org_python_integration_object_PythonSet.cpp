@@ -1,7 +1,7 @@
 #include "headers/org_python_integration_object_PythonSet.h"
-#include "headers/python_object_manager.h"
-#include "headers/python_object_factory.h"
 #include "headers/globals.h"
+#include "headers/python_object_factory.h"
+#include "headers/python_object_manager.h"
 #include <Python.h>
 
 jobject set_iterator(JNIEnv *env, jobject java_set) {
@@ -13,7 +13,7 @@ jobject set_iterator(JNIEnv *env, jobject java_set) {
 bool set_has_next(JNIEnv *env, jobject iterator) {
     jclass cls = env->FindClass("java/util/Iterator");
     jmethodID has_next_method = env->GetMethodID(cls, "hasNext", "()Z");
-    return (bool) env->CallBooleanMethod(iterator, has_next_method);
+    return (bool)env->CallBooleanMethod(iterator, has_next_method);
 }
 
 jobject set_next(JNIEnv *env, jobject iterator) {
@@ -22,7 +22,7 @@ jobject set_next(JNIEnv *env, jobject iterator) {
     return env->CallObjectMethod(iterator, next_method);
 }
 
-JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonSet_from(JNIEnv *env, jclass cls, jobject java_set) {
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonSet_from(JNIEnv *env, jclass, jobject java_set) {
     if (!java_set) {
         jthrowable java_exception = create_native_operation_exception(env, "Java set cannot be null");
         env->Throw(java_exception);
@@ -50,6 +50,6 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonSet_from(JNIE
         }
     }
 
-    std::size_t index = object_manager->add_object(py_set);
+    const std::size_t index = object_manager->add_object(py_set);
     return create_python_set(env, index, object_manager->get_scope_id());
 }
