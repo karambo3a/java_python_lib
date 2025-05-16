@@ -13,7 +13,10 @@ import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonCallable;
 import org.python.integration.object.PythonInt;
+import org.python.integration.object.PythonList;
+import org.python.integration.object.PythonStr;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -185,7 +188,7 @@ public class PythonCallableTest {
     }
 
     @Test
-    @DisplayName("Should successfully convert Consumer to PythonCallable")
+    @DisplayName("Should successfully convert Function (returns PythonObject created inside it) to PythonCallable")
     void testFromFunctionWithInnerScope() {
         PythonInt integer = PythonInt.from(1);
         PythonCallable callable = PythonCallable.from((arg1) -> {
@@ -193,5 +196,62 @@ public class PythonCallableTest {
         });
         Optional<PythonInt> res = callable.call(integer).asInt();
         assertEquals(2, res.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should successfully call Java map om PythonList")
+    void testJavaMapOnPythonListWithJavaFunction() {
+        PythonList list = PythonList.from(List.of(
+                PythonInt.from(1),
+                PythonInt.from(2),
+                PythonInt.from(3)
+        ));
+        PythonList newList = PythonList.from(list.stream().map(a -> (IPythonObject) PythonStr.from("wow!")).toList());
+        assertEquals(PythonList.from(List.of(
+                        PythonStr.from("wow!"),
+                        PythonStr.from("wow!"),
+                        PythonStr.from("wow!")
+                )), newList
+        );
+    }
+
+    @Test
+    @DisplayName("Should successfully call Python map on PythonList with Python function")
+    void testPythonMapOnPythonListWithPythonFunction() {
+        PythonCallable func = PythonCore.evaluate("lambda a : a + 10").asCallable().get();
+        PythonList list = PythonList.from(List.of(
+                PythonInt.from(1),
+                PythonInt.from(2),
+                PythonInt.from(3)
+        ));
+        PythonCallable map = PythonCore.evaluate("map").asCallable().get();
+        PythonList newList = PythonList.of(map.call(func, list));
+        assertEquals(PythonList.from(List.of(
+                        PythonInt.from(11),
+                        PythonInt.from(12),
+                        PythonInt.from(13))),
+                newList
+        );
+    }
+
+    @Test
+    @DisplayName("Should successfully call Python map on PythonList with Java function")
+    void testPythonMapOnPythonListWithJavaFunction() {
+        PythonCallable func = PythonCallable.from((arg) -> {
+            return PythonInt.from(10);
+        });
+        PythonList list = PythonList.from(List.of(
+                PythonInt.from(1),
+                PythonInt.from(2),
+                PythonInt.from(3)
+        ));
+        PythonCallable map = PythonCore.evaluate("map").asCallable().get();
+        PythonList newList = PythonList.of(map.call(func, list));
+        assertEquals(PythonList.from(List.of(
+                        PythonInt.from(10),
+                        PythonInt.from(10),
+                        PythonInt.from(10))),
+                newList
+        );
     }
 }

@@ -7,9 +7,7 @@ Java_org_python_integration_object_AbstractPythonObject_equals(JNIEnv *env, jobj
     if (this_object == other_object) {
         return JNI_TRUE;
     }
-    if (!env->IsInstanceOf(other_object, env->GetObjectClass(this_object))) {
-        return JNI_FALSE;
-    }
+
     PyObject *py_this = object_manager->get_object(env, this_object);
     PyObject *py_other = object_manager->get_object(env, other_object);
     if (!py_this || !py_other) {
