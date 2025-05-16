@@ -73,9 +73,6 @@ jobject convert_to_python_callable(JNIEnv *env, PyObject *py_callable) {
 
 jthrowable create_python_exception(JNIEnv *env) {
     PyObject *py_type = nullptr, *py_value = nullptr, *py_traceback = nullptr;
-#ifndef PYTHON_VERSION
-#error "bebra"
-#endif
 #if PYTHON_VERSION >= 312
     py_value = PyErr_GetRaisedException();
 #else

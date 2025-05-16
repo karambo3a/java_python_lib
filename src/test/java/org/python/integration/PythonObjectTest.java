@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,13 @@ public class PythonObjectTest {
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
         list = PythonCore.evaluate("[1,2,3]");
+    }
+
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
     }
 
     private IPythonObject createPythonObject() {

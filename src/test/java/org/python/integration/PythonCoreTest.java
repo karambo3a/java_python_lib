@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -22,9 +23,13 @@ public class PythonCoreTest {
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
     }
 
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
+    }
 
     @Test
     @DisplayName("Should successfully evaluate valid Python expression")

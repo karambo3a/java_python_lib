@@ -8,28 +8,23 @@ PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs
     PyJavaFunctionObject *py_function = (PyJavaFunctionObject *)self;
     JNIEnv *env = nullptr;
 
-    initialize_scope();
-
     if (py_function->java_vm->AttachCurrentThread((void **)&env, nullptr) != JNI_OK) {
         PyErr_SetString(PyExc_RuntimeError, "Failed to attach to Java VM");
-        finalize_scope();
         return nullptr;
     }
 
     if (kwargs) {
         PyErr_SetString(PyExc_RuntimeError, "kwargs must be null");
-        finalize_scope();
         return nullptr;
     }
 
     if ((std::size_t)PyTuple_Size(args) != py_function->args_cnt) {
-        PyErr_SetString(
-            PyExc_RuntimeError,
-            ("Wrong number of arguments: must be " + std::to_string(py_function->args_cnt) + " arguments").c_str()
-        );
-        finalize_scope();
+        std::string message = "Wrong number of arguments: must be " + std::to_string(py_function->args_cnt) + " arguments";
+        PyErr_SetString(PyExc_RuntimeError, message.c_str());
         return nullptr;
     }
+
+    initialize_scope();
 
     std::vector<jvalue> jargs(py_function->args_cnt);
     for (std::size_t i = 0; i < py_function->args_cnt; ++i) {
@@ -40,23 +35,22 @@ PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs
     if (py_function->is_void) {
         env->CallVoidMethodA(py_function->java_function, py_function->java_method, &jargs[0]);
         py_result = Py_None;
-        object_manager->get_prev_object_manager()->add_object(py_result, true);
     } else {
         jobject java_result = env->CallObjectMethodA(py_function->java_function, py_function->java_method, &jargs[0]);
         py_result = object_manager->get_object(env, java_result);
-        object_manager->get_prev_object_manager()->add_object(py_result);
     }
 
     py_function->java_vm->DetachCurrentThread();
 
     finalize_scope();
+    Py_IncRef(py_result);
     return py_result;
 }
 
-void py_java_function_free(PyObject *self) {
+void py_java_function_dealloc(PyObject *self) {
     PyJavaFunctionObject *py_function = (PyJavaFunctionObject *)self;
     JNIEnv *env = nullptr;
-    if (py_function->java_vm->AttachCurrentThread((void **)&env, nullptr) != JNI_OK) {
+    if (py_function->java_vm && py_function->java_vm->AttachCurrentThread((void **)&env, nullptr) != JNI_OK) {
         Py_TYPE(py_function)->tp_free(py_function);
         return;
     }
@@ -91,12 +85,14 @@ PyJavaFunctionObject *create_py_java_function_object(
     if (env->GetJavaVM(&(py_java_function->java_vm)) != JNI_OK) {
         jthrowable java_exception = create_native_operation_exception(env, "Failed to get Java VM");
         env->Throw(java_exception);
+        Py_DecRef((PyObject *)py_java_function);
         return nullptr;
     }
     py_java_function->java_function = env->NewGlobalRef(java_function);
     if (!py_java_function->java_function) {
         jthrowable java_exception = create_native_operation_exception(env, "Failed to create global reference");
         env->Throw(java_exception);
+        Py_DecRef((PyObject *)py_java_function);
         return nullptr;
     }
     py_java_function->java_method = java_method;

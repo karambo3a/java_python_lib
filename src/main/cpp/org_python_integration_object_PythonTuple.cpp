@@ -4,17 +4,21 @@
 #include "headers/python_object_manager.h"
 #include <Python.h>
 
-std::size_t tuple_size(JNIEnv *env, jobject java_tuple) {
-    jclass cls = env->FindClass("java/util/List");
-    jmethodID size_method = env->GetMethodID(cls, "size", "()I");
-    return env->CallIntMethod(java_tuple, size_method);
+
+namespace {
+    std::size_t tuple_size(JNIEnv *env, jobject java_tuple) {
+        jclass cls = env->FindClass("java/util/List");
+        jmethodID size_method = env->GetMethodID(cls, "size", "()I");
+        return env->CallIntMethod(java_tuple, size_method);
+    }
+
+    jobject tuple_get(JNIEnv *env, jobject java_tuple, std::size_t index) {
+        jclass cls = env->FindClass("java/util/List");
+        jmethodID get_method = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
+        return env->CallObjectMethod(java_tuple, get_method, index);
+    }
 }
 
-jobject tuple_get(JNIEnv *env, jobject java_tuple, std::size_t index) {
-    jclass cls = env->FindClass("java/util/List");
-    jmethodID get_method = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
-    return env->CallObjectMethod(java_tuple, get_method, index);
-}
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonTuple_from(JNIEnv *env, jclass, jobject java_tuple) {
     if (!java_tuple) {

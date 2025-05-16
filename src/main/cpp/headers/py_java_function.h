@@ -5,21 +5,22 @@
 #include <jni.h>
 
 typedef struct {
-    PyObject_HEAD JavaVM *java_vm;
+    PyObject_HEAD
+    JavaVM *java_vm;
     jobject java_function;
     jmethodID java_method;
     std::size_t args_cnt;
     bool is_void;
 } PyJavaFunctionObject;
 
-void py_java_function_free(PyObject *self);
+void py_java_function_dealloc(PyObject *self);
 
 PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs);
 
 inline PyTypeObject PyJavaFunction_Type = {
-    .ob_base = PyVarObject_HEAD_INIT(NULL, 0).tp_name = "PyJavaFunctionObject",
+    .tp_name = "PyJavaFunctionObject",
     .tp_basicsize = sizeof(PyJavaFunctionObject),
-    .tp_dealloc = (destructor)py_java_function_free,
+    .tp_dealloc = (destructor)py_java_function_dealloc,
     .tp_call = (ternaryfunc)py_java_function_call,
     .tp_flags = Py_TPFLAGS_DEFAULT,
     .tp_new = PyType_GenericNew,

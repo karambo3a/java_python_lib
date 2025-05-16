@@ -20,16 +20,18 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_of(JNIEn
     return python_list;
 }
 
-std::size_t list_size(JNIEnv *env, jobject java_list) {
-    jclass cls = env->FindClass("java/util/List");
-    jmethodID size_method = env->GetMethodID(cls, "size", "()I");
-    return env->CallIntMethod(java_list, size_method);
-}
+namespace {
+    std::size_t list_size(JNIEnv *env, jobject java_list) {
+        jclass cls = env->FindClass("java/util/List");
+        jmethodID size_method = env->GetMethodID(cls, "size", "()I");
+        return env->CallIntMethod(java_list, size_method);
+    }
 
-jobject list_get(JNIEnv *env, jobject java_list, std::size_t index) {
-    jclass cls = env->FindClass("java/util/List");
-    jmethodID get_method = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
-    return env->CallObjectMethod(java_list, get_method, index);
+    jobject list_get(JNIEnv *env, jobject java_list, std::size_t index) {
+        jclass cls = env->FindClass("java/util/List");
+        jmethodID get_method = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
+        return env->CallObjectMethod(java_list, get_method, index);
+    }
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_from(JNIEnv *env, jclass, jobject java_list) {

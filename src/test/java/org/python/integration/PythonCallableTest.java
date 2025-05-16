@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,9 +32,13 @@ public class PythonCallableTest {
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
     }
 
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
+    }
 
     @ParameterizedTest
     @MethodSource("provideDataSuccessful")

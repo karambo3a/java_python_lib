@@ -6,8 +6,9 @@ import org.python.integration.core.PythonScope;
 import java.util.AbstractList;
 import java.util.List;
 import java.util.Optional;
+import java.util.RandomAccess;
 
-public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject {
+public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject, RandomAccess {
     private final IPythonObject pythonTuple;
     private final long index;
     private final long scopeId;
