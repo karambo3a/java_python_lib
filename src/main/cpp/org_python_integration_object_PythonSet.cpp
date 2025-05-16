@@ -5,26 +5,24 @@
 #include <Python.h>
 
 namespace {
-    jobject set_iterator(JNIEnv *env, jobject java_set) {
-        jclass cls = env->FindClass("java/util/Set");
-        jmethodID iterator = env->GetMethodID(cls, "iterator", "()Ljava/util/Iterator;");
-        return env->CallObjectMethod(java_set, iterator);
-    }
-
-    bool set_has_next(JNIEnv *env, jobject iterator) {
-        jclass cls = env->FindClass("java/util/Iterator");
-        jmethodID has_next_method = env->GetMethodID(cls, "hasNext", "()Z");
-        return (bool)env->CallBooleanMethod(iterator, has_next_method);
-    }
-
-    jobject set_next(JNIEnv *env, jobject iterator) {
-        jclass cls = env->FindClass("java/util/Iterator");
-        jmethodID next_method = env->GetMethodID(cls, "next", "()Ljava/lang/Object;");
-        return env->CallObjectMethod(iterator, next_method);
-    }
+jobject set_iterator(JNIEnv *env, jobject java_set) {
+    jclass cls = env->FindClass("java/util/Set");
+    jmethodID iterator = env->GetMethodID(cls, "iterator", "()Ljava/util/Iterator;");
+    return env->CallObjectMethod(java_set, iterator);
 }
 
+bool set_has_next(JNIEnv *env, jobject iterator) {
+    jclass cls = env->FindClass("java/util/Iterator");
+    jmethodID has_next_method = env->GetMethodID(cls, "hasNext", "()Z");
+    return (bool)env->CallBooleanMethod(iterator, has_next_method);
+}
 
+jobject set_next(JNIEnv *env, jobject iterator) {
+    jclass cls = env->FindClass("java/util/Iterator");
+    jmethodID next_method = env->GetMethodID(cls, "next", "()Ljava/lang/Object;");
+    return env->CallObjectMethod(iterator, next_method);
+}
+}  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonSet_from(JNIEnv *env, jclass, jobject java_set) {
     if (!java_set) {

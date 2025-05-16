@@ -19,7 +19,8 @@ PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs
     }
 
     if ((std::size_t)PyTuple_Size(args) != py_function->args_cnt) {
-        std::string message = "Wrong number of arguments: must be " + std::to_string(py_function->args_cnt) + " arguments";
+        const std::string message =
+            "Wrong number of arguments: must be " + std::to_string(py_function->args_cnt) + " arguments";
         PyErr_SetString(PyExc_RuntimeError, message.c_str());
         return nullptr;
     }

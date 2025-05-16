@@ -3,6 +3,7 @@
 CC=g++
 CLANG_TIDY=clang-tidy-18
 CXXFLAGS=-std=c++20 -fPIC -fno-omit-frame-pointer -g -DPYTHON_VERSION=312
+CLANG_FORMAT=clang-format
 INCLUDES=-I/usr/include/python3.12 \
             -I/usr/lib/jvm/java-21-openjdk-amd64/include \
             -I/usr/lib/jvm/java-21-openjdk-amd64/include/linux
@@ -38,6 +39,8 @@ tidy:
 		$(CLANG_TIDY) -header-filter='src/main/cpp/headers/.*' $$f -- $(CXXFLAGS) $(INCLUDES);\
 	done\
 
+format:
+	$(CLANG_FORMAT) -i src/main/cpp/*.cpp
 
 cleanNative:
 	rm -rf build/cpp build/libs

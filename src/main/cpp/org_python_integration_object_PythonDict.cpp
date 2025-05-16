@@ -5,43 +5,42 @@
 #include <Python.h>
 
 namespace {
-    jobject map_entry_set(JNIEnv *env, jobject java_map) {
-        jclass cls = env->FindClass("java/util/Map");
-        jmethodID set = env->GetMethodID(cls, "entrySet", "()Ljava/util/Set;");
-        return env->CallObjectMethod(java_map, set);
-    }
-
-    jobject map_iterator(JNIEnv *env, jobject java_entry_set) {
-        jclass cls = env->FindClass("java/util/Set");
-        jmethodID iterator = env->GetMethodID(cls, "iterator", "()Ljava/util/Iterator;");
-        return env->CallObjectMethod(java_entry_set, iterator);
-    }
-
-    bool map_has_next(JNIEnv *env, jobject iterator) {
-        jclass cls = env->FindClass("java/util/Iterator");
-        jmethodID has_next_method = env->GetMethodID(cls, "hasNext", "()Z");
-        return (bool)env->CallBooleanMethod(iterator, has_next_method);
-    }
-
-    jobject map_next(JNIEnv *env, jobject iterator) {
-        jclass cls = env->FindClass("java/util/Iterator");
-        jmethodID next_method = env->GetMethodID(cls, "next", "()Ljava/lang/Object;");
-        return env->CallObjectMethod(iterator, next_method);
-    }
-
-    jobject entry_get_key(JNIEnv *env, jobject entry) {
-        jclass cls = env->FindClass("java/util/Map$Entry");
-        jmethodID get_key_method = env->GetMethodID(cls, "getKey", "()Ljava/lang/Object;");
-        return env->CallObjectMethod(entry, get_key_method);
-    }
-
-    jobject entry_get_value(JNIEnv *env, jobject entry) {
-        jclass cls = env->FindClass("java/util/Map$Entry");
-        jmethodID get_value_method = env->GetMethodID(cls, "getValue", "()Ljava/lang/Object;");
-        return env->CallObjectMethod(entry, get_value_method);
-    }
+jobject map_entry_set(JNIEnv *env, jobject java_map) {
+    jclass cls = env->FindClass("java/util/Map");
+    jmethodID set = env->GetMethodID(cls, "entrySet", "()Ljava/util/Set;");
+    return env->CallObjectMethod(java_map, set);
 }
 
+jobject map_iterator(JNIEnv *env, jobject java_entry_set) {
+    jclass cls = env->FindClass("java/util/Set");
+    jmethodID iterator = env->GetMethodID(cls, "iterator", "()Ljava/util/Iterator;");
+    return env->CallObjectMethod(java_entry_set, iterator);
+}
+
+bool map_has_next(JNIEnv *env, jobject iterator) {
+    jclass cls = env->FindClass("java/util/Iterator");
+    jmethodID has_next_method = env->GetMethodID(cls, "hasNext", "()Z");
+    return (bool)env->CallBooleanMethod(iterator, has_next_method);
+}
+
+jobject map_next(JNIEnv *env, jobject iterator) {
+    jclass cls = env->FindClass("java/util/Iterator");
+    jmethodID next_method = env->GetMethodID(cls, "next", "()Ljava/lang/Object;");
+    return env->CallObjectMethod(iterator, next_method);
+}
+
+jobject entry_get_key(JNIEnv *env, jobject entry) {
+    jclass cls = env->FindClass("java/util/Map$Entry");
+    jmethodID get_key_method = env->GetMethodID(cls, "getKey", "()Ljava/lang/Object;");
+    return env->CallObjectMethod(entry, get_key_method);
+}
+
+jobject entry_get_value(JNIEnv *env, jobject entry) {
+    jclass cls = env->FindClass("java/util/Map$Entry");
+    jmethodID get_value_method = env->GetMethodID(cls, "getValue", "()Ljava/lang/Object;");
+    return env->CallObjectMethod(entry, get_value_method);
+}
+}  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonDict_from(JNIEnv *env, jclass, jobject java_map) {
     if (!java_map) {

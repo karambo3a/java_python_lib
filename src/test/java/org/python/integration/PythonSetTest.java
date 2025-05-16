@@ -94,7 +94,7 @@ public class PythonSetTest {
         assertNotNull(set);
 
         var expected = Set.of("1", "2");
-        for (var i: set) {
+        for (var i : set) {
             assertTrue(expected.contains(i.representation()));
         }
     }

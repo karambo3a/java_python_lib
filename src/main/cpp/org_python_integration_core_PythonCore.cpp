@@ -2,7 +2,7 @@
 #include "headers/globals.h"
 #include "headers/python_object_factory.h"
 #include <Python.h>
-#include <map>
+#include <unordered_map>
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate(JNIEnv *env, jclass, jstring java_repr) {
     PyObject *main_module = PyImport_AddModule("__main__");
@@ -43,6 +43,7 @@ JNIEXPORT void JNICALL Java_org_python_integration_core_PythonCore_free(JNIEnv *
     object_manager->free_object(env, java_object);
 }
 
+namespace {
 jobject import_module(JNIEnv *env, jstring java_module) {
     if (!java_module) {
         jthrowable java_exception = create_native_operation_exception(env, "Module name cannot be null");
@@ -62,6 +63,13 @@ jobject import_module(JNIEnv *env, jstring java_module) {
     env->ReleaseStringUTFChars(java_module, module_name);
     return convert_to_python_object(env, py_module);
 }
+
+void free_pyobject_map(std::unordered_map<jstring, PyObject *> &names) {
+    for (auto &name_and_attr : names) {
+        Py_DecRef(name_and_attr.second);
+    }
+}
+}  // namespace
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_core_PythonCore_importModule(JNIEnv *env, jclass, jstring java_module) {
@@ -93,17 +101,13 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_fromImport
     }
     PyObject *py_module = object_manager->get_object(env, java_module);
 
-    jclass map_class = env->FindClass("java/util/HashMap");
-    jmethodID map_constructor = env->GetMethodID(map_class, "<init>", "(I)V");
-    jobject map = env->NewObject(map_class, map_constructor, (jsize)names_size);
-    jmethodID map_put = env->GetMethodID(map_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-
-    std::map<jstring, PyObject *> names;
+    std::unordered_map<jstring, PyObject *> names;
     for (std::size_t i = 0; i < names_size; ++i) {
         jstring java_name = (jstring)env->GetObjectArrayElement(java_names, (jsize)i);
         if (!java_name) {
             jthrowable java_exception = create_native_operation_exception(env, "Name cannot be null");
             env->Throw(java_exception);
+            free_pyobject_map(names);
             return nullptr;
         }
         const char *name = env->GetStringUTFChars(java_name, nullptr);
@@ -112,12 +116,17 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_fromImport
         if (!py_attr) {
             jthrowable java_exception = create_python_exception(env);
             env->Throw(java_exception);
+            free_pyobject_map(names);
             return nullptr;
         }
         names.insert({java_name, py_attr});
     }
 
-    for (auto name_and_attr : names) {
+    jclass map_class = env->FindClass("java/util/HashMap");
+    jmethodID map_constructor = env->GetMethodID(map_class, "<init>", "(I)V");
+    jobject map = env->NewObject(map_class, map_constructor, (jsize)names_size);
+    jmethodID map_put = env->GetMethodID(map_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    for (auto &name_and_attr : names) {
         env->CallObjectMethod(map, map_put, name_and_attr.first, convert_to_python_object(env, name_and_attr.second));
     }
     return map;
