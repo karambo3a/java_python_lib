@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonInt;
 import org.python.integration.object.PythonList;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -26,7 +28,12 @@ public class PythonListTest {
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
+    }
+
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
     }
 
     private PythonList initPythonList(String representation) {
@@ -127,5 +134,19 @@ public class PythonListTest {
         IPythonObject object = PythonCore.evaluate("[1,2,3]");
 
         assertEquals(object, object);
+    }
+
+
+    @Test
+    @DisplayName("Should successfully convert List to PythonList")
+    void testFromSuccessful() {
+        IPythonObject first = PythonInt.from(1);
+        IPythonObject second = PythonInt.from(2);
+        var l = List.of(first, second);
+        PythonList list = PythonList.from(l);
+        assertNotNull(list);
+
+        assertEquals(first.representation(), list.getFirst().representation());
+        assertEquals(second.representation(), list.getLast().representation());
     }
 }

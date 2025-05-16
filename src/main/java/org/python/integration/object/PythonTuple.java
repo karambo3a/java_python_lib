@@ -4,9 +4,11 @@ import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonScope;
 
 import java.util.AbstractList;
+import java.util.List;
 import java.util.Optional;
+import java.util.RandomAccess;
 
-public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject {
+public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject, RandomAccess {
     private final IPythonObject pythonTuple;
     private final long index;
     private final long scopeId;
@@ -47,6 +49,11 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
     @Override
     public Optional<PythonBool> asBool() {
         return this.pythonTuple.asBool();
+    }
+
+    @Override
+    public Optional<PythonStr> asStr() {
+        return this.pythonTuple.asStr();
     }
 
     @Override
@@ -123,4 +130,6 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
             return result.toJavaBoolean();
         }
     }
+
+    public static native PythonTuple from(List<IPythonObject> tuple);
 }

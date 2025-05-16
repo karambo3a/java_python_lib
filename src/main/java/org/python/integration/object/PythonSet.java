@@ -7,6 +7,7 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonSet;
@@ -24,6 +25,7 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
     public PythonSet keepAlive() {
         return this.pythonSet.keepAlive().asSet().get();
     }
+
 
     @Override
     public String representation() {
@@ -51,6 +53,11 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
     }
 
     @Override
+    public Optional<PythonStr> asStr() {
+        return this.pythonSet.asStr();
+    }
+
+    @Override
     public Optional<PythonList> asList() {
         return this.pythonSet.asList();
     }
@@ -64,6 +71,7 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
     public Optional<PythonTuple> asTuple() {
         return this.pythonSet.asTuple();
     }
+
 
     @Override
     public Optional<PythonSet> asSet() {
@@ -116,7 +124,7 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
                     return true;
                 }
 
-                try (PythonScope nextScope = new PythonScope()) {
+                try (PythonScope pythonScope = new PythonScope()) {
                     IPythonObject nextAttr = pythonIterator.getAttribute("__next__");
                     PythonCallable nextCallable = nextAttr.asCallable()
                             .orElseThrow(() -> new IllegalStateException("__next__ is not callable"));
@@ -155,4 +163,7 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
             return lenInt.toJavaInt();
         }
     }
+
+
+    public static native PythonSet from(Set<IPythonObject> set);
 }

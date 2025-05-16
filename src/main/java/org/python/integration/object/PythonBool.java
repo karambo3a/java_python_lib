@@ -12,4 +12,6 @@ public class PythonBool extends AbstractPythonObject{
     }
 
     public native boolean toJavaBoolean();
+
+    public static native PythonBool from(boolean value);
 }

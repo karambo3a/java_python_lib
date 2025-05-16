@@ -15,6 +15,8 @@ public interface IPythonObject {
 
     Optional<PythonBool> asBool();
 
+    Optional<PythonStr> asStr();
+
     Optional<PythonList> asList();
 
     Optional<PythonDict> asDict();

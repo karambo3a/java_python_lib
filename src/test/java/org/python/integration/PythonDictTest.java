@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonDict;
+import org.python.integration.object.PythonInt;
 
 import java.util.AbstractMap;
 import java.util.Map;
@@ -29,7 +31,12 @@ public class PythonDictTest {
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
+    }
+
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
     }
 
     private PythonDict initPythonDict(String representation) {
@@ -100,7 +107,7 @@ public class PythonDictTest {
 
     @Test
     @DisplayName("Should successfully return dict item")
-    public void testGetExistentKey() {
+    public void testGetExistentKeySuccessful() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
         IPythonObject value = pythonDict.get(PythonCore.evaluate("1"));
@@ -108,8 +115,8 @@ public class PythonDictTest {
     }
 
     @Test
-    @DisplayName("Should successfully return dict item")
-    public void testGetNonExistentKey() {
+    @DisplayName("Should return null when get non-existent item from dict")
+    public void testGetNonExistentKeyThrows() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
         assertNull(pythonDict.get(PythonCore.evaluate("3")));
@@ -198,5 +205,18 @@ public class PythonDictTest {
         IPythonObject prevValue = pythonDict.remove(PythonCore.evaluate("3"));
         assertNull(prevValue);
         assertEquals("{1: 2, 2: 3}", pythonDict.representation());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Map to PythonDict")
+    void testFromSuccessful() {
+        IPythonObject key = PythonInt.from(1);
+        IPythonObject value = PythonInt.from(2);
+        var s = Map.of(key, value);
+        PythonDict dict = PythonDict.from(s);
+        assertNotNull(dict);
+
+        assertTrue(dict.containsKey(PythonCore.evaluate("1")));
+        assertEquals("2", dict.get(PythonCore.evaluate("1")).representation());
     }
 }

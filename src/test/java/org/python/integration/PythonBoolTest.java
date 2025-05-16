@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,20 +10,26 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
 import org.python.integration.object.IPythonObject;
+import org.python.integration.object.PythonBool;
 
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonBoolTest {
-
     private PythonSession pythonSession;
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
+    }
+
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
     }
 
     @Test
@@ -34,6 +41,17 @@ public class PythonBoolTest {
         assertTrue(trueBool.asBool().get().toJavaBoolean());
         assertFalse(falseBool.asBool().get().toJavaBoolean());
     }
+
+
+    @Test
+    @DisplayName("Should return PythonBool from Java boolean")
+    void testFromJavaBooleanSuccessful() {
+        PythonBool pythonBool = PythonBool.from(true);
+
+        assertNotNull(pythonBool);
+        assertTrue(pythonBool.toJavaBoolean());
+    }
+
 
     @ParameterizedTest
     @MethodSource("provideInputForEqualsTest")

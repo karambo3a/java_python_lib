@@ -4,9 +4,11 @@ import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonScope;
 
 import java.util.AbstractList;
+import java.util.List;
 import java.util.Optional;
+import java.util.RandomAccess;
 
-public class PythonList extends AbstractList<IPythonObject> implements IPythonObject {
+public class PythonList extends AbstractList<IPythonObject> implements IPythonObject, RandomAccess {
     private final IPythonObject pythonList;
     private final long index;
     private final long scopeId;
@@ -47,6 +49,11 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
     @Override
     public Optional<PythonBool> asBool() {
         return this.pythonList.asBool();
+    }
+
+    @Override
+    public Optional<PythonStr> asStr() {
+        return this.pythonList.asStr();
     }
 
     @Override
@@ -147,4 +154,6 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
     }
 
     public static native PythonList of(IPythonObject object);
+
+    public static native PythonList from(List<IPythonObject> list);
 }

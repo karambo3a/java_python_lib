@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,12 +13,16 @@ import org.python.integration.exception.NativeOperationException;
 import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonCallable;
+import org.python.integration.object.PythonInt;
+import org.python.integration.object.PythonList;
+import org.python.integration.object.PythonStr;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,9 +32,13 @@ public class PythonCallableTest {
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
     }
 
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
+    }
 
     @ParameterizedTest
     @MethodSource("provideDataSuccessful")
@@ -121,7 +130,7 @@ public class PythonCallableTest {
         IPythonObject list = PythonCore.evaluate("[1, 2, 3]");
         IPythonObject attr1 = list.getAttribute("__len__");
 
-        assertFalse(attr1.equals(list));
+        assertNotEquals(attr1, list);
     }
 
     @ParameterizedTest
@@ -140,6 +149,114 @@ public class PythonCallableTest {
                 Arguments.of("__len__", "__len__", true),
                 // Should return false for unequal objects
                 Arguments.of("__len__", "__str__", false)
+        );
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Function to PythonCallable")
+    void testFromUnaryOperator() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from((arg) -> integer);
+        Optional<PythonInt> res = callable.call(integer).asInt();
+        assertTrue(res.isPresent());
+        assertEquals(1, res.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Supplier to PythonCallable")
+    void testFromSupplier() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from(() -> integer);
+        Optional<PythonInt> res = callable.call().asInt();
+        assertTrue(res.isPresent());
+        assertEquals(1, res.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert BiFunction to PythonCallable")
+    void testFromBinaryOperator() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from((arg1, arg2) -> integer);
+        Optional<PythonInt> res = callable.call(integer, integer).asInt();
+        assertTrue(res.isPresent());
+        assertEquals(1, res.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Consumer to PythonCallable")
+    void testFromConsumer() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from((arg1) -> {
+        });
+        IPythonObject res = callable.call(integer);
+        assertEquals("None", res.representation());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Function (returns PythonObject created inside it) to PythonCallable")
+    void testFromFunctionWithInnerScope() {
+        PythonInt integer = PythonInt.from(1);
+        PythonCallable callable = PythonCallable.from((arg1) -> {
+            return PythonInt.from(2);
+        });
+        Optional<PythonInt> res = callable.call(integer).asInt();
+        assertEquals(2, res.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should successfully call Java map om PythonList")
+    void testJavaMapOnPythonListWithJavaFunction() {
+        PythonList list = PythonList.from(List.of(
+                PythonInt.from(1),
+                PythonInt.from(2),
+                PythonInt.from(3)
+        ));
+        PythonList newList = PythonList.from(list.stream().map(a -> (IPythonObject) PythonStr.from("wow!")).toList());
+        assertEquals(PythonList.from(List.of(
+                        PythonStr.from("wow!"),
+                        PythonStr.from("wow!"),
+                        PythonStr.from("wow!")
+                )), newList
+        );
+    }
+
+    @Test
+    @DisplayName("Should successfully call Python map on PythonList with Python function")
+    void testPythonMapOnPythonListWithPythonFunction() {
+        PythonCallable func = PythonCore.evaluate("lambda a : a + 10").asCallable().get();
+        PythonList list = PythonList.from(List.of(
+                PythonInt.from(1),
+                PythonInt.from(2),
+                PythonInt.from(3)
+        ));
+        PythonCallable map = PythonCore.evaluate("map").asCallable().get();
+        PythonList newList = PythonList.of(map.call(func, list));
+        assertEquals(PythonList.from(List.of(
+                        PythonInt.from(11),
+                        PythonInt.from(12),
+                        PythonInt.from(13))),
+                newList
+        );
+    }
+
+    @Test
+    @DisplayName("Should successfully call Python map on PythonList with Java function")
+    void testPythonMapOnPythonListWithJavaFunction() {
+        PythonCallable func = PythonCallable.from((arg) -> {
+            return PythonInt.from(10);
+        });
+        PythonList list = PythonList.from(List.of(
+                PythonInt.from(1),
+                PythonInt.from(2),
+                PythonInt.from(3)
+        ));
+        PythonCallable map = PythonCore.evaluate("map").asCallable().get();
+        PythonList newList = PythonList.of(map.call(func, list));
+        assertEquals(PythonList.from(List.of(
+                        PythonInt.from(10),
+                        PythonInt.from(10),
+                        PythonInt.from(10))),
+                newList
         );
     }
 }

@@ -12,4 +12,6 @@ public class PythonInt extends AbstractPythonObject {
     }
 
     public native int toJavaInt();
+
+    public static native PythonInt from(int value);
 }

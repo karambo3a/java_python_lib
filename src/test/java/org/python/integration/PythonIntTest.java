@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonIntTest {
@@ -22,7 +24,12 @@ public class PythonIntTest {
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
+    }
+
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
     }
 
     @Test
@@ -61,5 +68,17 @@ public class PythonIntTest {
         IPythonObject object = PythonCore.evaluate("1");
 
         assertEquals(object, object);
+    }
+
+    @Test
+    @DisplayName("Should return new PythonInt from Java int")
+    void testFromJavaInt() {
+        PythonInt pythonInt1 = PythonInt.from(5);
+        assertNotNull(pythonInt1);
+        assertEquals(5, pythonInt1.toJavaInt());
+
+        PythonInt pythonInt2 = PythonInt.from(1000);
+        assertNotNull(pythonInt2);
+        assertEquals(1000, pythonInt2.toJavaInt());
     }
 }

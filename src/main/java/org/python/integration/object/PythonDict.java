@@ -7,6 +7,7 @@ import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -58,6 +59,10 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         return this.pythonDict.asBool();
     }
 
+    @Override
+    public Optional<PythonStr> asStr() {
+        return this.pythonDict.asStr();
+    }
 
     @Override
     public Optional<PythonList> asList() {
@@ -178,6 +183,7 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         }
     }
 
+
     private final class EntrySet extends AbstractSet<Entry<IPythonObject, IPythonObject>> {
         @Override
         public int size() {
@@ -277,4 +283,6 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
             return this.key.hashCode() + this.getValue().hashCode();
         }
     }
+
+    public static native PythonDict from(Map<IPythonObject, IPythonObject> map);
 }
