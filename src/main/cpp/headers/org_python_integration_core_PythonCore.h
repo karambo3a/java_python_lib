@@ -23,6 +23,22 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonCore_free
   (JNIEnv *, jclass, jobject);
 
+/*
+ * Class:     org_python_integration_core_PythonCore
+ * Method:    importModule
+ * Signature: (Ljava/lang/String;)Lorg/python/integration/object/IPythonObject;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_importModule
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     org_python_integration_core_PythonCore
+ * Method:    fromImport
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;)Ljava/util/Map;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_fromImport
+  (JNIEnv *, jclass, jstring, jobjectArray);
+
 #ifdef __cplusplus
 }
 #endif
