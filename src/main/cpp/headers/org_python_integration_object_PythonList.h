@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_of
   (JNIEnv *, jclass, jobject);
 
+/*
+ * Class:     org_python_integration_object_PythonList
+ * Method:    from
+ * Signature: (Ljava/util/List;)Lorg/python/integration/object/PythonList;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_from
+  (JNIEnv *, jclass, jobject);
+
 #ifdef __cplusplus
 }
 #endif

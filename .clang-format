@@ -6,7 +6,7 @@ AllowShortFunctionsOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 BreakBeforeBraces: Custom
-ColumnLimit: 100
+ColumnLimit: 120
 EmptyLineAfterAccessModifier: Never
 IncludeBlocks: Merge
 IndentWidth: 4

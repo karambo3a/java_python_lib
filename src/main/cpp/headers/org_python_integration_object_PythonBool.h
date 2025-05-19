@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jboolean JNICALL Java_org_python_integration_object_PythonBool_toJavaBoolean
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_python_integration_object_PythonBool
+ * Method:    from
+ * Signature: (Z)Lorg/python/integration/object/PythonBool;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonBool_from
+  (JNIEnv *, jclass, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

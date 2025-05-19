@@ -15,6 +15,38 @@ extern "C" {
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_call
   (JNIEnv *, jobject, jobjectArray);
 
+/*
+ * Class:     org_python_integration_object_PythonCallable
+ * Method:    from
+ * Signature: (Ljava/util/function/Consumer;)Lorg/python/integration/object/PythonCallable;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_Consumer_2
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     org_python_integration_object_PythonCallable
+ * Method:    from
+ * Signature: (Ljava/util/function/Supplier;)Lorg/python/integration/object/PythonCallable;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_Supplier_2
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     org_python_integration_object_PythonCallable
+ * Method:    from
+ * Signature: (Ljava/util/function/Function;)Lorg/python/integration/object/PythonCallable;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_Function_2
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     org_python_integration_object_PythonCallable
+ * Method:    from
+ * Signature: (Ljava/util/function/BiFunction;)Lorg/python/integration/object/PythonCallable;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_BiFunction_2
+  (JNIEnv *, jclass, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,4 +1,3 @@
----
 Checks: '
     -bugprone-*,
     -modernize-*,
@@ -6,8 +5,9 @@ Checks: '
     -readability-*,
     -portability-*,
     -clang-analyzer-*,
-    misc-*'
+    misc-*,
+    -misc-include-cleaner'
 WarningsAsErrors: true
-HeaderFilterRegex: '.*\.(h|hpp|cpp)$'
+HeaderFilterRegex: '.*.(h|hpp|cpp)$'
 ExtraArgs:
     - "-std=c++20"

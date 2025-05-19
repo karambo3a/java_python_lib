@@ -1,5 +1,6 @@
 package org.python.integration;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonInt;
 import org.python.integration.object.PythonTuple;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -26,7 +28,12 @@ public class PythonTupleTest {
 
     @BeforeEach
     void initPythonSession() {
-        pythonSession = new PythonSession();
+        this.pythonSession = new PythonSession();
+    }
+
+    @AfterEach
+    void closePythonSession() {
+        this.pythonSession.close();
     }
 
     private PythonTuple initPythonTuple(String representation) {
@@ -106,5 +113,18 @@ public class PythonTupleTest {
         IPythonObject obj = PythonCore.evaluate("(1,2,3)");
 
         assertEquals(obj, obj);
+    }
+
+    @Test
+    @DisplayName("Should successfully convert List to PythonTuple")
+    void testFromSuccessful() {
+        IPythonObject first = PythonInt.from(1);
+        IPythonObject second = PythonInt.from(2);
+        var t = List.of(first, second);
+        PythonTuple tuple = PythonTuple.from(t);
+        assertNotNull(tuple);
+
+        assertEquals(first.representation(), tuple.getFirst().representation());
+        assertEquals(second.representation(), tuple.getLast().representation());
     }
 }

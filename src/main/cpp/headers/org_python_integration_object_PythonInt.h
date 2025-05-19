@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_org_python_integration_object_PythonInt_toJavaInt
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_python_integration_object_PythonInt
+ * Method:    from
+ * Signature: (I)Lorg/python/integration/object/PythonInt;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_from
+  (JNIEnv *, jclass, jint);
+
 #ifdef __cplusplus
 }
 #endif
