@@ -1,6 +1,6 @@
-#include "headers/org_python_integration_object_PythonStr.h"
-#include "headers/globals.h"
-#include "headers/python_object_factory.h"
+#include "../headers/org_python_integration_object_PythonStr.h"
+#include "../headers/globals.h"
+#include "../headers/java_object_factory.h"
 
 JNIEXPORT jstring JNICALL Java_org_python_integration_object_PythonStr_toJavaString(JNIEnv *env, jobject java_object) {
     PyObject *py_object = object_manager->get_object(env, java_object);

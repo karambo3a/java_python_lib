@@ -1,6 +1,6 @@
-#include "headers/py_java_function.h"
-#include "headers/globals.h"
-#include "headers/python_object_factory.h"
+#include "../headers/py_java_function.h"
+#include "../headers/globals.h"
+#include "../headers/java_object_factory.h"
 #include <iostream>
 #include <string>
 
