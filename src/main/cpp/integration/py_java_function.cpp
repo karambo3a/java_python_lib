@@ -5,6 +5,11 @@
 #include <string>
 
 PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs) {
+    // handles the case when the interpreter terminates
+    if (!object_manager) {
+        return Py_None;
+    }
+
     PyJavaFunctionObject *py_function = (PyJavaFunctionObject *)self;
     JNIEnv *env = nullptr;
 
@@ -29,7 +34,9 @@ PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs
 
     std::vector<jvalue> jargs(py_function->args_cnt);
     for (std::size_t i = 0; i < py_function->args_cnt; ++i) {
-        jargs[i].l = convert_to_python_object(env, PyTuple_GetItem(args, (Py_ssize_t)i));
+        auto var = PyTuple_GetItem(args, (Py_ssize_t)i);
+        Py_IncRef(var);
+        jargs[i].l = convert_to_python_object(env, var);
     }
 
     PyObject *py_result = nullptr;

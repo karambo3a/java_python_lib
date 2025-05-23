@@ -47,6 +47,13 @@ PyObject *PythonObjectManager::get_object(JNIEnv *env, std::size_t index, std::s
         object_manager = object_manager->get_prev_object_manager();
     }
 
+    if (object_manager->get_scope_id() != scope_id) {
+        jthrowable java_exception =
+            create_native_operation_exception(env, "Scope associated with Python object is closed");
+        env->Throw(java_exception);
+        return nullptr;
+    }
+
     PyObject *py_object = object_manager->get_object(index);
     if (!py_object) {
         jthrowable java_exception =
