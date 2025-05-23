@@ -9,4 +9,8 @@ std::size_t get_index(JNIEnv *env, jobject java_object);
 
 std::size_t get_scope(JNIEnv *env, jobject java_object);
 
+void initialize_scope();
+
+void finalize_scope();
+
 #endif  // GLOBALS_H

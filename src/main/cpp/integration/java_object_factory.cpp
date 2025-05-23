@@ -1,5 +1,5 @@
-#include "headers/python_object_factory.h"
-#include "headers/globals.h"
+#include "../headers/java_object_factory.h"
+#include "../headers/globals.h"
 #include <jni.h>
 
 jobject create_java_object(JNIEnv *env, jclass cls, std::size_t index, std::size_t scope) {
@@ -97,4 +97,16 @@ jthrowable create_native_operation_exception(JNIEnv *env, const char *message) {
     jthrowable java_exception =
         (jthrowable)env->NewObject(python_exception_class, constructor, env->NewStringUTF(message));
     return java_exception;
+}
+
+jobject create_empty_optional(JNIEnv *env) {
+    jclass optional_class = env->FindClass("java/util/Optional");
+    jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
+    return env->CallStaticObjectMethod(optional_class, empty_method);
+}
+
+jobject create_optional(JNIEnv *env, jobject java_py_object) {
+    jclass optional_class = env->FindClass("java/util/Optional");
+    jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
+    return env->CallStaticObjectMethod(optional_class, of_method, java_py_object);
 }

@@ -47,6 +47,14 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_BiFunction_2
   (JNIEnv *, jclass, jobject);
 
+/*
+ * Class:     org_python_integration_object_PythonCallable
+ * Method:    from
+ * Signature: (Lorg/python/integration/object/PythonCallable/Function3;)Lorg/python/integration/object/PythonCallable;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Lorg_python_integration_object_PythonCallable_00024Function3_2
+  (JNIEnv *, jclass, jobject);
+
 #ifdef __cplusplus
 }
 #endif

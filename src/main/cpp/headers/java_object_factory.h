@@ -1,5 +1,5 @@
-#ifndef PYTHON_OBJECT_FACTORY_H
-#define PYTHON_OBJECT_FACTORY_H
+#ifndef JAVA_OBJECT_FACTORY_H
+#define JAVA_OBJECT_FACTORY_H
 
 #include <Python.h>
 #include <jni.h>
@@ -30,4 +30,8 @@ jthrowable create_python_exception(JNIEnv *env);
 
 jthrowable create_native_operation_exception(JNIEnv *env, const char *message);
 
-#endif  // PYTHON_OBJECT_FACTORY_H
+jobject create_empty_optional(JNIEnv *env);
+
+jobject create_optional(JNIEnv *env, jobject java_py_object);
+
+#endif  // JAVA_OBJECT_FACTORY_H

@@ -1,7 +1,7 @@
-#include "headers/org_python_integration_object_PythonDict.h"
-#include "headers/globals.h"
-#include "headers/python_object_factory.h"
-#include "headers/python_object_manager.h"
+#include "../headers/org_python_integration_object_PythonDict.h"
+#include "../headers/globals.h"
+#include "../headers/java_object_factory.h"
+#include "../headers/python_object_manager.h"
 #include <Python.h>
 
 namespace {

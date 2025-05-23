@@ -1,6 +1,6 @@
-#include "headers/org_python_integration_object_PythonInt.h"
-#include "headers/globals.h"
-#include "headers/python_object_factory.h"
+#include "../headers/org_python_integration_object_PythonInt.h"
+#include "../headers/globals.h"
+#include "../headers/java_object_factory.h"
 
 JNIEXPORT jint JNICALL Java_org_python_integration_object_PythonInt_toJavaInt(JNIEnv *env, jobject py_int) {
     PyObject *py_obj = object_manager->get_object(env, py_int);

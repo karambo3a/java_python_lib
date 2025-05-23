@@ -1,6 +1,6 @@
-#include "headers/python_object_manager.h"
-#include "headers/globals.h"
-#include "headers/python_object_factory.h"
+#include "../headers/python_object_manager.h"
+#include "../headers/globals.h"
+#include "../headers/java_object_factory.h"
 #include <cstddef>
 #include <jni.h>
 #include <string>
@@ -47,6 +47,13 @@ PyObject *PythonObjectManager::get_object(JNIEnv *env, std::size_t index, std::s
         object_manager = object_manager->get_prev_object_manager();
     }
 
+    if (object_manager->get_scope_id() != scope_id) {
+        jthrowable java_exception =
+            create_native_operation_exception(env, "Scope associated with Python object is closed");
+        env->Throw(java_exception);
+        return nullptr;
+    }
+
     PyObject *py_object = object_manager->get_object(index);
     if (!py_object) {
         jthrowable java_exception =
@@ -74,15 +81,4 @@ void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
     }
     this->py_objects[index] = nullptr;
     Py_XDECREF(this->py_objects[index]);
-}
-
-void initialize_scope() {
-    object_manager = new PythonObjectManager(object_manager, object_manager->get_scope_id() + 1);
-}
-
-void finalize_scope() {
-    PythonObjectManager *curr_object_manager = object_manager;
-    object_manager = curr_object_manager->get_prev_object_manager();
-    delete curr_object_manager;
-    curr_object_manager = nullptr;
 }

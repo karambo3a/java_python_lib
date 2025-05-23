@@ -1,6 +1,6 @@
-#include "headers/org_python_integration_object_PythonBool.h"
-#include "headers/globals.h"
-#include "headers/python_object_factory.h"
+#include "../headers/org_python_integration_object_PythonBool.h"
+#include "../headers/globals.h"
+#include "../headers/java_object_factory.h"
 
 JNIEXPORT jboolean JNICALL
 Java_org_python_integration_object_PythonBool_toJavaBoolean(JNIEnv *env, jobject java_object) {

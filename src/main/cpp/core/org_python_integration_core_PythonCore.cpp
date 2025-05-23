@@ -1,6 +1,6 @@
-#include "headers/org_python_integration_core_PythonCore.h"
-#include "headers/globals.h"
-#include "headers/python_object_factory.h"
+#include "../headers/org_python_integration_core_PythonCore.h"
+#include "../headers/globals.h"
+#include "../headers/java_object_factory.h"
 #include <Python.h>
 #include <unordered_map>
 

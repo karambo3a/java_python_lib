@@ -41,8 +41,4 @@ private:
     std::size_t scope_id = 0;
 };
 
-void initialize_scope();
-
-void finalize_scope();
-
 #endif  // PYTHON_OBJECT_MANAGER_H
