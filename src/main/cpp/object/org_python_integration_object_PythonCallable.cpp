@@ -2,7 +2,6 @@
 #include "../headers/globals.h"
 #include "../headers/java_object_factory.h"
 #include "../headers/py_java_function.h"
-#include <iostream>
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_PythonCallable_call(JNIEnv *env, jobject java_object, jobjectArray jargs) {
@@ -119,4 +118,21 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     );
 
     return convert_to_python_callable(env, (PyObject *)py_java_bi_function);
+}
+
+
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Lorg_python_integration_object_PythonCallable_00024Function3_2(JNIEnv *env, jclass, jobject java_function3) {
+    if (!java_function3) {
+        jthrowable java_exception = create_native_operation_exception(env, "Java function3 cannot be null");
+        env->Throw(java_exception);
+        return nullptr;
+    }
+
+    jclass function3_class = env->FindClass("org/python/integration/object/PythonCallable$Function3");
+    PyJavaFunctionObject *py_java_function3 = create_py_java_function_object(
+        env, java_function3,
+        env->GetMethodID(function3_class, "apply", "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), 3
+    );
+
+    return convert_to_python_callable(env, (PyObject *)py_java_function3);
 }

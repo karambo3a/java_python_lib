@@ -193,6 +193,18 @@ public class PythonCallableTest {
     }
 
     @Test
+    @DisplayName("Should successfully convert Consumer to PythonCallable")
+    void testFromFunction2() {
+        PythonInt integer1 = PythonInt.from(1);
+        PythonInt integer2 = PythonInt.from(10);
+        PythonInt integer3 = PythonInt.from(100);
+
+        PythonCallable callable = PythonCallable.from((arg1,arg2, arg3) -> integer1);
+        IPythonObject res = callable.call(integer1, integer2, integer3);
+        assertEquals(integer1, res.asInt().get());
+    }
+
+    @Test
     @DisplayName("Should successfully convert Function (returns PythonObject created inside it) to PythonCallable")
     void testFromFunctionWithInnerScope() {
         PythonInt integer = PythonInt.from(1);
