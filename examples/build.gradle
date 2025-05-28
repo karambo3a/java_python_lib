@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'org.examples.Main'
+    applicationDefaultJvmArgs = [
+            "-Djava.library.path=${file("${rootProject.projectDir}/examples/build/libs").absolutePath}"
+    ]
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation project(':')
+}
+
+def nativeLibsDir = file("${rootProject.projectDir}/build/libs")
+def newNativeLibsDir = file("build/libs")
+
+tasks.register('prepareDirs') {
+    nativeLibsDir.mkdirs()
+    newNativeLibsDir.mkdirs()
+}
+
+tasks.register('copyNativeLib', Copy) {
+    dependsOn 'prepareDirs', ':jar'
+    from nativeLibsDir
+    into newNativeLibsDir
+    include '*.so'
+}
+
+test {
+    dependsOn ':buildNative', 'copyNativeLib'
+    useJUnitPlatform()
+    systemProperty "java.library.path", newNativeLibsDir.absolutePath
+}
+
+run {
+    dependsOn ':buildNative', 'copyNativeLib'
+    systemProperty "java.library.path", newNativeLibsDir.absolutePath
+}

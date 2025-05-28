@@ -1,2 +1,5 @@
 rootProject.name = 'java_python_lib'
 
+
+include ':examples'
+project(':examples').projectDir = file('examples')
