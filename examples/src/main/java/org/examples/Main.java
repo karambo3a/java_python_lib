@@ -1,5 +1,6 @@
 package org.examples;
 
+import org.examples.coverage.LineCoverageTracker;
 import org.examples.simple.SimpleExample;
 import org.python.integration.core.PythonSession;
 import org.python.integration.object.PythonObject;
@@ -17,7 +18,17 @@ public class Main {
         }
     }
 
+    private static void runLineCoverage() {
+        try (PythonSession pythonSession = new PythonSession()) {
+            String path = "src/main/resources/python_file.py";
+
+            LineCoverageTracker.runFilePath(path);
+            LineCoverageTracker.writeCoverageToFile();
+        }
+    }
+
     public static void main(String[] args) {
         runSimpleExamples();
+        runLineCoverage();
     }
 }
