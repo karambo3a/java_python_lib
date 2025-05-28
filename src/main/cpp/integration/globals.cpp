@@ -1,5 +1,5 @@
-#include "../headers/globals.h"
-#include "../headers/python_object_manager.h"
+#include "globals.h"
+#include "python_object_manager.h"
 #include <cstddef>
 #include <jni.h>
 

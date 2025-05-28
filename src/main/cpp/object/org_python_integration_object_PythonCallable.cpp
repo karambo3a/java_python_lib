@@ -1,7 +1,7 @@
-#include "../headers/org_python_integration_object_PythonCallable.h"
-#include "../headers/globals.h"
-#include "../headers/java_object_factory.h"
-#include "../headers/py_java_function.h"
+#include "org_python_integration_object_PythonCallable.h"
+#include "globals.h"
+#include "py_java_function.h"
+#include "traits.h"
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_PythonCallable_call(JNIEnv *env, jobject java_object, jobjectArray jargs) {
@@ -13,8 +13,7 @@ Java_org_python_integration_object_PythonCallable_call(JNIEnv *env, jobject java
     const jsize args_cnt = env->GetArrayLength(jargs);
     PyObject *args = PyTuple_New((Py_ssize_t)args_cnt);
     if (!args) {
-        jthrowable java_exception = create_native_operation_exception(env, "Failed to create tuple for arguments");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Failed to create tuple for arguments"));
         return nullptr;
     }
 
@@ -34,13 +33,12 @@ Java_org_python_integration_object_PythonCallable_call(JNIEnv *env, jobject java
     }
 
     if (!func_result) {
-        jthrowable java_exception = create_python_exception(env);
+        env->Throw(java_traits<python_exception>::create(env));
         Py_DecRef(args);
-        env->Throw(java_exception);
         return nullptr;
     }
 
-    return convert_to_python_object(env, func_result);
+    return java_traits<python_object>::convert(env, func_result);
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_Consumer_2(
@@ -49,8 +47,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     jobject java_consumer
 ) {
     if (!java_consumer) {
-        jthrowable java_exception = create_native_operation_exception(env, "Java consumer cannot be null");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Java consumer cannot be null"));
         return nullptr;
     }
 
@@ -59,7 +56,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
         env, java_consumer, env->GetMethodID(consumer_class, "accept", "(Ljava/lang/Object;)V"), 1, true
     );
 
-    return convert_to_python_callable(env, (PyObject *)py_java_consumer);
+    return java_traits<python_callable>::convert(env, (PyObject *)py_java_consumer);
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_Supplier_2(
@@ -68,8 +65,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     jobject java_supplier
 ) {
     if (!java_supplier) {
-        jthrowable java_exception = create_native_operation_exception(env, "Java supplier cannot be null");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Java supplier cannot be null"));
         return nullptr;
     }
 
@@ -78,7 +74,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
         env, java_supplier, env->GetMethodID(supplier_class, "get", "()Ljava/lang/Object;"), 0
     );
 
-    return convert_to_python_callable(env, (PyObject *)py_java_supplier);
+    return java_traits<python_callable>::convert(env, (PyObject *)py_java_supplier);
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_Function_2(
@@ -87,8 +83,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     jobject java_function
 ) {
     if (!java_function) {
-        jthrowable java_exception = create_native_operation_exception(env, "Java function cannot be null");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Java function cannot be null"));
         return nullptr;
     }
 
@@ -97,7 +92,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
         env, java_function, env->GetMethodID(function_class, "apply", "(Ljava/lang/Object;)Ljava/lang/Object;"), 1
     );
 
-    return convert_to_python_callable(env, (PyObject *)py_java_function);
+    return java_traits<python_callable>::convert(env, (PyObject *)py_java_function);
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Ljava_util_function_BiFunction_2(
@@ -106,8 +101,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     jobject java_bi_function
 ) {
     if (!java_bi_function) {
-        jthrowable java_exception = create_native_operation_exception(env, "Java bi function cannot be null");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Java bi function cannot be null"));
         return nullptr;
     }
 
@@ -117,22 +111,28 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
         env->GetMethodID(bi_function_class, "apply", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), 2
     );
 
-    return convert_to_python_callable(env, (PyObject *)py_java_bi_function);
+    return java_traits<python_callable>::convert(env, (PyObject *)py_java_bi_function);
 }
 
-
-JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from__Lorg_python_integration_object_PythonCallable_00024Function3_2(JNIEnv *env, jclass, jobject java_function3) {
+JNIEXPORT jobject JNICALL
+Java_org_python_integration_object_PythonCallable_from__Lorg_python_integration_object_PythonCallable_00024Function3_2(
+    JNIEnv *env,
+    jclass,
+    jobject java_function3
+) {
     if (!java_function3) {
-        jthrowable java_exception = create_native_operation_exception(env, "Java function3 cannot be null");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Java function3 cannot be null"));
         return nullptr;
     }
 
     jclass function3_class = env->FindClass("org/python/integration/object/PythonCallable$Function3");
     PyJavaFunctionObject *py_java_function3 = create_py_java_function_object(
         env, java_function3,
-        env->GetMethodID(function3_class, "apply", "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), 3
+        env->GetMethodID(
+            function3_class, "apply", "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
+        ),
+        3
     );
 
-    return convert_to_python_callable(env, (PyObject *)py_java_function3);
+    return java_traits<python_callable>::convert(env, (PyObject *)py_java_function3);
 }

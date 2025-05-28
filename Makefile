@@ -22,7 +22,6 @@ OBJS=build/cpp/org_python_integration_core_PythonSession.o \
 	 build/cpp/org_python_integration_object_PythonTuple.o\
 	 build/cpp/org_python_integration_object_PythonSet.o\
 	 build/cpp/python_object_manager.o \
-	 build/cpp/java_object_factory.o \
 	 build/cpp/py_java_function.o \
      build/cpp/globals.o
 

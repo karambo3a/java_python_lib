@@ -1,6 +1,6 @@
-#include "../headers/py_java_function.h"
-#include "../headers/globals.h"
-#include "../headers/java_object_factory.h"
+#include "py_java_function.h"
+#include "globals.h"
+#include "traits.h"
 #include <iostream>
 #include <string>
 
@@ -36,7 +36,7 @@ PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs
     for (std::size_t i = 0; i < py_function->args_cnt; ++i) {
         auto var = PyTuple_GetItem(args, (Py_ssize_t)i);
         Py_IncRef(var);
-        jargs[i].l = convert_to_python_object(env, var);
+        jargs[i].l = java_traits<python_object>::convert(env, PyTuple_GetItem(args, (Py_ssize_t)i), true);
     }
 
     PyObject *py_result = nullptr;
@@ -77,29 +77,25 @@ PyJavaFunctionObject *create_py_java_function_object(
     bool is_void
 ) {
     if (PyType_Ready(&PyJavaFunction_Type) < 0) {
-        jthrowable java_exception = create_python_exception(env);
-        env->Throw(java_exception);
+        env->Throw(java_traits<python_exception>::create(env));
         return nullptr;
     }
 
     PyJavaFunctionObject *py_java_function =
         (PyJavaFunctionObject *)(PyJavaFunction_Type.tp_new(&PyJavaFunction_Type, nullptr, nullptr));
     if (!py_java_function) {
-        jthrowable java_exception = create_python_exception(env);
-        env->Throw(java_exception);
+        env->Throw(java_traits<python_exception>::create(env));
         return nullptr;
     }
 
     if (env->GetJavaVM(&(py_java_function->java_vm)) != JNI_OK) {
-        jthrowable java_exception = create_native_operation_exception(env, "Failed to get Java VM");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Failed to get Java VM"));
         Py_DecRef((PyObject *)py_java_function);
         return nullptr;
     }
     py_java_function->java_function = env->NewGlobalRef(java_function);
     if (!py_java_function->java_function) {
-        jthrowable java_exception = create_native_operation_exception(env, "Failed to create global reference");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Failed to create global reference"));
         Py_DecRef((PyObject *)py_java_function);
         return nullptr;
     }

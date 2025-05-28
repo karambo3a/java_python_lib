@@ -1,6 +1,6 @@
-#include "../headers/org_python_integration_object_AbstractPythonObject.h"
-#include "../headers/globals.h"
-#include "../headers/java_object_factory.h"
+#include "org_python_integration_object_AbstractPythonObject.h"
+#include "globals.h"
+#include "traits.h"
 
 JNIEXPORT jboolean JNICALL
 Java_org_python_integration_object_AbstractPythonObject_equals(JNIEnv *env, jobject this_object, jobject other_object) {
@@ -15,8 +15,7 @@ Java_org_python_integration_object_AbstractPythonObject_equals(JNIEnv *env, jobj
     }
     const int result = PyObject_RichCompareBool(py_this, py_other, Py_EQ);
     if (result == -1) {
-        jthrowable java_exception = create_python_exception(env);
-        env->Throw(java_exception);
+        env->Throw(java_traits<python_exception>::create(env));
         return JNI_FALSE;
     } else if (result == 0) {
         return JNI_FALSE;
@@ -32,8 +31,7 @@ Java_org_python_integration_object_AbstractPythonObject_hashCode(JNIEnv *env, jo
     }
     const Py_hash_t hash = PyObject_Hash(py_object);
     if (hash == -1 && PyErr_Occurred()) {
-        jthrowable java_exception = create_python_exception(env);
-        env->Throw(java_exception);
+        env->Throw(java_traits<python_exception>::create(env));
     }
     return (jint)hash;
 }
@@ -46,15 +44,13 @@ Java_org_python_integration_object_AbstractPythonObject_toString(JNIEnv *env, jo
     }
     PyObject *py_str = PyObject_Str(py_object);
     if (!py_str) {
-        jthrowable java_exception = create_python_exception(env);
-        env->Throw(java_exception);
+        env->Throw(java_traits<python_exception>::create(env));
     }
     const char *repr = PyUnicode_AsUTF8(py_str);
     jstring java_string = nullptr;
     if (!repr) {
-        jthrowable java_exception = create_python_exception(env);
+        env->Throw(java_traits<python_exception>::create(env));
         Py_DecRef(py_object);
-        env->Throw(java_exception);
     } else {
         java_string = env->NewStringUTF(repr);
     }
@@ -78,14 +74,14 @@ Java_org_python_integration_object_AbstractPythonObject_keepAlive(JNIEnv *env, j
 
     PythonObjectManager *prev_object_manager = curr_object_manager->get_prev_object_manager();
     if (!prev_object_manager) {
-        jthrowable java_exception =
-            create_native_operation_exception(env, "Cannot move object to higher scope: already in root scope");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(
+            env, "Cannot move object to higher scope: already in root scope"
+        ));
         return nullptr;
     }
 
     const std::size_t index = prev_object_manager->add_object(py_object, true);
-    return create_python_object(env, index, (jlong)prev_object_manager->get_scope_id());
+    return java_traits<python_object>::create(env, index, (jlong)prev_object_manager->get_scope_id());
 }
 
 JNIEXPORT jstring JNICALL
@@ -96,17 +92,15 @@ Java_org_python_integration_object_AbstractPythonObject_representation(JNIEnv *e
     }
     PyObject *py_repr = PyObject_Repr(py_object);
     if (!py_repr) {
-        jthrowable java_exception = create_python_exception(env);
-        env->Throw(java_exception);
+        env->Throw(java_traits<python_exception>::create(env));
         return nullptr;
     }
 
     // TODO: change PyUnicode_AsUTF8 to PyUnicode_AsUTF8AndSize
     const char *repr = PyUnicode_AsUTF8(py_repr);
     if (!repr) {
-        jthrowable java_exception = create_python_exception(env);
+        env->Throw(java_traits<python_exception>::create(env));
         Py_DecRef(py_repr);
-        env->Throw(java_exception);
         return nullptr;
     }
     jstring java_string = env->NewStringUTF(repr);
@@ -117,8 +111,7 @@ Java_org_python_integration_object_AbstractPythonObject_representation(JNIEnv *e
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_getAttribute(JNIEnv *env, jobject java_object, jstring name) {
     if (!name) {
-        jthrowable java_exception = create_native_operation_exception(env, "Attribute name cannot be null");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Attribute name cannot be null"));
         return nullptr;
     }
 
@@ -129,9 +122,8 @@ Java_org_python_integration_object_AbstractPythonObject_getAttribute(JNIEnv *env
 
     const char *attr_name = env->GetStringUTFChars(name, nullptr);
     if (!attr_name) {
-        jthrowable java_exception =
-            create_native_operation_exception(env, "Failed to convert Java string to const char*");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Failed to convert Java string to const char*")
+        );
         return nullptr;
     }
 
@@ -139,21 +131,31 @@ Java_org_python_integration_object_AbstractPythonObject_getAttribute(JNIEnv *env
     env->ReleaseStringUTFChars(name, attr_name);
 
     if (!attr_object) {
-        jthrowable java_exception = create_python_exception(env);
-        env->Throw(java_exception);
+        env->Throw(java_traits<python_exception>::create(env));
         return nullptr;
     }
 
-    return convert_to_python_object(env, attr_object);
+    return java_traits<python_object>::convert(env, attr_object);
 }
 
 namespace {
-jobject AbstractPythonObject_asT(
-    JNIEnv *env,
-    jobject java_object,
-    int (*is_type)(PyObject *),
-    jobject (*create_object)(JNIEnv *, std::size_t, std::size_t)
-) {
+class optional {
+public:
+    static jobject empty(JNIEnv *env) {
+        jclass optional_class = env->FindClass("java/util/Optional");
+        jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
+        return env->CallStaticObjectMethod(optional_class, empty_method);
+    }
+
+    static jobject of(JNIEnv *env, jobject java_py_object) {
+        jclass optional_class = env->FindClass("java/util/Optional");
+        jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
+        return env->CallStaticObjectMethod(optional_class, of_method, java_py_object);
+    }
+};
+
+template <typename T>
+jobject AbstractPythonObject_asT(JNIEnv *env, jobject java_object) {
     const std::size_t index = get_index(env, java_object);
     const std::size_t scope_id = get_scope(env, java_object);
     PyObject *py_object = object_manager->get_object(env, index, scope_id);
@@ -161,67 +163,51 @@ jobject AbstractPythonObject_asT(
         return nullptr;
     }
 
-    if (!is_type(py_object)) {
-        return create_empty_optional(env);
+    if (!python_traits<T>::check(py_object)) {
+        return ::optional::empty(env);
     }
 
-    jobject java_py_object = create_object(env, index, scope_id);
-    return create_optional(env, java_py_object);
+    jobject java_py_object = java_traits<T>::create(env, index, scope_id);
+    return ::optional::of(env, java_py_object);
 }
 }  // namespace
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asCallable(JNIEnv *env, jobject java_object) {
-    return AbstractPythonObject_asT(
-        env, java_object, [](PyObject *py_object) { return PyCallable_Check(py_object); }, create_python_callable
-    );
+    return AbstractPythonObject_asT<python_callable>(env, java_object);
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asInt(JNIEnv *env, jobject java_object) {
-    return AbstractPythonObject_asT(
-        env, java_object, [](PyObject *py_object) { return PyLong_CheckExact(py_object); }, create_python_int
-    );
+    return AbstractPythonObject_asT<python_int>(env, java_object);
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asBool(JNIEnv *env, jobject java_object) {
-    return AbstractPythonObject_asT(
-        env, java_object, [](PyObject *py_object) { return PyBool_Check(py_object); }, create_python_bool
-    );
+    return AbstractPythonObject_asT<python_bool>(env, java_object);
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asStr(JNIEnv *env, jobject java_object) {
-    return AbstractPythonObject_asT(
-        env, java_object, [](PyObject *py_object) { return PyUnicode_CheckExact(py_object); }, create_python_str
-    );
+    return AbstractPythonObject_asT<python_str>(env, java_object);
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asList(JNIEnv *env, jobject java_object) {
-    return AbstractPythonObject_asT(
-        env, java_object, [](PyObject *py_object) { return PyList_CheckExact(py_object); }, create_python_list
-    );
+    return AbstractPythonObject_asT<python_list>(env, java_object);
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asDict(JNIEnv *env, jobject java_object) {
-    return AbstractPythonObject_asT(
-        env, java_object, [](PyObject *py_object) { return PyDict_CheckExact(py_object); }, create_python_dict
-    );
+    return AbstractPythonObject_asT<python_dict>(env, java_object);
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asTuple(JNIEnv *env, jobject java_object) {
-    return AbstractPythonObject_asT(
-        env, java_object, [](PyObject *py_object) { return PyTuple_CheckExact(py_object); }, create_python_tuple
-    );
+    return AbstractPythonObject_asT<python_tuple>(env, java_object);
 }
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asSet(JNIEnv *env, jobject java_object) {
-    return AbstractPythonObject_asT(
-        env, java_object, [](PyObject *py_object) { return PySet_CheckExact(py_object); }, create_python_set
-    );
+    return AbstractPythonObject_asT<python_set>(env, java_object);
 }

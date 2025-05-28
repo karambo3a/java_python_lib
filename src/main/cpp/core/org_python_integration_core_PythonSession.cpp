@@ -1,6 +1,6 @@
-#include "../headers/org_python_integration_core_PythonSession.h"
-#include "../headers/globals.h"
-#include "../headers/python_object_manager.h"
+#include "org_python_integration_core_PythonSession.h"
+#include "globals.h"
+#include "python_object_manager.h"
 #include <Python.h>
 
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonSession_initializePy(JNIEnv *, jobject) {
