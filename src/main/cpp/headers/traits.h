@@ -6,6 +6,7 @@
 struct python_object;
 struct python_callable;
 struct python_int;
+struct python_float;
 struct python_bool;
 struct python_str;
 struct python_list;
@@ -30,6 +31,13 @@ template <>
 struct python_traits<python_int> {
     static bool check(PyObject *py_object) {
         return PyLong_CheckExact(py_object);
+    }
+};
+
+template <>
+struct python_traits<python_float> {
+    static bool check(PyObject *py_object) {
+        return PyFloat_CheckExact(py_object);
     }
 };
 
@@ -128,6 +136,18 @@ struct java_traits<python_int> {
 
     static jobject convert(JNIEnv *env, PyObject *py_int, bool is_borrowed = false) {
         return convert_toT<python_int>(env, py_int, is_borrowed);
+    }
+};
+
+template <>
+struct java_traits<python_float> {
+    static jobject create(JNIEnv *env, std::size_t index, std::size_t scope_id) {
+        jclass python_int_class = env->FindClass("org/python/integration/object/PythonFloat");
+        return create_java_object(env, python_int_class, index, scope_id);
+    }
+
+    static jobject convert(JNIEnv *env, PyObject *py_int, bool is_borrowed = false) {
+        return convert_toT<python_float>(env, py_int, is_borrowed);
     }
 };
 

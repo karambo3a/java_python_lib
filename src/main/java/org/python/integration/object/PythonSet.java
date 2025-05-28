@@ -20,12 +20,10 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
         this.pythonSet = new PythonObject(index, scopeId);
     }
 
-
     @Override
     public PythonSet keepAlive() {
         return this.pythonSet.keepAlive().asSet().get();
     }
-
 
     @Override
     public String representation() {
@@ -45,6 +43,11 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
     @Override
     public Optional<PythonInt> asInt() {
         return this.pythonSet.asInt();
+    }
+
+    @Override
+    public Optional<PythonFloat> asFloat() {
+        return this.pythonSet.asFloat();
     }
 
     @Override
@@ -71,7 +74,6 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
     public Optional<PythonTuple> asTuple() {
         return this.pythonSet.asTuple();
     }
-
 
     @Override
     public Optional<PythonSet> asSet() {

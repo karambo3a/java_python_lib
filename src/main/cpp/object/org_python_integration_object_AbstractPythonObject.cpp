@@ -182,6 +182,10 @@ Java_org_python_integration_object_AbstractPythonObject_asInt(JNIEnv *env, jobje
     return AbstractPythonObject_asT<python_int>(env, java_object);
 }
 
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asFloat(JNIEnv *env, jobject java_object) {
+    return AbstractPythonObject_asT<python_float>(env, java_object);
+}
+
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_asBool(JNIEnv *env, jobject java_object) {
     return AbstractPythonObject_asT<python_bool>(env, java_object);

@@ -19,12 +19,10 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
         this.pythonList = new PythonObject(index, scopeId);
     }
 
-
     @Override
     public PythonList keepAlive() {
         return this.pythonList.keepAlive().asList().get();
     }
-
 
     @Override
     public String representation() {
@@ -44,6 +42,11 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
     @Override
     public Optional<PythonInt> asInt() {
         return this.pythonList.asInt();
+    }
+
+    @Override
+    public Optional<PythonFloat> asFloat() {
+        return this.pythonList.asFloat();
     }
 
     @Override

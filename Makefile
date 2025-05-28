@@ -15,6 +15,7 @@ OBJS=build/cpp/org_python_integration_core_PythonSession.o \
 	 build/cpp/org_python_integration_object_AbstractPythonObject.o \
 	 build/cpp/org_python_integration_object_PythonCallable.o\
 	 build/cpp/org_python_integration_object_PythonInt.o\
+	 build/cpp/org_python_integration_object_PythonFloat.o\
 	 build/cpp/org_python_integration_object_PythonBool.o\
 	 build/cpp/org_python_integration_object_PythonStr.o\
 	 build/cpp/org_python_integration_object_PythonList.o\
