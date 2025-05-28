@@ -12,6 +12,7 @@ import org.python.integration.core.PythonSession;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonInt;
 
+import java.math.BigInteger;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -34,12 +35,24 @@ public class PythonIntTest {
 
     @Test
     @DisplayName("Should return correct Java int from PythonInt")
-    void testToJavaIntSuccessful() {
+    void testToJavaNumberSuccessful() {
         IPythonObject integer = PythonCore.evaluate("1");
 
         Optional<PythonInt> pythonInt = integer.asInt();
         assertTrue(pythonInt.isPresent());
-        assertEquals(1, pythonInt.get().toJavaInt());
+        assertEquals(1, pythonInt.get().toJavaNumber().intValueExact());
+    }
+
+    @Test
+    @DisplayName("Should return correct Java BigInteger from PythonInt")
+    void testToJavaNumberWithBigIntegerSuccessful() {
+        BigInteger bigInteger = new BigInteger(Long.valueOf(Long.MAX_VALUE).toString());
+        bigInteger = bigInteger.add(bigInteger);
+        IPythonObject integer = PythonCore.evaluate(bigInteger.toString());
+
+        Optional<PythonInt> pythonInt = integer.asInt();
+        assertTrue(pythonInt.isPresent());
+        assertEquals(bigInteger, pythonInt.get().toJavaNumber());
     }
 
     @ParameterizedTest
@@ -75,10 +88,10 @@ public class PythonIntTest {
     void testFromJavaInt() {
         PythonInt pythonInt1 = PythonInt.from(5);
         assertNotNull(pythonInt1);
-        assertEquals(5, pythonInt1.toJavaInt());
+        assertEquals(5, pythonInt1.toJavaNumber().intValueExact());
 
         PythonInt pythonInt2 = PythonInt.from(1000);
         assertNotNull(pythonInt2);
-        assertEquals(1000, pythonInt2.toJavaInt());
+        assertEquals(1000, pythonInt2.toJavaNumber().intValueExact());
     }
 }

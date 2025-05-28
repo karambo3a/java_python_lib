@@ -160,7 +160,7 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
             IPythonObject lenAttr = this.pythonSet.getAttribute("__len__");
             PythonCallable lenAttrCallable = lenAttr.asCallable().orElseThrow(() -> new IllegalStateException("__len__ in not callable"));
             PythonInt lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("result of __len__ is not int"));
-            return lenInt.toJavaInt();
+            return lenInt.toJavaNumber().intValueExact();
         }
     }
 

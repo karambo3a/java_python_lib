@@ -73,8 +73,8 @@ PyObject *PythonObjectManager::get_object(JNIEnv *env, jobject java_object) {
 void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
     const std::size_t index = get_index(env, java_object);
     if (!this->py_objects[index]) {
-        const char *message = ("Double object free on index=" + std::to_string(index)).c_str();
-        env->Throw(java_traits<native_operation_exception>::create(env, message));
+        const std::string message = "Double object free on index=" + std::to_string(index);
+        env->Throw(java_traits<native_operation_exception>::create(env, message.c_str()));
         return;
     }
     this->py_objects[index] = nullptr;

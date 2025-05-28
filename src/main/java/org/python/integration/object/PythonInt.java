@@ -1,6 +1,8 @@
 package org.python.integration.object;
 
 
+import java.math.BigInteger;
+
 public class PythonInt extends AbstractPythonObject {
     private PythonInt(long index, long scopeId) {
         super(index, scopeId);
@@ -11,7 +13,7 @@ public class PythonInt extends AbstractPythonObject {
         return super.keepAlive().asInt().get();
     }
 
-    public native int toJavaInt();
+    public native BigInteger toJavaNumber();
 
     public static native PythonInt from(int value);
 }

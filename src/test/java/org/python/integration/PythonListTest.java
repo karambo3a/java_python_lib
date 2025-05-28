@@ -61,7 +61,7 @@ public class PythonListTest {
         Optional<PythonInt> resultOptional = result.asInt();
         assertNotNull(resultOptional);
         assertTrue(resultOptional.isPresent());
-        assertEquals(2, resultOptional.get().toJavaInt());
+        assertEquals(2, resultOptional.get().toJavaNumber().intValueExact());
     }
 
 
@@ -75,7 +75,7 @@ public class PythonListTest {
         assertNotNull(result);
         Optional<PythonInt> resultOptional = result.asInt();
         assertTrue(resultOptional.isPresent());
-        assertEquals(3, resultOptional.get().toJavaInt());
+        assertEquals(3, resultOptional.get().toJavaNumber().intValueExact());
 
         assertEquals("[1, 2, 1]", list.representation());
     }

@@ -159,7 +159,7 @@ public class PythonCallableTest {
         PythonCallable callable = PythonCallable.from((arg) -> integer);
         Optional<PythonInt> res = callable.call(integer).asInt();
         assertTrue(res.isPresent());
-        assertEquals(1, res.get().toJavaInt());
+        assertEquals(1, res.get().toJavaNumber().intValueExact());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class PythonCallableTest {
         PythonCallable callable = PythonCallable.from(() -> integer);
         Optional<PythonInt> res = callable.call().asInt();
         assertTrue(res.isPresent());
-        assertEquals(1, res.get().toJavaInt());
+        assertEquals(1, res.get().toJavaNumber().intValueExact());
     }
 
     @Test
@@ -179,7 +179,7 @@ public class PythonCallableTest {
         PythonCallable callable = PythonCallable.from((arg1, arg2) -> integer);
         Optional<PythonInt> res = callable.call(integer, integer).asInt();
         assertTrue(res.isPresent());
-        assertEquals(1, res.get().toJavaInt());
+        assertEquals(1, res.get().toJavaNumber().intValueExact());
     }
 
     @Test
@@ -212,7 +212,7 @@ public class PythonCallableTest {
             return PythonInt.from(2);
         });
         Optional<PythonInt> res = callable.call(integer).asInt();
-        assertEquals(2, res.get().toJavaInt());
+        assertEquals(2, res.get().toJavaNumber().intValueExact());
     }
 
     @Test

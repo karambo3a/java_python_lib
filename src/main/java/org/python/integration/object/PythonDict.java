@@ -117,7 +117,7 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
             IPythonObject lenAttr = this.pythonDict.getAttribute("__len__");
             PythonCallable lenAttrCallable = lenAttr.asCallable().orElseThrow(() -> new IllegalStateException("__len__ is not callable"));
             PythonInt lenInt = lenAttrCallable.call().asInt().orElseThrow(() -> new IllegalStateException("__len__ result must be int"));
-            return lenInt.toJavaInt();
+            return lenInt.toJavaNumber().intValueExact();
         }
     }
 

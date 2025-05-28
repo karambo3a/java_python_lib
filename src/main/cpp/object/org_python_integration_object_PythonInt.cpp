@@ -2,20 +2,38 @@
 #include "globals.h"
 #include "traits.h"
 
-JNIEXPORT jint JNICALL Java_org_python_integration_object_PythonInt_toJavaInt(JNIEnv *env, jobject py_int) {
+namespace {
+class big_integer {
+public:
+    static jobject of(JNIEnv *env, const char *string_int) {
+        jclass big_integer_class = env->FindClass("java/math/BigInteger");
+        jmethodID constructor = env->GetMethodID(big_integer_class, "<init>", "(Ljava/lang/String;)V");
+        jstring java_string_int = env->NewStringUTF(string_int);
+        return env->NewObject(big_integer_class, constructor, java_string_int);
+    }
+};
+}  // namespace
+
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_toJavaNumber(JNIEnv *env, jobject py_int) {
     PyObject *py_obj = object_manager->get_object(env, py_int);
     if (!py_obj) {
-        return -1;
+        return nullptr;
     }
 
-    const jint java_int = (jint)PyLong_AsLong(py_obj);
-
-    if (java_int == -1 && PyErr_Occurred()) {
+    PyObject *py_str_int = PyObject_Str(py_obj);
+    if (!py_str_int) {
         env->Throw(java_traits<python_exception>::create(env));
-        return -1;
+        return nullptr;
     }
 
-    return java_int;
+    const char *string_int = PyUnicode_AsUTF8(py_str_int);
+    if (!string_int) {
+        env->Throw(java_traits<python_exception>::create(env));
+        Py_DecRef(py_str_int);
+        return nullptr;
+    }
+    Py_DecRef(py_str_int);
+    return ::big_integer::of(env, string_int);
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_from(JNIEnv *env, jclass, jint java_int) {

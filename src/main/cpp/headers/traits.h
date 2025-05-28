@@ -1,7 +1,6 @@
 #ifndef TRAITS_H
 #define TRAITS_H
 
-#include "traits.h"
 #include <jni.h>
 
 struct python_object;

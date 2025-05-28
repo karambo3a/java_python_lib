@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     org_python_integration_object_PythonInt
- * Method:    toJavaInt
- * Signature: ()I
+ * Method:    toJavaNumber
+ * Signature: ()Ljava/math/BigInteger;
  */
-JNIEXPORT jint JNICALL Java_org_python_integration_object_PythonInt_toJavaInt
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_toJavaNumber
   (JNIEnv *, jobject);
 
 /*
