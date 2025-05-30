@@ -1,6 +1,8 @@
 #include "org_python_integration_object_PythonInt.h"
 #include "globals.h"
 #include "traits.h"
+#include <jni.h>
+#include <optional>
 
 namespace {
 jobject big_integer_of(JNIEnv *env, const char *string_int) {
@@ -12,6 +14,8 @@ jobject big_integer_of(JNIEnv *env, const char *string_int) {
 }  // namespace
 
 JNIEXPORT jlong JNICALL Java_org_python_integration_object_PythonInt_toJavaLong(JNIEnv *env, jobject py_int) {
+    static_assert(sizeof(long long) == sizeof(jlong), "size of long long != size of jlong");
+
     PyObject *py_object = object_manager->get_object(env, py_int);
     if (!py_object) {
         return -1;
