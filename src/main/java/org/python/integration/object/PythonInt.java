@@ -13,7 +13,9 @@ public class PythonInt extends AbstractPythonObject {
         return super.keepAlive().asInt().get();
     }
 
-    public native BigInteger toJavaNumber();
+    public native long toJavaLong();
 
-    public static native PythonInt from(int value);
+    public native BigInteger toJavaBigInteger();
+
+    public static native PythonInt from(long value);
 }

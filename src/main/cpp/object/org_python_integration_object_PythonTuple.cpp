@@ -8,25 +8,25 @@ namespace {
 class tuple {
 public:
     tuple(JNIEnv *env, jobject java_tuple) : env(env), java_tuple(java_tuple) {
+        jclass cls = env->FindClass("java/util/List");
+        size_method = env->GetMethodID(cls, "size", "()I");
+        get_method = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
     }
 
     std::size_t size() {
-        jclass cls = env->FindClass("java/util/List");
-        jmethodID size_method = env->GetMethodID(cls, "size", "()I");
         return env->CallIntMethod(java_tuple, size_method);
     }
 
     jobject operator[](std::size_t index) {
-        jclass cls = env->FindClass("java/util/List");
-        jmethodID get_method = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
         return env->CallObjectMethod(java_tuple, get_method, index);
     }
 
 private:
     JNIEnv *env;
     jobject java_tuple;
+    jmethodID size_method;
+    jmethodID get_method;
 };
-
 }  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonTuple_from(JNIEnv *env, jclass, jobject java_tuple) {

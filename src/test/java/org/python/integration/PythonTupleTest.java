@@ -66,7 +66,7 @@ public class PythonTupleTest {
 
         Optional<PythonInt> resultOptional = result.asInt();
         assertTrue(resultOptional.isPresent());
-        assertEquals(2, resultOptional.get().toJavaNumber().intValueExact());
+        assertEquals(2, resultOptional.get().toJavaLong());
     }
 
     @Test

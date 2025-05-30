@@ -122,8 +122,7 @@ Java_org_python_integration_object_AbstractPythonObject_getAttribute(JNIEnv *env
 
     const char *attr_name = env->GetStringUTFChars(name, nullptr);
     if (!attr_name) {
-        env->Throw(java_traits<native_operation_exception>::create(env, "Failed to convert Java string to const char*")
-        );
+        env->Throw(java_traits<native_operation_exception>::create(env, "Failed to convert JavaString to const char*"));
         return nullptr;
     }
 
@@ -139,20 +138,17 @@ Java_org_python_integration_object_AbstractPythonObject_getAttribute(JNIEnv *env
 }
 
 namespace {
-class optional {
-public:
-    static jobject empty(JNIEnv *env) {
-        jclass optional_class = env->FindClass("java/util/Optional");
-        jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
-        return env->CallStaticObjectMethod(optional_class, empty_method);
-    }
+static jobject optional_empty(JNIEnv *env) {
+    jclass optional_class = env->FindClass("java/util/Optional");
+    jmethodID empty_method = env->GetStaticMethodID(optional_class, "empty", "()Ljava/util/Optional;");
+    return env->CallStaticObjectMethod(optional_class, empty_method);
+}
 
-    static jobject of(JNIEnv *env, jobject java_py_object) {
-        jclass optional_class = env->FindClass("java/util/Optional");
-        jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
-        return env->CallStaticObjectMethod(optional_class, of_method, java_py_object);
-    }
-};
+static jobject optional_of(JNIEnv *env, jobject java_py_object) {
+    jclass optional_class = env->FindClass("java/util/Optional");
+    jmethodID of_method = env->GetStaticMethodID(optional_class, "of", "(Ljava/lang/Object;)Ljava/util/Optional;");
+    return env->CallStaticObjectMethod(optional_class, of_method, java_py_object);
+}
 
 template <typename T>
 jobject AbstractPythonObject_asT(JNIEnv *env, jobject java_object) {
@@ -164,11 +160,11 @@ jobject AbstractPythonObject_asT(JNIEnv *env, jobject java_object) {
     }
 
     if (!python_traits<T>::check(py_object)) {
-        return ::optional::empty(env);
+        return optional_empty(env);
     }
 
     jobject java_py_object = java_traits<T>::create(env, index, scope_id);
-    return ::optional::of(env, java_py_object);
+    return optional_of(env, java_py_object);
 }
 }  // namespace
 
@@ -182,7 +178,8 @@ Java_org_python_integration_object_AbstractPythonObject_asInt(JNIEnv *env, jobje
     return AbstractPythonObject_asT<python_int>(env, java_object);
 }
 
-JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asFloat(JNIEnv *env, jobject java_object) {
+JNIEXPORT jobject JNICALL
+Java_org_python_integration_object_AbstractPythonObject_asFloat(JNIEnv *env, jobject java_object) {
     return AbstractPythonObject_asT<python_float>(env, java_object);
 }
 

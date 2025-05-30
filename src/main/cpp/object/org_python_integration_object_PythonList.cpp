@@ -8,23 +8,24 @@ namespace {
 class list {
 public:
     list(JNIEnv *env, jobject java_list) : env(env), java_list(java_list) {
+        jclass cls = env->FindClass("java/util/List");
+        size_method = env->GetMethodID(cls, "size", "()I");
+        get_method = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
     }
 
     std::size_t size() {
-        jclass cls = env->FindClass("java/util/List");
-        jmethodID size_method = env->GetMethodID(cls, "size", "()I");
         return env->CallIntMethod(java_list, size_method);
     }
 
     jobject operator[](std::size_t index) {
-        jclass cls = env->FindClass("java/util/List");
-        jmethodID get_method = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
         return env->CallObjectMethod(java_list, get_method, index);
     }
 
 private:
     JNIEnv *env;
     jobject java_list;
+    jmethodID size_method;
+    jmethodID get_method;
 };
 
 }  // namespace

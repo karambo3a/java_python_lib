@@ -8,28 +8,33 @@ namespace {
 class entry {
 public:
     entry(JNIEnv *env, jobject java_entry) : env(env), java_entry(java_entry) {
+        jclass cls = env->FindClass("java/util/Map$Entry");
+        get_key_method = env->GetMethodID(cls, "getKey", "()Ljava/lang/Object;");
+        get_value_method = env->GetMethodID(cls, "getValue", "()Ljava/lang/Object;");
     }
 
     jobject key() {
-        jclass cls = env->FindClass("java/util/Map$Entry");
-        jmethodID get_key_method = env->GetMethodID(cls, "getKey", "()Ljava/lang/Object;");
         return env->CallObjectMethod(java_entry, get_key_method);
     }
 
     jobject value() {
-        jclass cls = env->FindClass("java/util/Map$Entry");
-        jmethodID get_value_method = env->GetMethodID(cls, "getValue", "()Ljava/lang/Object;");
         return env->CallObjectMethod(java_entry, get_value_method);
     }
 
 private:
     JNIEnv *env;
     jobject java_entry;
+    jmethodID get_key_method;
+    jmethodID get_value_method;
 };
 
 class iterator {
 public:
     iterator(JNIEnv *env, jobject java_iterator) : env(env), java_iterator(java_iterator), current_entry(env, nullptr) {
+        jclass cls = env->FindClass("java/util/Iterator");
+        has_next_method = env->GetMethodID(cls, "hasNext", "()Z");
+        next_method = env->GetMethodID(cls, "next", "()Ljava/lang/Object;");
+
         if (this->java_iterator && this->has_next()) {
             this->current_entry = this->next();
         }
@@ -57,16 +62,14 @@ private:
     JNIEnv *env;
     jobject java_iterator;
     ::entry current_entry;
+    jmethodID has_next_method;
+    jmethodID next_method;
 
     bool has_next() {
-        jclass cls = env->FindClass("java/util/Iterator");
-        jmethodID has_next_method = env->GetMethodID(cls, "hasNext", "()Z");
         return (bool)env->CallBooleanMethod(java_iterator, has_next_method);
     }
 
     ::entry next() {
-        jclass cls = env->FindClass("java/util/Iterator");
-        jmethodID next_method = env->GetMethodID(cls, "next", "()Ljava/lang/Object;");
         return ::entry(env, env->CallObjectMethod(java_iterator, next_method));
     }
 };
@@ -74,6 +77,8 @@ private:
 class entry_set {
 public:
     entry_set(JNIEnv *env, jobject java_entry_set) : env(env), java_entry_set(java_entry_set) {
+        jclass cls = env->FindClass("java/util/Set");
+        iterator_method = env->GetMethodID(cls, "iterator", "()Ljava/util/Iterator;");
     }
 
     ::iterator begin() {
@@ -87,28 +92,28 @@ public:
 private:
     JNIEnv *env;
     jobject java_entry_set;
+    jmethodID iterator_method;
 
     ::iterator iterator() {
-        jclass cls = env->FindClass("java/util/Set");
-        jmethodID iterator = env->GetMethodID(cls, "iterator", "()Ljava/util/Iterator;");
-        return ::iterator(env, env->CallObjectMethod(java_entry_set, iterator));
+        return ::iterator(env, env->CallObjectMethod(java_entry_set, iterator_method));
     }
 };
 
 class map {
 public:
     map(JNIEnv *env, jobject java_map) : env(env), java_map(java_map) {
+        jclass cls = env->FindClass("java/util/Map");
+        entry_set_method = env->GetMethodID(cls, "entrySet", "()Ljava/util/Set;");
     }
 
     ::entry_set entry_set() {
-        jclass cls = env->FindClass("java/util/Map");
-        jmethodID entry_set = env->GetMethodID(cls, "entrySet", "()Ljava/util/Set;");
-        return ::entry_set(env, env->CallObjectMethod(java_map, entry_set));
+        return ::entry_set(env, env->CallObjectMethod(java_map, entry_set_method));
     }
 
 private:
     JNIEnv *env;
     jobject java_map;
+    jmethodID entry_set_method;
 };
 
 }  // namespace

@@ -34,25 +34,25 @@ public class PythonIntTest {
     }
 
     @Test
-    @DisplayName("Should return correct Java int from PythonInt")
-    void testToJavaNumberSuccessful() {
+    @DisplayName("Should return correct Java long from PythonInt")
+    void testToJavaLongSuccessful() {
         IPythonObject integer = PythonCore.evaluate("1");
 
         Optional<PythonInt> pythonInt = integer.asInt();
         assertTrue(pythonInt.isPresent());
-        assertEquals(1, pythonInt.get().toJavaNumber().intValueExact());
+        assertEquals(1, pythonInt.get().toJavaLong());
     }
 
     @Test
     @DisplayName("Should return correct Java BigInteger from PythonInt")
-    void testToJavaNumberWithBigIntegerSuccessful() {
+    void testToJavaBigIntegerWithBigIntegerSuccessful() {
         BigInteger bigInteger = new BigInteger(Long.valueOf(Long.MAX_VALUE).toString());
         bigInteger = bigInteger.add(bigInteger);
         IPythonObject integer = PythonCore.evaluate(bigInteger.toString());
 
         Optional<PythonInt> pythonInt = integer.asInt();
         assertTrue(pythonInt.isPresent());
-        assertEquals(bigInteger, pythonInt.get().toJavaNumber());
+        assertEquals(bigInteger, pythonInt.get().toJavaBigInteger());
     }
 
     @ParameterizedTest
@@ -84,14 +84,14 @@ public class PythonIntTest {
     }
 
     @Test
-    @DisplayName("Should return new PythonInt from Java int")
+    @DisplayName("Should return new PythonInt from Java long")
     void testFromJavaInt() {
         PythonInt pythonInt1 = PythonInt.from(5);
         assertNotNull(pythonInt1);
-        assertEquals(5, pythonInt1.toJavaNumber().intValueExact());
+        assertEquals(5, pythonInt1.toJavaLong());
 
         PythonInt pythonInt2 = PythonInt.from(1000);
         assertNotNull(pythonInt2);
-        assertEquals(1000, pythonInt2.toJavaNumber().intValueExact());
+        assertEquals(1000, pythonInt2.toJavaLong());
     }
 }
