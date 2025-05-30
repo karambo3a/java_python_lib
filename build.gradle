@@ -45,14 +45,15 @@ clean {
     dependsOn cleanNative
 }
 
-def nativeLibsDir = file("build/libs")
+ext {
+    nativeLibsDir = file("build/libs")
+}
 
 test {
     dependsOn buildNative
     useJUnitPlatform()
     systemProperty "java.library.path", nativeLibsDir
 }
-
 
 jar {
     dependsOn buildNative
