@@ -24,6 +24,7 @@ OBJS=build/cpp/org_python_integration_core_PythonSession.o \
 	 build/cpp/org_python_integration_object_PythonSet.o\
 	 build/cpp/python_object_manager.o \
 	 build/cpp/py_java_function.o \
+	 build/cpp/gil.o \
      build/cpp/globals.o
 
 vpath %.cpp src/main/cpp/core src/main/cpp/integration src/main/cpp/object

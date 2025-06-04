@@ -1,4 +1,5 @@
 #include "org_python_integration_object_PythonSet.h"
+#include "gil.h"
 #include "globals.h"
 #include "python_object_manager.h"
 #include "traits.h"
@@ -77,6 +78,8 @@ private:
 }  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonSet_from(JNIEnv *env, jclass, jobject java_set) {
+    GIL gil;
+
     if (!java_set) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java set cannot be null"));
         return nullptr;

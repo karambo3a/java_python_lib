@@ -1,10 +1,13 @@
 #include "org_python_integration_object_PythonCallable.h"
+#include "gil.h"
 #include "globals.h"
 #include "py_java_function.h"
 #include "traits.h"
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_PythonCallable_call(JNIEnv *env, jobject java_object, jobjectArray jargs) {
+    GIL gil;
+
     PyObject *callable_object = object_manager->get_object(env, java_object);
     if (!callable_object) {
         return nullptr;
@@ -46,6 +49,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     jclass,
     jobject java_consumer
 ) {
+    GIL gil;
+
     if (!java_consumer) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java consumer cannot be null"));
         return nullptr;
@@ -64,6 +69,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     jclass,
     jobject java_supplier
 ) {
+    GIL gil;
+
     if (!java_supplier) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java supplier cannot be null"));
         return nullptr;
@@ -82,6 +89,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     jclass,
     jobject java_function
 ) {
+    GIL gil;
+
     if (!java_function) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java function cannot be null"));
         return nullptr;
@@ -100,6 +109,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonCallable_from
     jclass,
     jobject java_bi_function
 ) {
+    GIL gil;
+
     if (!java_bi_function) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java bi function cannot be null"));
         return nullptr;
@@ -120,6 +131,8 @@ Java_org_python_integration_object_PythonCallable_from__Lorg_python_integration_
     jclass,
     jobject java_function3
 ) {
+    GIL gil;
+
     if (!java_function3) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java function3 cannot be null"));
         return nullptr;

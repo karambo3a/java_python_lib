@@ -1,4 +1,5 @@
 #include "org_python_integration_object_PythonInt.h"
+#include "gil.h"
 #include "globals.h"
 #include "traits.h"
 #include <jni.h>
@@ -15,6 +16,7 @@ jobject big_integer_of(JNIEnv *env, const char *string_int) {
 JNIEXPORT jlong JNICALL Java_org_python_integration_object_PythonInt_toJavaLong(JNIEnv *env, jobject py_int) {
     static_assert(sizeof(long long) == sizeof(jlong), "size of long long != size of jlong");
 
+    GIL gil;
     PyObject *py_object = object_manager->get_object(env, py_int);
     if (!py_object) {
         return -1;
@@ -30,6 +32,8 @@ JNIEXPORT jlong JNICALL Java_org_python_integration_object_PythonInt_toJavaLong(
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_toJavaBigInteger(JNIEnv *env, jobject py_int) {
+    GIL gil;
+
     PyObject *py_object = object_manager->get_object(env, py_int);
     if (!py_object) {
         return nullptr;
@@ -52,6 +56,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_toJavaBig
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_from(JNIEnv *env, jclass, jlong java_long) {
+    GIL gil;
+
     PyObject *py_int = PyLong_FromLongLong((long)java_long);
     if (!py_int) {
         env->Throw(java_traits<python_exception>::create(env));

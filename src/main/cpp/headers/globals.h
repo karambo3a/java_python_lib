@@ -2,6 +2,9 @@
 #define GLOBALS_H
 
 #include "python_object_manager.h"
+#include <Python.h>
+
+extern PyThreadState *_save;
 
 extern PythonObjectManager *object_manager;
 

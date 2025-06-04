@@ -16,7 +16,6 @@ struct python_set;
 struct python_exception;
 struct native_operation_exception;
 
-
 template <typename T>
 struct python_traits;
 

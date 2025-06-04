@@ -1,4 +1,5 @@
 #include "org_python_integration_object_PythonFloat.h"
+#include "gil.h"
 #include "globals.h"
 #include "traits.h"
 #include <Python.h>
@@ -6,6 +7,8 @@
 
 JNIEXPORT jdouble JNICALL
 Java_org_python_integration_object_PythonFloat_toJavaDouble(JNIEnv *env, jobject java_object) {
+    GIL gil;
+
     PyObject *py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
         return -1.0;
@@ -23,6 +26,8 @@ Java_org_python_integration_object_PythonFloat_toJavaDouble(JNIEnv *env, jobject
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_PythonFloat_from(JNIEnv *env, jclass, jdouble java_double) {
+    GIL gil;
+
     PyObject *py_float = PyFloat_FromDouble((double)java_double);
     if (!py_float) {
         env->Throw(java_traits<python_exception>::create(env));

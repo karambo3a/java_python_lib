@@ -1,4 +1,5 @@
 #include "org_python_integration_object_PythonList.h"
+#include "gil.h"
 #include "globals.h"
 #include "python_object_manager.h"
 #include "traits.h"
@@ -31,6 +32,8 @@ private:
 }  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_of(JNIEnv *env, jclass, jobject java_object) {
+    GIL gil;
+
     PyObject *sequence = object_manager->get_object(env, java_object);
     if (!sequence) {
         return nullptr;
@@ -45,6 +48,8 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_of(JNIEn
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_from(JNIEnv *env, jclass, jobject java_list) {
+    GIL gil;
+
     if (!java_list) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java list cannot be null"));
         return nullptr;
