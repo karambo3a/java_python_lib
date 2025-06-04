@@ -23,36 +23,35 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
         this.pythonDict = new PythonObject(index, scopeId);
     }
 
-
     @Override
     public PythonDict keepAlive() {
         return this.pythonDict.keepAlive().asDict().get();
     }
-
 
     @Override
     public String representation() {
         return this.pythonDict.representation();
     }
 
-
     @Override
     public IPythonObject getAttribute(String attrName) {
         return this.pythonDict.getAttribute(attrName);
     }
-
 
     @Override
     public Optional<PythonCallable> asCallable() {
         return this.pythonDict.asCallable();
     }
 
-
     @Override
     public Optional<PythonInt> asInt() {
         return this.pythonDict.asInt();
     }
 
+    @Override
+    public Optional<PythonFloat> asFloat() {
+        return this.pythonDict.asFloat();
+    }
 
     @Override
     public Optional<PythonBool> asBool() {
@@ -109,7 +108,6 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
     public Set<Entry<IPythonObject, IPythonObject>> entrySet() {
         return new EntrySet();
     }
-
 
     @Override
     public int size() {
@@ -182,7 +180,6 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
             return popAttrCallable.call(key).keepAlive();
         }
     }
-
 
     private final class EntrySet extends AbstractSet<Entry<IPythonObject, IPythonObject>> {
         @Override

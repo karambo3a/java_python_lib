@@ -1,7 +1,8 @@
-#include "../headers/org_python_integration_core_PythonScope.h"
-#include "../headers/globals.h"
-#include "../headers/java_object_factory.h"
-#include "../headers/python_object_manager.h"
+#include "org_python_integration_core_PythonScope.h"
+#include "gil.h"
+#include "globals.h"
+#include "python_object_manager.h"
+#include "traits.h"
 #include <Python.h>
 
 JNIEXPORT jlong JNICALL Java_org_python_integration_core_PythonScope_initializeScope(JNIEnv *, jobject) {
@@ -10,9 +11,10 @@ JNIEXPORT jlong JNICALL Java_org_python_integration_core_PythonScope_initializeS
 }
 
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonScope_finalizeScope(JNIEnv *env, jobject java_object) {
+    const GIL gil;
+
     if (get_scope(env, java_object) != object_manager->get_scope_id()) {
-        jthrowable java_exception = create_native_operation_exception(env, "Cannot close non-last scope");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Cannot close non-last scope"));
         return;
     }
     finalize_scope();

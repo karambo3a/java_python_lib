@@ -10,9 +10,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
 import org.python.integration.object.IPythonObject;
-import org.python.integration.object.PythonInt;
+import org.python.integration.object.PythonFloat;
 
-import java.math.BigInteger;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PythonIntTest {
+public class PythonFloatTest {
     private PythonSession pythonSession;
 
     @BeforeEach
@@ -34,25 +33,13 @@ public class PythonIntTest {
     }
 
     @Test
-    @DisplayName("Should return correct Java long from PythonInt")
-    void testToJavaLongSuccessful() {
-        IPythonObject integer = PythonCore.evaluate("1");
+    @DisplayName("Should return correct Java double from PythonFloat")
+    void testToJavaNumberSuccessful() {
+        IPythonObject pythonFloat = PythonCore.evaluate("1.0");
 
-        Optional<PythonInt> pythonInt = integer.asInt();
-        assertTrue(pythonInt.isPresent());
-        assertEquals(1, pythonInt.get().toJavaLong());
-    }
-
-    @Test
-    @DisplayName("Should return correct Java BigInteger from PythonInt")
-    void testToJavaBigIntegerWithBigIntegerSuccessful() {
-        BigInteger bigInteger = new BigInteger(Long.valueOf(Long.MAX_VALUE).toString());
-        bigInteger = bigInteger.add(bigInteger);
-        IPythonObject integer = PythonCore.evaluate(bigInteger.toString());
-
-        Optional<PythonInt> pythonInt = integer.asInt();
-        assertTrue(pythonInt.isPresent());
-        assertEquals(bigInteger, pythonInt.get().toJavaBigInteger());
+        Optional<PythonFloat> pythonFloatOp = pythonFloat.asFloat();
+        assertTrue(pythonFloatOp.isPresent());
+        assertEquals(1.0, pythonFloatOp.get().toJavaDouble());
     }
 
     @ParameterizedTest
@@ -67,31 +54,31 @@ public class PythonIntTest {
     private static Stream<Arguments> provideInputForEqualsTest() {
         return Stream.of(
                 // Should return true for equal objects
-                Arguments.of("1", "1", true),
+                Arguments.of("1.0", "1.0", true),
                 // Should return false for unequal objects
-                Arguments.of("1", "2", false),
+                Arguments.of("1.0", "2.0", false),
                 // Should return false for objects of different classes
-                Arguments.of("1", "[1,2,3]", false)
+                Arguments.of("1.0", "[1.0,2.0,3.0]", false)
         );
     }
 
     @Test
     @DisplayName("Equals should return true Java boolean (equals with the same object)")
     void testEqualsWithTheSameObj() {
-        IPythonObject object = PythonCore.evaluate("1");
+        IPythonObject object = PythonCore.evaluate("1.0");
 
         assertEquals(object, object);
     }
 
     @Test
-    @DisplayName("Should return new PythonInt from Java long")
-    void testFromJavaInt() {
-        PythonInt pythonInt1 = PythonInt.from(5);
-        assertNotNull(pythonInt1);
-        assertEquals(5, pythonInt1.toJavaLong());
+    @DisplayName("Should return new PythonFloat from Java double")
+    void testFromJavaDouble() {
+        PythonFloat pythonFloat1 = PythonFloat.from(5.0);
+        assertNotNull(pythonFloat1);
+        assertEquals(5.0, pythonFloat1.toJavaDouble());
 
-        PythonInt pythonInt2 = PythonInt.from(1000);
-        assertNotNull(pythonInt2);
-        assertEquals(1000, pythonInt2.toJavaLong());
+        PythonFloat pythonFloat2 = PythonFloat.from(1000.0);
+        assertNotNull(pythonFloat2);
+        assertEquals(1000.0, pythonFloat2.toJavaDouble());
     }
 }
