@@ -6,7 +6,7 @@
 
 JNIEXPORT jboolean JNICALL
 Java_org_python_integration_object_AbstractPythonObject_equals(JNIEnv *env, jobject this_object, jobject other_object) {
-    GIL gil;
+    const GIL gil;
 
     if (this_object == other_object) {
         return JNI_TRUE;
@@ -29,7 +29,7 @@ Java_org_python_integration_object_AbstractPythonObject_equals(JNIEnv *env, jobj
 
 JNIEXPORT jint JNICALL
 Java_org_python_integration_object_AbstractPythonObject_hashCode(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
@@ -44,7 +44,7 @@ Java_org_python_integration_object_AbstractPythonObject_hashCode(JNIEnv *env, jo
 
 JNIEXPORT jstring JNICALL
 Java_org_python_integration_object_AbstractPythonObject_toString(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
@@ -68,7 +68,7 @@ Java_org_python_integration_object_AbstractPythonObject_toString(JNIEnv *env, jo
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_keepAlive(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     const std::size_t scope_id = get_scope(env, java_object);
 
@@ -96,7 +96,7 @@ Java_org_python_integration_object_AbstractPythonObject_keepAlive(JNIEnv *env, j
 
 JNIEXPORT jstring JNICALL
 Java_org_python_integration_object_AbstractPythonObject_representation(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
@@ -122,7 +122,7 @@ Java_org_python_integration_object_AbstractPythonObject_representation(JNIEnv *e
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_AbstractPythonObject_getAttribute(JNIEnv *env, jobject java_object, jstring name) {
-    GIL gil;
+    const GIL gil;
 
     if (!name) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Attribute name cannot be null"));
@@ -166,7 +166,7 @@ static jobject optional_of(JNIEnv *env, jobject java_py_object) {
 
 template <typename T>
 jobject AbstractPythonObject_asT(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     const std::size_t index = get_index(env, java_object);
     const std::size_t scope_id = get_scope(env, java_object);

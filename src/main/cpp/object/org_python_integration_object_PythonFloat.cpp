@@ -7,7 +7,7 @@
 
 JNIEXPORT jdouble JNICALL
 Java_org_python_integration_object_PythonFloat_toJavaDouble(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
@@ -26,7 +26,7 @@ Java_org_python_integration_object_PythonFloat_toJavaDouble(JNIEnv *env, jobject
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_PythonFloat_from(JNIEnv *env, jclass, jdouble java_double) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *py_float = PyFloat_FromDouble((double)java_double);
     if (!py_float) {

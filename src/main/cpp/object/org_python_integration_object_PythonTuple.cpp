@@ -31,7 +31,7 @@ private:
 }  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonTuple_from(JNIEnv *env, jclass, jobject java_tuple) {
-    GIL gil;
+    const GIL gil;
 
     if (!java_tuple) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java tuple cannot be null"));

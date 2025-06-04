@@ -4,7 +4,7 @@
 #include "traits.h"
 
 JNIEXPORT jstring JNICALL Java_org_python_integration_object_PythonStr_toJavaString(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
@@ -20,7 +20,7 @@ JNIEXPORT jstring JNICALL Java_org_python_integration_object_PythonStr_toJavaStr
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonStr_from(JNIEnv *env, jclass, jstring java_string) {
-    GIL gil;
+    const GIL gil;
 
     if (!java_string) {
         env->Throw(java_traits<native_operation_exception>::create(env, "The conversion string cannot be null"));

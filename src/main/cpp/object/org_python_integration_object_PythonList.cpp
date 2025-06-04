@@ -32,7 +32,7 @@ private:
 }  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_of(JNIEnv *env, jclass, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *sequence = object_manager->get_object(env, java_object);
     if (!sequence) {
@@ -48,7 +48,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_of(JNIEn
 }
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonList_from(JNIEnv *env, jclass, jobject java_list) {
-    GIL gil;
+    const GIL gil;
 
     if (!java_list) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java list cannot be null"));

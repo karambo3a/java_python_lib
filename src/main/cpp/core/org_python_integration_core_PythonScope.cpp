@@ -11,7 +11,7 @@ JNIEXPORT jlong JNICALL Java_org_python_integration_core_PythonScope_initializeS
 }
 
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonScope_finalizeScope(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     if (get_scope(env, java_object) != object_manager->get_scope_id()) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Cannot close non-last scope"));

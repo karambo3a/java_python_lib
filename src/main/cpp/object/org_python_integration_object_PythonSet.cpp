@@ -78,7 +78,7 @@ private:
 }  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonSet_from(JNIEnv *env, jclass, jobject java_set) {
-    GIL gil;
+    const GIL gil;
 
     if (!java_set) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java set cannot be null"));

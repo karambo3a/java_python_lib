@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate(JNIEnv *env, jclass, jstring java_repr) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *main_module = PyImport_AddModule("__main__");
     if (!main_module) {
@@ -39,7 +39,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate(J
 }
 
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonCore_free(JNIEnv *env, jclass, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     object_manager->free_object(env, java_object);
 }
@@ -80,7 +80,7 @@ public:
             env->GetMethodID(map_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     }
 
-    void put(const jstring name, PyObject *attr) {
+    void put(jstring name, PyObject *attr) {
         env->CallObjectMethod(this->java_map, this->put_method, name, java_traits<python_object>::convert(env, attr));
     }
 
@@ -96,7 +96,7 @@ private:
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_core_PythonCore_importModule(JNIEnv *env, jclass, jstring java_module) {
-    GIL gil;
+    const GIL gil;
 
     return import_module(env, java_module);
 }
@@ -107,7 +107,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_fromImport
     jstring java_from,
     jobjectArray java_names
 ) {
-    GIL gil;
+    const GIL gil;
 
     if (!java_names) {
         env->Throw(java_traits<native_operation_exception>::create(env, "names cannot be null"));

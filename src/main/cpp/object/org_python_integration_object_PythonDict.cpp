@@ -120,7 +120,7 @@ private:
 }  // namespace
 
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonDict_from(JNIEnv *env, jclass, jobject java_map) {
-    GIL gil;
+    const GIL gil;
 
     if (!java_map) {
         env->Throw(java_traits<native_operation_exception>::create(env, "Java map cannot be null"));

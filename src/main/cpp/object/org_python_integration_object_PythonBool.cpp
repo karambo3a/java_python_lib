@@ -5,7 +5,7 @@
 
 JNIEXPORT jboolean JNICALL
 Java_org_python_integration_object_PythonBool_toJavaBoolean(JNIEnv *env, jobject java_object) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *py_object = object_manager->get_object(env, java_object);
     if (!py_object) {
@@ -21,7 +21,7 @@ Java_org_python_integration_object_PythonBool_toJavaBoolean(JNIEnv *env, jobject
 
 JNIEXPORT jobject JNICALL
 Java_org_python_integration_object_PythonBool_from(JNIEnv *env, jclass, jboolean java_boolean) {
-    GIL gil;
+    const GIL gil;
 
     PyObject *py_bool = PyBool_FromLong((long)java_boolean);
     if (!py_bool) {
