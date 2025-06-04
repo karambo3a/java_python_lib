@@ -15,4 +15,8 @@ public class PythonCore {
     public static native IPythonObject importModule(String module);
 
     public static native Map<String, IPythonObject> fromImport(String from, String... names);
+
+    public static IPythonObject fromImportOne(String from, String name) {
+        return fromImport(from, name).get(name);
+    }
 }

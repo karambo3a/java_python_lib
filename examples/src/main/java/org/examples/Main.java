@@ -2,7 +2,7 @@ package org.examples;
 
 import org.examples.coverage.LineCoverageTracker;
 import org.examples.simple.SimpleExample;
-import org.examples.threading.ListMapThreads;
+import org.examples.threading.ListMapPythonThreads;
 import org.python.integration.core.PythonSession;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonInt;
@@ -15,12 +15,12 @@ public class Main {
 
     private static void runSimpleExamples() {
         try (PythonSession pythonSession = new PythonSession()) {
-            System.out.printf("Python version: %s\n", SimpleExample.getPythonVersion());
+            System.out.printf("Python version: %s%n", SimpleExample.getPythonVersion());
 
             var list = SimpleExample.modulesPath().stream().map(IPythonObject::toString).toList();
-            System.out.printf("sys.path = %s\n", list);
+            System.out.printf("sys.path = %s%n", list);
 
-            System.out.printf("2^3 = %f\n\n", SimpleExample.pow(2, 3));
+            System.out.printf("2^3 = %f%n%n", SimpleExample.pow(2, 3));
         }
     }
 
@@ -33,7 +33,7 @@ public class Main {
         }
     }
 
-    private static void runListMapThreads() {
+    private static void runListMapPythonThreads() {
         try (PythonSession pythonSession = new PythonSession()) {
             List<IPythonObject> list = new ArrayList<>();
             for (int i = 0; i < 26; ++i) {
@@ -46,13 +46,13 @@ public class Main {
             };
 
             System.out.println();
-            System.out.println(ListMapThreads.map(list, function));
+            System.out.println(ListMapPythonThreads.map(list, function));
         }
     }
 
     public static void main(String[] args) {
         runSimpleExamples();
         runLineCoverage();
-        runListMapThreads();
+        runListMapPythonThreads();
     }
 }

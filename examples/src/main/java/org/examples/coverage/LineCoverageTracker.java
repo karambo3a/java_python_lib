@@ -32,11 +32,11 @@ public class LineCoverageTracker {
     }
 
     public static void writeCoverageToFile() {
-        try (BufferedWriter bufferWriter = Files.newBufferedWriter(Paths.get("cov.out"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+        try (BufferedWriter bufferWriter = Files.newBufferedWriter(Paths.get("cov.out"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             for (var entry : lineCoverage.entrySet()) {
                 entry.getValue().forEach((value) -> {
                     try {
-                        bufferWriter.write(String.format("%s: %s\n", entry.getKey(), value));
+                        bufferWriter.write(String.format("%s: %s%n", entry.getKey(), value));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

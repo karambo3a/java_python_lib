@@ -10,9 +10,9 @@ import org.python.integration.object.PythonList;
 import java.util.List;
 import java.util.function.Function;
 
-public class ListMapThreads {
+public class ListMapPythonThreads {
 
-    static public PythonList map(List<IPythonObject> list, Function<IPythonObject, IPythonObject> function) {
+    public static PythonList map(List<IPythonObject> list, Function<IPythonObject, IPythonObject> function) {
         try (PythonScope pythonScope = new PythonScope()) {
             PythonList pythonList = PythonList.from(list);
             PythonCallable pythonCallable = PythonCallable.from(function);
@@ -25,15 +25,11 @@ public class ListMapThreads {
     }
 
 
-    static private IPythonObject getThreadPoolExecutor() {
+    private static IPythonObject getThreadPoolExecutor() {
         try (PythonScope pythonScope = new PythonScope()) {
-            IPythonObject threadPoolExecutorClass = PythonCore.fromImport("concurrent.futures.thread", "ThreadPoolExecutor").get("ThreadPoolExecutor");
-            PythonCallable newAttr = threadPoolExecutorClass.getAttribute("__new__").asCallable().get();
-            IPythonObject threadPoolExecutor = newAttr.call(threadPoolExecutorClass);
-
-            PythonCallable initAttr = threadPoolExecutor.getAttribute("__init__").asCallable().get();
+            IPythonObject threadPoolExecutorClass = PythonCore.fromImportOne("concurrent.futures.thread", "ThreadPoolExecutor");
             PythonInt maxWorkers = PythonInt.from(5);
-            initAttr.call(maxWorkers);
+            IPythonObject threadPoolExecutor = threadPoolExecutorClass.asCallable().get().call(maxWorkers);
             return threadPoolExecutor.keepAlive();
         }
     }
