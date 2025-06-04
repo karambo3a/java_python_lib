@@ -73,6 +73,14 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObjec
 
 /*
  * Class:     org_python_integration_object_AbstractPythonObject
+ * Method:    asFloat
+ * Signature: ()Ljava/util/Optional;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_AbstractPythonObject_asFloat
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_python_integration_object_AbstractPythonObject
  * Method:    asBool
  * Signature: ()Ljava/util/Optional;
  */

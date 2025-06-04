@@ -13,6 +13,8 @@ public interface IPythonObject {
 
     Optional<PythonInt> asInt();
 
+    Optional<PythonFloat> asFloat();
+
     Optional<PythonBool> asBool();
 
     Optional<PythonStr> asStr();

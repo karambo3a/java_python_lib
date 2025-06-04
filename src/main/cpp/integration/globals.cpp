@@ -1,9 +1,11 @@
-#include "../headers/globals.h"
-#include "../headers/python_object_manager.h"
+#include "globals.h"
+#include "python_object_manager.h"
+#include <Python.h>
 #include <cstddef>
 #include <jni.h>
 
 PythonObjectManager *object_manager = nullptr;
+PyThreadState *_save = nullptr;
 
 std::size_t get_index(JNIEnv *env, jobject java_object) {
     jclass cls = env->GetObjectClass(java_object);

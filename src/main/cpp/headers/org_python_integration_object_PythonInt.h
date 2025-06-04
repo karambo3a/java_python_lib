@@ -9,19 +9,27 @@ extern "C" {
 #endif
 /*
  * Class:     org_python_integration_object_PythonInt
- * Method:    toJavaInt
- * Signature: ()I
+ * Method:    toJavaLong
+ * Signature: ()J
  */
-JNIEXPORT jint JNICALL Java_org_python_integration_object_PythonInt_toJavaInt
+JNIEXPORT jlong JNICALL Java_org_python_integration_object_PythonInt_toJavaLong
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_python_integration_object_PythonInt
+ * Method:    toJavaBigInteger
+ * Signature: ()Ljava/math/BigInteger;
+ */
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_toJavaBigInteger
   (JNIEnv *, jobject);
 
 /*
  * Class:     org_python_integration_object_PythonInt
  * Method:    from
- * Signature: (I)Lorg/python/integration/object/PythonInt;
+ * Signature: (J)Lorg/python/integration/object/PythonInt;
  */
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_from
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

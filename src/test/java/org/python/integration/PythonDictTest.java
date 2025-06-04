@@ -111,7 +111,7 @@ public class PythonDictTest {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
         IPythonObject value = pythonDict.get(PythonCore.evaluate("1"));
-        assertEquals(2, value.asInt().get().toJavaInt());
+        assertEquals(2, value.asInt().get().toJavaLong());
     }
 
     @Test

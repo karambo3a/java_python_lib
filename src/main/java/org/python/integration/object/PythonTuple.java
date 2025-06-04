@@ -19,12 +19,10 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
         this.pythonTuple = new PythonObject(index, scopeId);
     }
 
-
     @Override
     public PythonTuple keepAlive() {
         return this.pythonTuple.keepAlive().asTuple().get();
     }
-
 
     @Override
     public String representation() {
@@ -44,6 +42,11 @@ public class PythonTuple extends AbstractList<IPythonObject> implements IPythonO
     @Override
     public Optional<PythonInt> asInt() {
         return this.pythonTuple.asInt();
+    }
+
+    @Override
+    public Optional<PythonFloat> asFloat() {
+        return this.pythonTuple.asFloat();
     }
 
     @Override

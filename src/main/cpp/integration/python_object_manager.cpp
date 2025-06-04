@@ -1,6 +1,6 @@
-#include "../headers/python_object_manager.h"
-#include "../headers/globals.h"
-#include "../headers/java_object_factory.h"
+#include "python_object_manager.h"
+#include "globals.h"
+#include "traits.h"
 #include <cstddef>
 #include <jni.h>
 #include <string>
@@ -48,17 +48,16 @@ PyObject *PythonObjectManager::get_object(JNIEnv *env, std::size_t index, std::s
     }
 
     if (object_manager->get_scope_id() != scope_id) {
-        jthrowable java_exception =
-            create_native_operation_exception(env, "Scope associated with Python object is closed");
-        env->Throw(java_exception);
+        env->Throw(java_traits<native_operation_exception>::create(env, "Scope associated with Python object is closed")
+        );
         return nullptr;
     }
 
     PyObject *py_object = object_manager->get_object(index);
     if (!py_object) {
-        jthrowable java_exception =
-            create_native_operation_exception(env, "Associated Python object with Java object is NULL");
-        env->Throw(java_exception);
+        env->Throw(
+            java_traits<native_operation_exception>::create(env, "Associated Python object with Java object is NULL")
+        );
         return nullptr;
     }
     return py_object;
@@ -74,9 +73,8 @@ PyObject *PythonObjectManager::get_object(JNIEnv *env, jobject java_object) {
 void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
     const std::size_t index = get_index(env, java_object);
     if (!this->py_objects[index]) {
-        jthrowable java_exception =
-            create_native_operation_exception(env, ("Double object free on index=" + std::to_string(index)).c_str());
-        env->Throw(java_exception);
+        const std::string message = "Double object free on index=" + std::to_string(index);
+        env->Throw(java_traits<native_operation_exception>::create(env, message.c_str()));
         return;
     }
     this->py_objects[index] = nullptr;
