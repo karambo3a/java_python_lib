@@ -1,14 +1,9 @@
 plugins {
-    id 'java'
-    id 'application'
+    id 'java-library'
 }
 
 group = 'org.example'
 version = '1.0-SNAPSHOT'
-
-application {
-    mainClass = 'org.python.integration.Main'
-}
 
 repositories {
     mavenCentral()
@@ -36,7 +31,6 @@ compileJava {
     options.compilerArgs += ['-h', headersDir]
 }
 
-
 tasks.register('buildNative', Exec) {
     commandLine 'make', 'buildNative'
     inputs.files fileTree('src/main/cpp')
@@ -51,17 +45,16 @@ clean {
     dependsOn cleanNative
 }
 
-
-def nativeLibsDir = file("build/libs")
-run {
-    dependsOn 'buildNative'
-    systemProperty "java.library.path", "build/libs"
+ext {
+    nativeLibsDir = file("build/libs")
 }
-
-
 
 test {
     dependsOn buildNative
     useJUnitPlatform()
     systemProperty "java.library.path", nativeLibsDir
+}
+
+jar {
+    dependsOn buildNative
 }

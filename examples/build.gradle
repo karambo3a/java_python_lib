@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'org.examples.Main'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation project(':')
+}
+
+test {
+    dependsOn ':buildNative'
+    useJUnitPlatform()
+    systemProperty "java.library.path", nativeLibsDir.absolutePath
+}
+
+run {
+    dependsOn ':buildNative'
+    systemProperty "java.library.path", nativeLibsDir.absolutePath
+}

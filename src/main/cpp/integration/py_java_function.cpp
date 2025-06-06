@@ -18,8 +18,8 @@ PyObject *py_java_function_call(PyObject *self, PyObject *args, PyObject *kwargs
         return nullptr;
     }
 
-    if (kwargs) {
-        PyErr_SetString(PyExc_RuntimeError, "kwargs must be null");
+    if (kwargs && PyDict_Size(kwargs) != 0) {
+        PyErr_SetString(PyExc_RuntimeError, "kwargs not supported");
         return nullptr;
     }
 
