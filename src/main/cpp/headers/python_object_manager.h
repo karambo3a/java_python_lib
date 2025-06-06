@@ -39,6 +39,8 @@ private:
     std::vector<PyObject *> py_objects;
     PythonObjectManager *prev_object_manager = nullptr;
     std::size_t scope_id = 0;
+
+    PythonObjectManager* find_object_manager_by_scope(JNIEnv* env, std::size_t scope_id);
 };
 
 #endif  // PYTHON_OBJECT_MANAGER_H

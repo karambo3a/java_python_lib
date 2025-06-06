@@ -5,6 +5,20 @@
 #include <jni.h>
 #include <string>
 
+PythonObjectManager *PythonObjectManager::find_object_manager_by_scope(JNIEnv *env, std::size_t scope_id) {
+    PythonObjectManager *object_manager = this;
+    while (object_manager->get_prev_object_manager() != nullptr && object_manager->get_scope_id() != scope_id) {
+        object_manager = object_manager->get_prev_object_manager();
+    }
+
+    if (object_manager->get_scope_id() != scope_id) {
+        const char *message = "Scope associated with Python object is closed";
+        env->Throw(java_traits<native_operation_exception>::create(env, message));
+        return nullptr;
+    }
+    return object_manager;
+}
+
 PythonObjectManager::PythonObjectManager(PythonObjectManager *prev_object_manager, std::size_t scope_id)
     : prev_object_manager(prev_object_manager), scope_id(scope_id) {
 }
@@ -42,16 +56,7 @@ PyObject *PythonObjectManager::get_object(std::size_t index) {
 }
 
 PyObject *PythonObjectManager::get_object(JNIEnv *env, std::size_t index, std::size_t scope_id) {
-    PythonObjectManager *object_manager = this;
-    while (object_manager->get_prev_object_manager() != nullptr && object_manager->get_scope_id() != scope_id) {
-        object_manager = object_manager->get_prev_object_manager();
-    }
-
-    if (object_manager->get_scope_id() != scope_id) {
-        env->Throw(java_traits<native_operation_exception>::create(env, "Scope associated with Python object is closed")
-        );
-        return nullptr;
-    }
+    PythonObjectManager *object_manager = find_object_manager_by_scope(env, scope_id);
 
     PyObject *py_object = object_manager->get_object(index);
     if (!py_object) {
@@ -71,12 +76,14 @@ PyObject *PythonObjectManager::get_object(JNIEnv *env, jobject java_object) {
 }
 
 void PythonObjectManager::free_object(JNIEnv *env, jobject java_object) {
+    PythonObjectManager *object_manager = find_object_manager_by_scope(env, get_scope(env, java_object));
+
     const std::size_t index = get_index(env, java_object);
-    if (!this->py_objects[index]) {
+    if (!object_manager->py_objects[index]) {
         const std::string message = "Double object free on index=" + std::to_string(index);
         env->Throw(java_traits<native_operation_exception>::create(env, message.c_str()));
         return;
     }
-    this->py_objects[index] = nullptr;
-    Py_XDECREF(this->py_objects[index]);
+    object_manager->py_objects[index] = nullptr;
+    Py_XDECREF(object_manager->py_objects[index]);
 }
