@@ -9,17 +9,19 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
+import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonInt;
 import org.python.integration.object.PythonSet;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonSetTest {
@@ -36,11 +38,9 @@ public class PythonSetTest {
     }
 
     private PythonSet initPythonSet(String representation) {
-        IPythonObject pythonObject = PythonCore.evaluate(representation);
-        Optional<PythonSet> setOptional = pythonObject.asSet();
+        Optional<PythonSet> setOptional = PythonCore.evaluate(representation).asSet();
         return setOptional.orElse(null);
     }
-
 
     @Test
     @DisplayName("Should return set iterator")
@@ -50,11 +50,38 @@ public class PythonSetTest {
         int index = 0;
         for (IPythonObject next : set) {
             assertNotNull(next);
-            assertEquals(expected.get(index), next.representation());
+            assertEquals(expected.get(index), next.toString());
             index++;
         }
     }
 
+    @Test
+    @DisplayName("Should successfully return set size")
+    void testSizeSuccessful() {
+        PythonSet set = initPythonSet("{1,2,3}");
+        assertEquals(3, set.size());
+    }
+
+    @Test
+    @DisplayName("Should successfully return empty set size")
+    void testSizeEmptySuccessful() {
+        PythonSet set = initPythonSet("set()");
+        assertEquals(0, set.size());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Set to PythonSet")
+    void testFromSuccessful() {
+        IPythonObject first = PythonInt.from(1);
+        IPythonObject second = PythonInt.from(2);
+        PythonSet set = PythonSet.from(Set.of(first, second));
+        assertNotNull(set);
+
+        var expected = Set.of(first, second);
+        for (var i : set) {
+            assertTrue(expected.contains(i));
+        }
+    }
 
     @ParameterizedTest
     @MethodSource("provideInputForEqualsTest")
@@ -85,17 +112,20 @@ public class PythonSetTest {
     }
 
     @Test
-    @DisplayName("Should successfully convert Set to PythonSet")
-    void testFromSuccessful() {
-        IPythonObject first = PythonInt.from(1);
-        IPythonObject second = PythonInt.from(2);
-        var s = Set.of(first, second);
-        PythonSet set = PythonSet.from(s);
-        assertNotNull(set);
+    @DisplayName("Should successfully return String of a PythonSet")
+    void testToString() {
+        PythonSet pythonSet = initPythonSet("{1,2,3}");
 
-        var expected = Set.of("1", "2");
-        for (var i : set) {
-            assertTrue(expected.contains(i.representation()));
-        }
+        assertEquals("{1, 2, 3}", pythonSet.toString());
+    }
+
+    @Test
+    @DisplayName("Should throws when getting hashcode of unhashable set")
+    void testHashCode() {
+        PythonSet pythonSet = PythonSet.from(Set.of(PythonInt.from(1)));
+
+        PythonException exception = assertThrows(PythonException.class, pythonSet::hashCode);
+        assertEquals("unhashable type: 'set'", exception.getValue().toString());
+        exception.free();
     }
 }

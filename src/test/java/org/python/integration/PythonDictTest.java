@@ -9,11 +9,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonSession;
+import org.python.integration.exception.PythonException;
 import org.python.integration.object.IPythonObject;
 import org.python.integration.object.PythonDict;
 import org.python.integration.object.PythonInt;
 
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonDictTest {
@@ -54,39 +55,60 @@ public class PythonDictTest {
         Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
         assertNotNull(entries);
         assertEquals(2, entries.size());
-        var entryList = entries.stream().map((pyObject) -> Map.entry(pyObject.getKey().representation(), pyObject.getValue().representation()));
+        var entryList = entries.stream().map((pyObject) -> Map.entry(pyObject.getKey().toString(), pyObject.getValue().toString()));
         assertThat(entryList)
                 .hasSize(2)
-                .containsExactlyInAnyOrder(Map.entry("2", "3"), Map.entry("1", "2"));
+                .containsExactlyInAnyOrder(Map.entry("1", "2"), Map.entry("2", "3"));
 
         for (var entry : entries) {
             entry.setValue(PythonCore.evaluate("1"));
         }
-        assertEquals("{1: 1, 2: 1}", pythonDict.representation());
+        assertEquals(PythonDict.from(Map.of(PythonInt.from(1), PythonInt.from(1), PythonInt.from(2), PythonInt.from(1))), pythonDict);
+
+        assertTrue(entries.remove(Map.entry(PythonInt.from(1), PythonInt.from(1))));
+        assertEquals(PythonDict.from(Map.of(PythonInt.from(2), PythonInt.from(1))), pythonDict);
     }
 
     @Test
-    @DisplayName("Should successfully modify the dict via entrySet")
-    public void testEntrySetSetValueSuccessful() {
+    @DisplayName("Should successfully update dict via entrySet")
+    public void testUpdateDictEntrySetSuccessful() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
-
         Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
+
         for (var entry : entries) {
             entry.setValue(PythonCore.evaluate("1"));
         }
-        assertEquals("{1: 1, 2: 1}", pythonDict.representation());
+        assertEquals(PythonDict.from(Map.of(PythonInt.from(1), PythonInt.from(1), PythonInt.from(2), PythonInt.from(1))), pythonDict);
     }
 
     @Test
-    @DisplayName("Should successfully remove entry of the dict via entrySet ")
-    public void testEntrySetRemoveSuccessful() {
+    @DisplayName("Should successfully remove from the dict via entrySet")
+    public void testRemoveFromDictViaEntrySetSuccessful() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
-
         Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
-        assertTrue(entries.remove(new AbstractMap.SimpleEntry<>(PythonCore.evaluate("1"), PythonCore.evaluate("2"))));
-        assertEquals("{2: 3}", pythonDict.representation());
 
-        assertFalse(entries.remove(new AbstractMap.SimpleEntry<>(PythonCore.evaluate("2"), PythonCore.evaluate("2"))));
+        // Successful remove
+        assertTrue(entries.remove(Map.entry(PythonInt.from(1), PythonInt.from(2))));
+        assertEquals(PythonDict.from(Map.of(PythonInt.from(2), PythonInt.from(3))), pythonDict);
+
+        // Remove of non-existent entry
+        assertFalse(entries.remove(Map.entry(PythonInt.from(1), PythonInt.from(1))));
+
+        // Remove of non-entry
+        assertFalse(entries.remove(PythonInt.from(1)));
+
+        // Remove of entry with non-IPythonObject key and value
+        assertFalse(entries.remove(Map.entry(1, 1)));
+    }
+
+    @Test
+    @DisplayName("Should successfully call entrySet contains")
+    public void testEntrySetContainsSuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+        Set<Map.Entry<IPythonObject, IPythonObject>> entries = pythonDict.entrySet();
+
+        assertTrue(entries.contains(Map.entry(PythonInt.from(1), PythonInt.from(2))));
+        assertFalse(entries.contains(Map.entry(PythonInt.from(1), PythonInt.from(1))));
     }
 
     @Test
@@ -110,8 +132,8 @@ public class PythonDictTest {
     public void testGetExistentKeySuccessful() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
-        IPythonObject value = pythonDict.get(PythonCore.evaluate("1"));
-        assertEquals(2, value.asInt().get().toJavaLong());
+        IPythonObject value = pythonDict.get(PythonInt.from(1));
+        assertEquals(2, value.asInt().get().toJavaInt());
     }
 
     @Test
@@ -119,7 +141,15 @@ public class PythonDictTest {
     public void testGetNonExistentKeyThrows() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
-        assertNull(pythonDict.get(PythonCore.evaluate("3")));
+        assertNull(pythonDict.get(PythonInt.from(3)));
+    }
+
+    @Test
+    @DisplayName("Should return null when get non-existent item from dict")
+    public void testGetNonIPythonObjectKeyThrows() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        assertNull(pythonDict.get(3));
     }
 
     @Test
@@ -127,10 +157,10 @@ public class PythonDictTest {
     public void testPutExistentKeySuccessful() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
-        IPythonObject prevValue = pythonDict.put(PythonCore.evaluate("1"), PythonCore.evaluate("5"));
+        IPythonObject prevValue = pythonDict.put(PythonInt.from(1), PythonInt.from(5));
         assertNotNull(prevValue);
-        assertEquals("2", prevValue.representation());
-        assertEquals("{1: 5, 2: 3}", pythonDict.representation());
+        assertEquals(PythonInt.from(2), prevValue);
+        assertEquals("{1: 5, 2: 3}", pythonDict.toString());
     }
 
     @Test
@@ -138,7 +168,7 @@ public class PythonDictTest {
     public void testPutNonExistentKeySuccessful() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
-        IPythonObject prevValue = pythonDict.put(PythonCore.evaluate("3"), PythonCore.evaluate("4"));
+        IPythonObject prevValue = pythonDict.put(PythonInt.from(3), PythonInt.from(4));
         assertNull(prevValue);
     }
 
@@ -147,7 +177,7 @@ public class PythonDictTest {
     public void testContainsKeySuccessful() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
-        assertTrue(pythonDict.containsKey(PythonCore.evaluate("1")));
+        assertTrue(pythonDict.containsKey(PythonInt.from(1)));
     }
 
     @Test
@@ -155,7 +185,45 @@ public class PythonDictTest {
     public void testDoNotContainKeySuccessful() {
         PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
 
-        assertFalse(pythonDict.containsKey(PythonCore.evaluate("3")));
+        assertFalse(pythonDict.containsKey(PythonInt.from(3)));
+    }
+
+    @Test
+    @DisplayName("Should return false (key is not instance of IPythonObject)")
+    public void testKeyIsNotIPythonObjectSuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        assertFalse(pythonDict.containsKey(3));
+    }
+
+    @Test
+    @DisplayName("Should return prev value (dict contains the key)")
+    public void testRemoveContainsKeySuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        IPythonObject prevValue = pythonDict.remove(PythonInt.from(1));
+        assertNotNull(prevValue);
+        assertEquals(PythonInt.from(2), prevValue);
+        assertEquals("{2: 3}", pythonDict.toString());
+    }
+
+    @Test
+    @DisplayName("Should return null (dict does not contain the key)")
+    public void testRemoveDoNotContainKeySuccessful() {
+        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+
+        IPythonObject prevValue = pythonDict.remove(PythonInt.from(3));
+        assertNull(prevValue);
+        assertEquals("{1: 2, 2: 3}", pythonDict.toString());
+    }
+
+    @Test
+    @DisplayName("Should successfully convert Map to PythonDict")
+    void testFromSuccessful() {
+        PythonDict dict = PythonDict.from(Map.of(PythonInt.from(1), PythonInt.from(2)));
+        assertNotNull(dict);
+
+        assertEquals("{1: 2}", dict.toString());
     }
 
     @ParameterizedTest
@@ -181,42 +249,26 @@ public class PythonDictTest {
     @Test
     @DisplayName("Equals should return true Java boolean (equals with the same object)")
     void testEqualsWithTheSameObj() {
-        IPythonObject object = PythonCore.evaluate("{1:2, 2:3}");
+        IPythonObject object = initPythonDict("{1:2, 2:3}");
 
         assertEquals(object, object);
     }
 
     @Test
-    @DisplayName("Should return prev value (dict contains the key)")
-    public void testRemoveContainsKeySuccessful() {
-        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+    @DisplayName("Should successfully return String of a PythonDict")
+    void testToString() {
+        PythonDict pythonDict1 = PythonDict.from(Map.of(PythonInt.from(1), PythonInt.from(2)));
 
-        IPythonObject prevValue = pythonDict.remove(PythonCore.evaluate("1"));
-        assertNotNull(prevValue);
-        assertEquals("2", prevValue.representation());
-        assertEquals("{2: 3}", pythonDict.representation());
+        assertEquals("{1: 2}", pythonDict1.toString());
     }
 
     @Test
-    @DisplayName("Should return prev value (dict contains the key)")
-    public void testRemoveDoNotContainKeySuccessful() {
-        PythonDict pythonDict = initPythonDict("{1:2, 2:3}");
+    @DisplayName("Should throws when getting hashcode of unhashable dict")
+    void testHashCodeThrows() {
+        PythonDict pythonDict = PythonDict.from(Map.of(PythonInt.from(1), PythonInt.from(2)));
 
-        IPythonObject prevValue = pythonDict.remove(PythonCore.evaluate("3"));
-        assertNull(prevValue);
-        assertEquals("{1: 2, 2: 3}", pythonDict.representation());
-    }
-
-    @Test
-    @DisplayName("Should successfully convert Map to PythonDict")
-    void testFromSuccessful() {
-        IPythonObject key = PythonInt.from(1);
-        IPythonObject value = PythonInt.from(2);
-        var s = Map.of(key, value);
-        PythonDict dict = PythonDict.from(s);
-        assertNotNull(dict);
-
-        assertTrue(dict.containsKey(PythonCore.evaluate("1")));
-        assertEquals("2", dict.get(PythonCore.evaluate("1")).representation());
+        PythonException exception = assertThrows(PythonException.class, pythonDict::hashCode);
+        assertEquals("unhashable type: 'dict'", exception.getValue().toString());
+        exception.free();
     }
 }

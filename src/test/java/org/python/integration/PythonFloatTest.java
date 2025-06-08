@@ -35,11 +35,23 @@ public class PythonFloatTest {
     @Test
     @DisplayName("Should return correct Java double from PythonFloat")
     void testToJavaNumberSuccessful() {
-        IPythonObject pythonFloat = PythonCore.evaluate("1.0");
+        IPythonObject pythonFloat = PythonFloat.from(1.0);
 
         Optional<PythonFloat> pythonFloatOp = pythonFloat.asFloat();
         assertTrue(pythonFloatOp.isPresent());
         assertEquals(1.0, pythonFloatOp.get().toJavaDouble());
+    }
+
+    @Test
+    @DisplayName("Should return PythonFloat from Java double")
+    void testFromJavaDouble() {
+        PythonFloat pythonFloat1 = PythonFloat.from(5.0);
+        assertNotNull(pythonFloat1);
+        assertEquals(5.0, pythonFloat1.toJavaDouble());
+
+        PythonFloat pythonFloat2 = PythonFloat.from(1000.0);
+        assertNotNull(pythonFloat2);
+        assertEquals(1000.0, pythonFloat2.toJavaDouble());
     }
 
     @ParameterizedTest
@@ -65,20 +77,40 @@ public class PythonFloatTest {
     @Test
     @DisplayName("Equals should return true Java boolean (equals with the same object)")
     void testEqualsWithTheSameObj() {
-        IPythonObject object = PythonCore.evaluate("1.0");
+        PythonFloat object = PythonFloat.from(1.0);
 
         assertEquals(object, object);
     }
 
     @Test
-    @DisplayName("Should return new PythonFloat from Java double")
-    void testFromJavaDouble() {
-        PythonFloat pythonFloat1 = PythonFloat.from(5.0);
-        assertNotNull(pythonFloat1);
-        assertEquals(5.0, pythonFloat1.toJavaDouble());
+    @DisplayName("Should successfully return String of a PythonFloat")
+    void testToString() {
+        PythonFloat pythonFloat = PythonFloat.from(0.1);
 
-        PythonFloat pythonFloat2 = PythonFloat.from(1000.0);
-        assertNotNull(pythonFloat2);
-        assertEquals(1000.0, pythonFloat2.toJavaDouble());
+        assertEquals("0.1", pythonFloat.toString());
+    }
+
+    @Test
+    @DisplayName("Should return the same hashCode during a single run")
+    void testHashCode() {
+        PythonFloat pythonFloat = PythonFloat.from(0.1);
+
+        int hashCode1 = pythonFloat.hashCode();
+        int hashCode2 = pythonFloat.hashCode();
+
+        assertEquals(hashCode1, hashCode2);
+    }
+
+    @Test
+    @DisplayName("Should return the same hashCode for equal PythonFloat objects")
+    void testHashCodeEqualObj() {
+        PythonFloat pythonFloat1 = PythonFloat.from(0.1);
+        PythonFloat pythonFloat2 = PythonFloat.from(0.1);
+        assertEquals(pythonFloat1, pythonFloat2);
+
+        int hashCode1 = pythonFloat1.hashCode();
+        int hashCode2 = pythonFloat2.hashCode();
+
+        assertEquals(hashCode1, hashCode2);
     }
 }

@@ -1,7 +1,7 @@
 package org.python.integration.exception;
 
 public class NativeOperationException extends RuntimeException {
-    public NativeOperationException(String message) {
+    private NativeOperationException(String message) {
         super(message);
     }
 }

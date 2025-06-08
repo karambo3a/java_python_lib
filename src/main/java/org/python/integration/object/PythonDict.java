@@ -196,7 +196,7 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
                 return false;
             }
             IPythonObject dictValue = PythonDict.this.get(key);
-            return value.equals(dictValue);
+            return dictValue != null && dictValue.equals(value);
         }
 
         @Override
