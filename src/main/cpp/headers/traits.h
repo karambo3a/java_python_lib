@@ -1,6 +1,7 @@
 #ifndef TRAITS_H
 #define TRAITS_H
 
+#include "python_object_manager.h"
 #include <jni.h>
 
 struct python_object;
@@ -233,7 +234,12 @@ struct java_traits<python_exception> {
         PyErr_NormalizeException(&py_type, &py_value, &py_traceback);
 #endif
 
-        jobject java_value = java_traits<python_object>::convert(env, py_value);
+        PythonObjectManager *root_object_manager = object_manager;
+        while (root_object_manager->get_scope_id() != 0) {
+            root_object_manager = root_object_manager->get_prev_object_manager();
+        }
+        const std::size_t index = root_object_manager->add_object(py_value);
+        jobject java_value = java_traits<python_object>::create(env, index, 0);
 
         jclass python_exception_class = env->FindClass("org/python/integration/exception/PythonException");
         jmethodID constructor =
