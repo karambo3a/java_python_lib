@@ -3,8 +3,7 @@
 #include "globals.h"
 #include "traits.h"
 
-JNIEXPORT jboolean JNICALL
-Java_org_python_integration_object_PythonBool_toJavaBoolean(JNIEnv *env, jobject java_object) {
+JNIEXPORT jboolean JNICALL Java_org_python_integration_object_PythonBool_toJavaBoolean(JNIEnv *env, jobject java_object) {
     const GIL gil;
 
     PyObject *py_object = object_manager->get_object(env, java_object);
@@ -19,8 +18,7 @@ Java_org_python_integration_object_PythonBool_toJavaBoolean(JNIEnv *env, jobject
     return (jboolean)is_true;
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_python_integration_object_PythonBool_from(JNIEnv *env, jclass, jboolean java_boolean) {
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonBool_from(JNIEnv *env, jclass, jboolean java_boolean) {
     const GIL gil;
 
     PyObject *py_bool = PyBool_FromLong((long)java_boolean);

@@ -5,8 +5,7 @@
 #include <Python.h>
 #include <jni.h>
 
-JNIEXPORT jdouble JNICALL
-Java_org_python_integration_object_PythonFloat_toJavaDouble(JNIEnv *env, jobject java_object) {
+JNIEXPORT jdouble JNICALL Java_org_python_integration_object_PythonFloat_toJavaDouble(JNIEnv *env, jobject java_object) {
     const GIL gil;
 
     PyObject *py_object = object_manager->get_object(env, java_object);
@@ -24,8 +23,7 @@ Java_org_python_integration_object_PythonFloat_toJavaDouble(JNIEnv *env, jobject
     return java_double;
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_python_integration_object_PythonFloat_from(JNIEnv *env, jclass, jdouble java_double) {
+JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonFloat_from(JNIEnv *env, jclass, jdouble java_double) {
     const GIL gil;
 
     PyObject *py_float = PyFloat_FromDouble((double)java_double);

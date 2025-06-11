@@ -6,17 +6,17 @@
 #include <string>
 
 PythonObjectManager *PythonObjectManager::find_object_manager_by_scope(JNIEnv *env, std::size_t scope_id) {
-    PythonObjectManager *object_manager = this;
-    while (object_manager->get_prev_object_manager() != nullptr && object_manager->get_scope_id() != scope_id) {
-        object_manager = object_manager->get_prev_object_manager();
+    PythonObjectManager *curr_object_manager = object_manager;
+    while (curr_object_manager->get_prev_object_manager() != nullptr && curr_object_manager->get_scope_id() != scope_id) {
+        curr_object_manager = curr_object_manager->get_prev_object_manager();
     }
 
-    if (object_manager->get_scope_id() != scope_id) {
+    if (curr_object_manager->get_scope_id() != scope_id) {
         const char *message = "Scope associated with Python object is closed";
         env->Throw(java_traits<native_operation_exception>::create(env, message));
         return nullptr;
     }
-    return object_manager;
+    return curr_object_manager;
 }
 
 PythonObjectManager::PythonObjectManager(PythonObjectManager *prev_object_manager, std::size_t scope_id)

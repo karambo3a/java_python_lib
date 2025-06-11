@@ -22,13 +22,12 @@ OBJS=build/cpp/org_python_integration_core_PythonSession.o \
 	 build/cpp/org_python_integration_object_PythonDict.o\
 	 build/cpp/org_python_integration_object_PythonTuple.o\
 	 build/cpp/org_python_integration_object_PythonSet.o\
-	 build/cpp/org_python_integration_exception_PythonException.o\
 	 build/cpp/python_object_manager.o \
 	 build/cpp/py_java_function.o \
 	 build/cpp/gil.o \
      build/cpp/globals.o
 
-vpath %.cpp src/main/cpp/core src/main/cpp/exception src/main/cpp/integration src/main/cpp/object
+vpath %.cpp src/main/cpp/core src/main/cpp/integration src/main/cpp/object
 
 buildNative: $(OBJS)
 	mkdir -p build/libs && \
@@ -39,13 +38,13 @@ $(OBJS): build/cpp/%.o: %.cpp
 	$(CC) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 tidy:
-	@for f in src/main/cpp/core/*.cpp src/main/cpp/exception/*.cpp src/main/cpp/integration/*.cpp src/main/cpp/object/*.cpp; do\
+	@for f in src/main/cpp/core/*.cpp src/main/cpp/integration/*.cpp src/main/cpp/object/*.cpp; do\
 		echo $$f;\
 		$(CLANG_TIDY) -header-filter='src/main/cpp/headers/.*' $$f -- $(CXXFLAGS) $(INCLUDES);\
 	done\
 
 format:
-	$(CLANG_FORMAT) -i src/main/cpp/core/*.cpp src/main/cpp/integration/*.cpp src/main/cpp/object/*.cpp src/main/cpp/exception/*.cpp
+	$(CLANG_FORMAT) -i src/main/cpp/core/*.cpp src/main/cpp/integration/*.cpp src/main/cpp/object/*.cpp
 
 cleanNative:
 	rm -rf build/cpp build/libs

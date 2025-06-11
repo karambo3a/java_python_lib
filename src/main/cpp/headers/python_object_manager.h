@@ -17,9 +17,9 @@ public:
 
     PythonObjectManager &operator=(const PythonObjectManager &) = delete;
 
-    PythonObjectManager(PythonObjectManager &&other) = delete;
+    PythonObjectManager(PythonObjectManager &&) = delete;
 
-    PythonObjectManager &operator=(PythonObjectManager &&other) = delete;
+    PythonObjectManager &operator=(PythonObjectManager &&) = delete;
 
     std::size_t add_object(PyObject *py_object, bool is_borrowed = false);
 
@@ -33,14 +33,14 @@ public:
 
     PyObject *get_object(std::size_t index);
 
-    void free_object(JNIEnv *env, jobject java_object);
+    static void free_object(JNIEnv *env, jobject java_object);
 
 private:
     std::vector<PyObject *> py_objects;
     PythonObjectManager *prev_object_manager = nullptr;
     std::size_t scope_id = 0;
 
-    PythonObjectManager* find_object_manager_by_scope(JNIEnv* env, std::size_t scope_id);
+    static PythonObjectManager *find_object_manager_by_scope(JNIEnv *env, std::size_t scope_id);
 };
 
 #endif  // PYTHON_OBJECT_MANAGER_H

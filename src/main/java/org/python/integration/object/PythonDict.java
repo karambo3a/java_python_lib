@@ -6,8 +6,8 @@ import org.python.integration.exception.PythonException;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -196,7 +196,7 @@ public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implem
                 return false;
             }
             IPythonObject dictValue = PythonDict.this.get(key);
-            return dictValue != null && dictValue.equals(value);
+            return value.equals(dictValue);
         }
 
         @Override

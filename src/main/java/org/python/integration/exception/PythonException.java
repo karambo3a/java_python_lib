@@ -1,5 +1,6 @@
 package org.python.integration.exception;
 
+import org.python.integration.core.PythonCore;
 import org.python.integration.object.IPythonObject;
 
 public class PythonException extends RuntimeException {
@@ -13,5 +14,7 @@ public class PythonException extends RuntimeException {
         return value;
     }
 
-    public native void free();
+    public void free() {
+        PythonCore.free(this.value);
+    }
 }
