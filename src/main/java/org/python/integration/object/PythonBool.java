@@ -1,6 +1,6 @@
 package org.python.integration.object;
 
-public class PythonBool extends AbstractPythonObject{
+public class PythonBool extends AbstractPythonObject {
 
     private PythonBool(long index, long scopeId) {
         super(index, scopeId);

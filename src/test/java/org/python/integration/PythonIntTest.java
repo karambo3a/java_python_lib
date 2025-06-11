@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PythonIntTest {
@@ -36,7 +37,7 @@ public class PythonIntTest {
     @Test
     @DisplayName("Should return correct Java long from PythonInt")
     void testToJavaLongSuccessful() {
-        IPythonObject integer = PythonCore.evaluate("1");
+        IPythonObject integer = PythonInt.from(1);
 
         Optional<PythonInt> pythonInt = integer.asInt();
         assertTrue(pythonInt.isPresent());
@@ -44,8 +45,29 @@ public class PythonIntTest {
     }
 
     @Test
+    @DisplayName("Should return correct Java int from PythonInt")
+    void testToJavaIntSuccessful() {
+        IPythonObject integer = PythonInt.from(1);
+
+        Optional<PythonInt> pythonInt = integer.asInt();
+        assertTrue(pythonInt.isPresent());
+        assertEquals(1, pythonInt.get().toJavaInt());
+    }
+
+    @Test
+    @DisplayName("Should throws when the value overflows an int in toJavaInt")
+    void testToJavaIntOverflowThrows() {
+        IPythonObject integer = PythonInt.from((long) Integer.MAX_VALUE + 1);
+
+        Optional<PythonInt> pythonInt = integer.asInt();
+        assertTrue(pythonInt.isPresent());
+        ArithmeticException exception = assertThrows(ArithmeticException.class, () -> pythonInt.get().toJavaInt());
+        assertEquals("integer overflow", exception.getMessage());
+    }
+
+    @Test
     @DisplayName("Should return correct Java BigInteger from PythonInt")
-    void testToJavaBigIntegerWithBigIntegerSuccessful() {
+    void testToJavaBigIntegerSuccessful() {
         BigInteger bigInteger = new BigInteger(Long.valueOf(Long.MAX_VALUE).toString());
         bigInteger = bigInteger.add(bigInteger);
         IPythonObject integer = PythonCore.evaluate(bigInteger.toString());
@@ -53,6 +75,18 @@ public class PythonIntTest {
         Optional<PythonInt> pythonInt = integer.asInt();
         assertTrue(pythonInt.isPresent());
         assertEquals(bigInteger, pythonInt.get().toJavaBigInteger());
+    }
+
+    @Test
+    @DisplayName("Should return PythonInt from Java long")
+    void testFromJavaInt() {
+        PythonInt pythonInt1 = PythonInt.from(5);
+        assertNotNull(pythonInt1);
+        assertEquals(5, pythonInt1.toJavaInt());
+
+        PythonInt pythonInt2 = PythonInt.from((long) Integer.MAX_VALUE + 1);
+        assertNotNull(pythonInt2);
+        assertEquals((long) Integer.MAX_VALUE + 1, pythonInt2.toJavaLong());
     }
 
     @ParameterizedTest
@@ -78,20 +112,40 @@ public class PythonIntTest {
     @Test
     @DisplayName("Equals should return true Java boolean (equals with the same object)")
     void testEqualsWithTheSameObj() {
-        IPythonObject object = PythonCore.evaluate("1");
+        PythonInt object = PythonInt.from(1);
 
         assertEquals(object, object);
     }
 
     @Test
-    @DisplayName("Should return new PythonInt from Java long")
-    void testFromJavaInt() {
-        PythonInt pythonInt1 = PythonInt.from(5);
-        assertNotNull(pythonInt1);
-        assertEquals(5, pythonInt1.toJavaLong());
+    @DisplayName("Should successfully return String of a PythonInt")
+    void testToString() {
+        PythonInt pythonInt = PythonInt.from(1);
 
-        PythonInt pythonInt2 = PythonInt.from(1000);
-        assertNotNull(pythonInt2);
-        assertEquals(1000, pythonInt2.toJavaLong());
+        assertEquals("1", pythonInt.toString());
+    }
+
+    @Test
+    @DisplayName("Should return the same hashCode during a single run")
+    void testHashCode() {
+        PythonInt pythonInt = PythonInt.from(1);
+
+        int hashCode1 = pythonInt.hashCode();
+        int hashCode2 = pythonInt.hashCode();
+
+        assertEquals(hashCode1, hashCode2);
+    }
+
+    @Test
+    @DisplayName("Should return the same hashCode for equal PythonInt objects")
+    void testHashCodeEqualObj() {
+        PythonInt pythonInt1 = PythonInt.from(1);
+        PythonInt pythonInt2 = PythonInt.from(1);
+        assertEquals(pythonInt1, pythonInt2);
+
+        int hashCode1 = pythonInt1.hashCode();
+        int hashCode2 = pythonInt2.hashCode();
+
+        assertEquals(hashCode1, hashCode2);
     }
 }

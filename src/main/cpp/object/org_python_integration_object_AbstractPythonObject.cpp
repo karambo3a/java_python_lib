@@ -8,6 +8,10 @@ JNIEXPORT jboolean JNICALL
 Java_org_python_integration_object_AbstractPythonObject_equals(JNIEnv *env, jobject this_object, jobject other_object) {
     const GIL gil;
 
+    if (other_object == nullptr) {
+        return JNI_FALSE;
+    }
+
     if (this_object == other_object) {
         return JNI_TRUE;
     }
@@ -73,8 +77,7 @@ Java_org_python_integration_object_AbstractPythonObject_keepAlive(JNIEnv *env, j
     const std::size_t scope_id = get_scope(env, java_object);
 
     PythonObjectManager *curr_object_manager = object_manager;
-    while (curr_object_manager->get_prev_object_manager() != nullptr && curr_object_manager->get_scope_id() != scope_id
-    ) {
+    while (curr_object_manager->get_prev_object_manager() != nullptr && curr_object_manager->get_scope_id() != scope_id) {
         curr_object_manager = curr_object_manager->get_prev_object_manager();
     }
     PyObject *py_object = curr_object_manager->get_object(env, java_object);

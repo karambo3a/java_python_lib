@@ -80,4 +80,36 @@ public class PythonBoolTest {
 
         assertEquals(object, object);
     }
+
+    @Test
+    @DisplayName("Should successfully return String of a PythonBool")
+    void testToString() {
+        PythonBool pythonBool = PythonBool.from(true);
+
+        assertEquals("True", pythonBool.toString());
+    }
+
+    @Test
+    @DisplayName("Should return the same hashCode during a single run")
+    void testHashCode() {
+        PythonBool pythonBool = PythonBool.from(true);
+
+        int hashCode1 = pythonBool.hashCode();
+        int hashCode2 = pythonBool.hashCode();
+
+        assertEquals(hashCode1, hashCode2);
+    }
+
+    @Test
+    @DisplayName("Should return the same hashCode for equal PythonBool objects")
+    void testHashCodeEqualObj() {
+        PythonBool pythonBool1 = PythonBool.from(true);
+        PythonBool pythonBool2 = PythonBool.from(true);
+        assertEquals(pythonBool1, pythonBool2);
+
+        int hashCode1 = pythonBool1.hashCode();
+        int hashCode2 = pythonBool2.hashCode();
+
+        assertEquals(hashCode1, hashCode2);
+    }
 }
