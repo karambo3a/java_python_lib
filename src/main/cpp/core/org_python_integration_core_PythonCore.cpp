@@ -41,7 +41,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_evaluate(J
 JNIEXPORT void JNICALL Java_org_python_integration_core_PythonCore_free(JNIEnv *env, jclass, jobject java_object) {
     const GIL gil;
 
-    object_manager->free_object(env, java_object);
+    PythonObjectManager::free_object(env, java_object);
 }
 
 namespace {
@@ -76,8 +76,7 @@ public:
         jclass map_class = env->FindClass("java/util/HashMap");
         jmethodID map_constructor = env->GetMethodID(map_class, "<init>", "(I)V");
         this->java_map = env->NewObject(map_class, map_constructor, (jsize)names_size);
-        this->put_method =
-            env->GetMethodID(map_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+        this->put_method = env->GetMethodID(map_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     }
 
     void put(jstring name, PyObject *attr) {
@@ -101,12 +100,8 @@ Java_org_python_integration_core_PythonCore_importModule(JNIEnv *env, jclass, js
     return import_module(env, java_module);
 }
 
-JNIEXPORT jobject JNICALL Java_org_python_integration_core_PythonCore_fromImport(
-    JNIEnv *env,
-    jclass,
-    jstring java_from,
-    jobjectArray java_names
-) {
+JNIEXPORT jobject JNICALL
+Java_org_python_integration_core_PythonCore_fromImport(JNIEnv *env, jclass, jstring java_from, jobjectArray java_names) {
     const GIL gil;
 
     if (!java_names) {

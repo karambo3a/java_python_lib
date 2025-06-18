@@ -9,6 +9,14 @@ public:
 
     ~GIL();
 
+    GIL(const GIL &) = delete;
+
+    GIL(GIL &&) = delete;
+
+    GIL &operator=(const GIL &) = delete;
+
+    GIL &operator=(GIL &&) = delete;
+
 private:
     PyGILState_STATE gil_state;
 };

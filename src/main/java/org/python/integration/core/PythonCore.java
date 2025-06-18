@@ -4,6 +4,16 @@ import org.python.integration.object.IPythonObject;
 
 import java.util.Map;
 
+/**
+ * The {@code PythonCore} provides core functionality for Python interacting with Java.
+ *
+ * <p>This class enables:
+ * <ul>
+ *  <li>Execution of Python code from Java strings</li>
+ *  <li>Importing Python modules</li>
+ *  <li>Manual lifecycle management of Python objects</li>
+ * </ul>
+ */
 public class PythonCore {
     private PythonCore() {
     }

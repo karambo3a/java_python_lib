@@ -6,7 +6,7 @@ AllowShortFunctionsOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 BreakBeforeBraces: Custom
-ColumnLimit: 120
+ColumnLimit: 122
 EmptyLineAfterAccessModifier: Never
 IncludeBlocks: Merge
 IndentWidth: 4
@@ -22,3 +22,5 @@ IncludeCategories:
     Priority: 2
   - Regex: '^".*"$'
     Priority: 3
+
+MaxEmptyLinesToKeep: 2

@@ -35,7 +35,6 @@ public class PythonScopeTest {
         assertDoesNotThrow(pythonScope1::close);
     }
 
-
     @Test
     @DisplayName("Throws an exception when not the last scope is closed")
     void testCloseThrows() {
