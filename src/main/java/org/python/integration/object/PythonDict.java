@@ -11,7 +11,22 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
-
+/**
+ * Represents a Python dictionary in Java.
+ *
+ * <p>This class is a wrapper for Python dict that
+ * provides methods for safe type conversions from Java {@code Map}, memory management and modifications.
+ * Extends {@code AbstractPythonObject} which provides base operations with all Python objects.
+ *
+ * <p>Extends {@code AbstractMap} to provide core {@code Map<IPythonObject, IPythonObject>} functionality.
+ * All modifications performed through this interface directly affect Python dict associated with {@code PythonDict} in the Python interpreter.
+ *
+ * <p>The {@code equals()} guarantees all equals contract compliance only when comparing with {@code IPythonObjects} instances.
+ *
+ * @see IPythonObject
+ * @see AbstractPythonObject
+ * @see AbstractMap
+ */
 public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implements IPythonObject {
     private final IPythonObject pythonDict;
     private final long index;

@@ -42,7 +42,6 @@ public class PythonBoolTest {
         assertFalse(falseBool.asBool().get().toJavaBoolean());
     }
 
-
     @Test
     @DisplayName("Should return PythonBool from Java boolean")
     void testFromJavaBooleanSuccessful() {
@@ -51,7 +50,6 @@ public class PythonBoolTest {
         assertNotNull(pythonBool);
         assertTrue(pythonBool.toJavaBoolean());
     }
-
 
     @ParameterizedTest
     @MethodSource("provideInputForEqualsTest")
