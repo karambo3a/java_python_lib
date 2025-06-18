@@ -2,6 +2,7 @@ package org.python.integration.object;
 
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonScope;
+import org.python.integration.exception.PythonException;
 
 import java.util.AbstractList;
 import java.util.List;
@@ -120,6 +121,36 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
             IPythonObject insertAttr = this.pythonList.getAttribute("insert");
             PythonCallable insertCallable = insertAttr.asCallable().orElseThrow(() -> new IllegalStateException("insert is not callable"));
             insertCallable.call(pythonIndex, object);
+        }
+    }
+
+    @Override
+    public boolean remove(Object object) {
+        if (!(object instanceof IPythonObject pythonObject)) {
+            return false;
+        }
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject removeAttr = this.pythonList.getAttribute("remove");
+            PythonCallable removeCallable = removeAttr.asCallable().orElseThrow(() -> new IllegalStateException("remove is not callable"));
+            try {
+                removeCallable.call(pythonObject);
+                return true;
+            } catch (PythonException pe) {
+                if (pe.getValue().representation().contains("ValueError")) {
+                    return false;
+                }
+                throw pe;
+            }
+        }
+    }
+
+    @Override
+    public IPythonObject remove(int index) {
+        try (PythonScope pythonScope = new PythonScope()) {
+            PythonInt pythonIndex = PythonInt.from(index);
+            IPythonObject popAttr = this.pythonList.getAttribute("pop");
+            PythonCallable popCallable = popAttr.asCallable().orElseThrow(() -> new IllegalStateException("pop is not callable"));
+            return popCallable.call(pythonIndex).keepAlive();
         }
     }
 

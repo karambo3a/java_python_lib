@@ -166,6 +166,36 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
         }
     }
 
+    @Override
+    public boolean add(IPythonObject object) {
+        try (PythonScope pythonScope = new PythonScope()) {
+            int sizeBefore = size();
+            IPythonObject addAttr = this.pythonSet.getAttribute("add");
+            PythonCallable addAttrCallable = addAttr.asCallable().orElseThrow(() -> new IllegalStateException("add in not callable"));
+            addAttrCallable.call(object);
+            return sizeBefore < size();
+        }
+    }
+
+    @Override
+    public boolean remove(Object object) {
+        if (!(object instanceof IPythonObject pythonObject)) {
+            return false;
+        }
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject removeAttr = this.pythonSet.getAttribute("remove");
+            PythonCallable removeAttrCallable = removeAttr.asCallable().orElseThrow(() -> new IllegalStateException("remove in not callable"));
+            try {
+                removeAttrCallable.call(pythonObject);
+                return true;
+            } catch (PythonException pe) {
+                if (pe.getValue().representation().contains("KeyError")) {
+                    return false;
+                }
+                throw pe;
+            }
+        }
+    }
 
     public static native PythonSet from(Set<IPythonObject> set);
 }

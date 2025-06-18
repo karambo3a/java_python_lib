@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,6 +68,46 @@ public class PythonSetTest {
     void testSizeEmptySuccessful() {
         PythonSet set = initPythonSet("set()");
         assertEquals(0, set.size());
+    }
+
+    @Test
+    @DisplayName("Should successfully add item to set and returns true")
+    void testAddSuccessful() {
+        PythonSet set = initPythonSet("{1,2,3}");
+        PythonInt item = PythonInt.from(4);
+
+        assertTrue(set.add(item));
+        assertEquals("{1, 2, 3, 4}", set.toString());
+    }
+
+    @Test
+    @DisplayName("Should return false because set already contains the item")
+    void testAddUnsuccessful() {
+        PythonSet set = initPythonSet("{1,2,3}");
+        PythonInt item = PythonInt.from(1);
+
+        assertFalse(set.add(item));
+        assertEquals("{1, 2, 3}", set.toString());
+    }
+
+    @Test
+    @DisplayName("Should successfully remove item from set and returns true")
+    void testRemoveSuccessful() {
+        PythonSet set = initPythonSet("{1,2,3}");
+        PythonInt item = PythonInt.from(1);
+
+        assertTrue(set.remove(item));
+        assertEquals("{2, 3}", set.toString());
+    }
+
+    @Test
+    @DisplayName("Should return false because set does not contain the item")
+    void testRemoveUnsuccessful() {
+        PythonSet set = initPythonSet("{1,2,3}");
+        PythonInt item = PythonInt.from(4);
+
+        assertFalse(set.remove(item));
+        assertEquals("{1, 2, 3}", set.toString());
     }
 
     @Test

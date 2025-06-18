@@ -144,6 +144,46 @@ public class PythonListTest {
     }
 
     @Test
+    @DisplayName("Should successfully removes item from list")
+    void testListRemoveByValueSuccessful() {
+        PythonList list = initPythonList("[1,2,3]");
+        IPythonObject item = PythonInt.from(1);
+
+        assertTrue(list.remove(item));
+        assertEquals("[2, 3]", list.toString());
+    }
+
+    @Test
+    @DisplayName("Should returns false when list does not contain the item")
+    void testListRemoveByValueUnsuccessful() {
+        PythonList list = initPythonList("[1,2,3]");
+        IPythonObject item = PythonInt.from(4);
+
+        assertFalse(list.remove(item));
+        assertEquals("[1, 2, 3]", list.toString());
+    }
+
+    @Test
+    @DisplayName("Should successfully removes item by index from list")
+    void testListRemoveByIndexSuccessful() {
+        PythonList list = initPythonList("[1,2,3]");
+        IPythonObject item = list.remove(1);
+
+        assertNotNull(item);
+        assertEquals(2, item.asInt().get().toJavaInt());
+        assertEquals("[1, 3]", list.toString());
+    }
+
+    @Test
+    @DisplayName("Should throws when index is out od range")
+    void testListRemoveByIndexThrows() {
+        PythonList list = initPythonList("[1,2,3]");
+
+        PythonException exception = assertThrows(PythonException.class, () -> list.remove(3));
+        assertTrue(exception.getValue().toString().contains("out of range"));
+    }
+
+    @Test
     @DisplayName("Should return true if list contains item")
     void testListContainsTrueSuccessful() {
         PythonList list = initPythonList("[1,2,3]");
