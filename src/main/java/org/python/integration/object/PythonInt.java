@@ -7,7 +7,6 @@ import java.math.BigInteger;
  *
  * <p>This class is a wrapper for Python int values that
  * provides methods for safe type conversions from Java {@code long} primitives, to Java {@code int}, {@code long}, {@code BigInteger} and memory management.
- * It extends {@code AbstractPythonObject} which provides base operations with all Python objects.
  *
  * <p> For conversion to Java types, use
  * {@code int} when the Python {@code int} is known to fits in 32 bits,
@@ -15,7 +14,6 @@ import java.math.BigInteger;
  * {@code BigInteger} for values greater than 64-bit or when the size is unknown.
  *
  * @see IPythonObject
- * @see AbstractPythonObject
  */
 public class PythonInt extends AbstractPythonObject {
 

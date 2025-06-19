@@ -58,9 +58,9 @@ public abstract class AbstractPythonObject implements IPythonObject {
      *
      * <p><b>Important:</b> use equals only with IPythonObject instances.
      *
-     * @param object the reference object with which to compare.
+     * @param object the reference object with which to compare
      * @return {@code true} if this object is the same as the obj
-     * argument; {@code false} otherwise.
+     * argument; {@code false} otherwise
      * @see IPythonObject
      */
     @Override
@@ -73,8 +73,8 @@ public abstract class AbstractPythonObject implements IPythonObject {
      *
      * <p>Some of Python objets are not hashable (sush as list) and this method will throw PythonException.
      *
-     * @return a hash code value for this object.
-     * @throws PythonException when calling on unhashable Python objects.
+     * @return a hash code value for this object
+     * @throws PythonException when calling on unhashable Python objects
      * @see IPythonObject
      */
     @Override

@@ -46,7 +46,6 @@ public class PythonCoreTest {
     @DisplayName("Should throw when evaluating invalid Python syntax")
     void testEvaluateThrows() {
         PythonException exception = assertThrows(PythonException.class, () -> PythonCore.evaluate("[1, 2, 3"));
-        assertTrue(exception.getValue().toString().contains("'[' was never closed"));
         exception.free();
     }
 

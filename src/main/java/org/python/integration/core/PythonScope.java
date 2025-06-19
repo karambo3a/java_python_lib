@@ -3,7 +3,7 @@ package org.python.integration.core;
 import org.python.integration.object.IPythonObject;
 
 /**
- * The {@code PythonScope} manages the lifetime of {@code IPythonObject} instances created in it.
+ * The {@code PythonScope} manages the lifetime of {@link IPythonObject} instances created in it.
  * It implements {@code AutoCloseable} to ensure correct cleanup of Python objects via try-with-resources blocks.
  *
  * <p>Have hierarchical structure. During initialization of {@link PythonSession} creates the root scope.

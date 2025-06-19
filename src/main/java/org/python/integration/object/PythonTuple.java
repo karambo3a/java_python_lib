@@ -12,16 +12,11 @@ import java.util.RandomAccess;
  * Represents a Python tuple in Java.
  *
  * <p>This class is an immutable wrapper for Python tuple that
- * provides methods for safe type conversions from Java {@code List} and memory management.
- * It extends {@code AbstractPythonObject} which provides base operations with all Python objects.
- *
- * <p>It implements {@code RandomAccess} for efficient element access and extends {@code AbstractList} to provide read-only {@code List<IPythonObject>} functionality.
+ * provides methods for safe type conversions from Java {@link List}, memory management and read-only access.
  *
  * <p>The {@code equals()} guarantees all equals contract compliance only when comparing with {@code IPythonObjects} instances.
  *
  * @see IPythonObject
- * @see AbstractPythonObject
- * @see AbstractList
  */
 public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject, RandomAccess {
     private final IPythonObject pythonTuple;

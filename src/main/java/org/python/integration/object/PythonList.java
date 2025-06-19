@@ -13,17 +13,13 @@ import java.util.RandomAccess;
  * Represents a Python list in Java.
  *
  * <p>This class is a wrapper for Python list that
- * provides methods for safe type conversions from Java {@code List}, memory management and modifications.
- * It extends {@code AbstractPythonObject} which provides base operations with all Python objects.
+ * provides methods for safe type conversions from Java {@link List}, memory management and modifications.
  *
- * <p>It implements {@code RandomAccess} for efficient element access and extends {@code AbstractList} to provide core {@code List<IPythonObject>} functionality.
- * All modifications through this interface directly affect Python list in the Python interpreter associated with {@code PythonList}.
+ * <p>All modifications through this interface directly affect Python list in the Python interpreter associated with {@code PythonList}.
  *
  * <p>The {@code equals()} guarantees all equals contract compliance only when comparing with {@code IPythonObjects} instances.
  *
  * @see IPythonObject
- * @see AbstractPythonObject
- * @see AbstractList
  */
 public class PythonList extends AbstractList<IPythonObject> implements IPythonObject, RandomAccess {
     private final IPythonObject pythonList;

@@ -13,17 +13,13 @@ import java.util.Set;
  * Represents a Python set in Java.
  *
  * <p>This class is a wrapper for Python set that
- * provides methods for safe type conversions from Java {@code Set}, memory management and modifications.
- * Extends {@code AbstractPythonObject} which provides base operations with all Python objects.
+ * provides methods for safe type conversions from Java {@link Set}, memory management and modifications.
  *
- * <p>Extends {@code AbstractSet} to provide core {@code Set<IPythonObject>} functionality.
- * All modifications performed through this interface directly affect Python set associated with {@code PythonSet} in the Python interpreter.
+ * <p>All modifications performed through this interface directly affect Python set associated with {@code PythonSet} in the Python interpreter.
  *
  * <p>The {@code equals()} guarantees all equals contract compliance only when comparing with {@code IPythonObjects} instances.
  *
  * @see IPythonObject
- * @see AbstractPythonObject
- * @see AbstractSet
  */
 public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonSet;
