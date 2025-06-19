@@ -79,7 +79,11 @@ struct python_traits<python_tuple> {
 template <>
 struct python_traits<python_set> {
     static bool check(PyObject *py_object) {
+#if PYTHON_VERSION >= 310
         return PySet_CheckExact(py_object);
+#else
+        return PySet_Check(py_object) && PyAnySet_CheckExact(py_object);
+#endif
     }
 };
 
