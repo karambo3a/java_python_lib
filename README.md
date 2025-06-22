@@ -20,6 +20,8 @@ This library provides tools for Java-Python integration, enabling:
 
 ## Installation and usage
 
+Currently, the library is only supported on Linux.
+
 1. **Edit Makefile**
     ```Makefile
       # Change to your Python version (39 for Python 3.9 etc.)
@@ -50,6 +52,8 @@ Usage examples are available in [examples](./examples) directory:
 * **Basic Java-Python calls** – modules and functions.
 * **Coverage tracking** – track executed lines from Java.
 * **Parallel execution** – Python threading with Java functions
+
+To run the examples, use `./gradlew :examples:run`
 
 ## Dependencies
 
