@@ -2,12 +2,25 @@ package org.python.integration.object;
 
 import org.python.integration.core.PythonCore;
 import org.python.integration.core.PythonScope;
+import org.python.integration.exception.PythonException;
 
 import java.util.AbstractList;
 import java.util.List;
 import java.util.Optional;
 import java.util.RandomAccess;
 
+/**
+ * Represents a Python list in Java.
+ *
+ * <p>This class is a wrapper for Python list that
+ * provides methods for safe type conversions from Java {@link List}, memory management and modifications.
+ *
+ * <p>All modifications through this interface directly affect Python list in the Python interpreter associated with {@code PythonList}.
+ *
+ * <p>The {@code equals()} guarantees all equals contract compliance only when comparing with {@code IPythonObjects} instances.
+ *
+ * @see IPythonObject
+ */
 public class PythonList extends AbstractList<IPythonObject> implements IPythonObject, RandomAccess {
     private final IPythonObject pythonList;
     private final long index;
@@ -120,6 +133,36 @@ public class PythonList extends AbstractList<IPythonObject> implements IPythonOb
             IPythonObject insertAttr = this.pythonList.getAttribute("insert");
             PythonCallable insertCallable = insertAttr.asCallable().orElseThrow(() -> new IllegalStateException("insert is not callable"));
             insertCallable.call(pythonIndex, object);
+        }
+    }
+
+    @Override
+    public boolean remove(Object object) {
+        if (!(object instanceof IPythonObject pythonObject)) {
+            return false;
+        }
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject removeAttr = this.pythonList.getAttribute("remove");
+            PythonCallable removeCallable = removeAttr.asCallable().orElseThrow(() -> new IllegalStateException("remove is not callable"));
+            try {
+                removeCallable.call(pythonObject);
+                return true;
+            } catch (PythonException pe) {
+                if (pe.getValue().representation().contains("ValueError")) {
+                    return false;
+                }
+                throw pe;
+            }
+        }
+    }
+
+    @Override
+    public IPythonObject remove(int index) {
+        try (PythonScope pythonScope = new PythonScope()) {
+            PythonInt pythonIndex = PythonInt.from(index);
+            IPythonObject popAttr = this.pythonList.getAttribute("pop");
+            PythonCallable popCallable = popAttr.asCallable().orElseThrow(() -> new IllegalStateException("pop is not callable"));
+            return popCallable.call(pythonIndex).keepAlive();
         }
     }
 

@@ -1,6 +1,14 @@
 package org.python.integration.object;
 
-public class PythonBool extends AbstractPythonObject{
+/**
+ * Represents a Python {@code bool} in Java.
+ *
+ * <p>This class is a wrapper for Python boolean values {@code True} or {@code False} that
+ * provides methods for safe type conversions from/to Java {@code boolean} primitives and memory management.
+ *
+ * @see IPythonObject
+ */
+public class PythonBool extends AbstractPythonObject {
 
     private PythonBool(long index, long scopeId) {
         super(index, scopeId);

@@ -5,6 +5,19 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Represents a Python callable object in Java.
+ *
+ * <p>This class is a wrapper for Python callable objects (implementing method {@code __call__}), that
+ * provides methods for safe type conversions from Java functional interfaces, memory management and executing in the Python interpreter from Java.
+ *
+ * <p>Supports calling Python callable objects from Java with various arguments counts,
+ * and converting Java functional interfaces (such as {@code Consumer}, {@code Supplier}, etc.) to Python callable objects
+ * stored in the Python interpreter.
+ *
+ * @see IPythonObject
+ * @see FunctionalInterface
+ */
 public class PythonCallable extends AbstractPythonObject {
 
     private PythonCallable(long index, long scopeId) {

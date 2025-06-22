@@ -9,6 +9,18 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Represents a Python set in Java.
+ *
+ * <p>This class is a wrapper for Python set that
+ * provides methods for safe type conversions from Java {@link Set}, memory management and modifications.
+ *
+ * <p>All modifications performed through this interface directly affect Python set associated with {@code PythonSet} in the Python interpreter.
+ *
+ * <p>The {@code equals()} guarantees all equals contract compliance only when comparing with {@code IPythonObjects} instances.
+ *
+ * @see IPythonObject
+ */
 public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObject {
     private final IPythonObject pythonSet;
     private final long index;
@@ -166,6 +178,36 @@ public class PythonSet extends AbstractSet<IPythonObject> implements IPythonObje
         }
     }
 
+    @Override
+    public boolean add(IPythonObject object) {
+        try (PythonScope pythonScope = new PythonScope()) {
+            int sizeBefore = size();
+            IPythonObject addAttr = this.pythonSet.getAttribute("add");
+            PythonCallable addAttrCallable = addAttr.asCallable().orElseThrow(() -> new IllegalStateException("add in not callable"));
+            addAttrCallable.call(object);
+            return sizeBefore < size();
+        }
+    }
+
+    @Override
+    public boolean remove(Object object) {
+        if (!(object instanceof IPythonObject pythonObject)) {
+            return false;
+        }
+        try (PythonScope pythonScope = new PythonScope()) {
+            IPythonObject removeAttr = this.pythonSet.getAttribute("remove");
+            PythonCallable removeAttrCallable = removeAttr.asCallable().orElseThrow(() -> new IllegalStateException("remove in not callable"));
+            try {
+                removeAttrCallable.call(pythonObject);
+                return true;
+            } catch (PythonException pe) {
+                if (pe.getValue().representation().contains("KeyError")) {
+                    return false;
+                }
+                throw pe;
+            }
+        }
+    }
 
     public static native PythonSet from(Set<IPythonObject> set);
 }

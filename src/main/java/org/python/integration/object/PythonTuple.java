@@ -8,6 +8,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.RandomAccess;
 
+/**
+ * Represents a Python tuple in Java.
+ *
+ * <p>This class is an immutable wrapper for Python tuple that
+ * provides methods for safe type conversions from Java {@link List}, memory management and read-only access.
+ *
+ * <p>The {@code equals()} guarantees all equals contract compliance only when comparing with {@code IPythonObjects} instances.
+ *
+ * @see IPythonObject
+ */
 public class PythonTuple extends AbstractList<IPythonObject> implements IPythonObject, RandomAccess {
     private final IPythonObject pythonTuple;
     private final long index;

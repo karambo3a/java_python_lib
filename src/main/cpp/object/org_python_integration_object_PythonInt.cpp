@@ -58,7 +58,7 @@ JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_toJavaBig
 JNIEXPORT jobject JNICALL Java_org_python_integration_object_PythonInt_from(JNIEnv *env, jclass, jlong java_long) {
     const GIL gil;
 
-    PyObject *py_int = PyLong_FromLongLong((long)java_long);
+    PyObject *py_int = PyLong_FromLongLong((long long)java_long);
     if (!py_int) {
         env->Throw(java_traits<python_exception>::create(env));
         return nullptr;

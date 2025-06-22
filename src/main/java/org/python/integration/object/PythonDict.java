@@ -6,12 +6,23 @@ import org.python.integration.exception.PythonException;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
-
+/**
+ * Represents a Python dictionary in Java.
+ *
+ * <p>This class is a wrapper for Python dict that
+ * provides methods for safe type conversions from Java {@link Map}, memory management and modifications.
+ *
+ * <p>All modifications performed through this interface directly affect Python dict associated with {@code PythonDict} in the Python interpreter.
+ *
+ * <p>The {@code equals()} guarantees all equals contract compliance only when comparing with {@code IPythonObjects} instances.
+ *
+ * @see IPythonObject
+ */
 public class PythonDict extends AbstractMap<IPythonObject, IPythonObject> implements IPythonObject {
     private final IPythonObject pythonDict;
     private final long index;
